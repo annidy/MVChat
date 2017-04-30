@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:Thesis.xcodeproj">
+      location = "self:MVChat.xcodeproj">
    </FileRef>
 </Workspace>
