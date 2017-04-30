@@ -22,20 +22,18 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    [self.messagesTableView registerClass:[MVMessageCell class] forCellReuseIdentifier:@"MessageCell"];
     self.messagesTableView.tableFooterView = [UIView new];
     self.messagesTableView.delegate = self;
     self.messagesTableView.dataSource = self;
     
     self.messages = [MVChatManager messages];
     self.messagesTableView.estimatedRowHeight = 30;
+    
 }
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 50;
-}
-
--(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
+    return self.messages.count;
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -44,11 +42,6 @@
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     MVMessageCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MessageCell"];
-    if (!cell) {
-        cell = [MVMessageCell new];
-        [cell build];
-    }
-    
     cell.label.text = self.messages[indexPath.row].text;
     
     return cell;

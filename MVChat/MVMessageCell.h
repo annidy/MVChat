@@ -10,5 +10,4 @@
 
 @interface MVMessageCell : UITableViewCell
 @property (strong, nonatomic) UILabel *label;
-- (void) build;
 @end

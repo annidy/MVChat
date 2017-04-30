@@ -8,21 +8,25 @@
 
 #import "MVMessageCell.h"
 
+@interface MVMessageCell ()
+
+@end
+
 @implementation MVMessageCell
 
 - (void)awakeFromNib {
     [super awakeFromNib];
-    // Initialization code
 }
 
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
-    [super setSelected:selected animated:animated];
-
-    // Configure the view for the selected state
+-(instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
+    if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
+        [self build];
+    }
+    
+    return self;
 }
 
 - (void)build {
-    
     UIImageView *bubble = [UIImageView new];
     self.label = [UILabel new];
     self.label.numberOfLines = 0;
@@ -48,8 +52,5 @@
     bubble.image = resizedImage;
     
     [bubble setTintColor:[UIColor colorWithRed:0.5 green:0.8 blue:0.8 alpha:0.4]];
-    
-    
-    
 }
 @end
