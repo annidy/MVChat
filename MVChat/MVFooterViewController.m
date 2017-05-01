@@ -18,11 +18,11 @@
 #pragma mark - Lifecycle
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    self.sendButton.enabled = NO;
 }
 
 - (IBAction)messageTextFieldChanged:(id)sender {
-    self.sendButton.enabled = self.messageTextField.text.length > 0;
+    self.sendButton.enabled = [self.messageTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]].length > 0;
 }
 
 @end

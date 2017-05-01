@@ -15,6 +15,7 @@
     for (int i = 0; i < 50; i++) {
         MVMessageModel *message = [MVMessageModel new];
         message.text = [self randomString];
+        message.sendDate = [self randomDate];
         
         if ([self randomBool]) {
             message.direction = MessageDirectionIncoming;
@@ -44,6 +45,14 @@ static char *letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123
 
 + (BOOL)randomBool {
     return arc4random_uniform(50) % 2;
+}
+
++ (NSDate *)randomDate {
+    NSDate *date = [NSDate new];
+    
+    NSUInteger days = arc4random_uniform(500000);
+    
+    return [date dateByAddingTimeInterval:days];
 }
 
 @end

@@ -17,5 +17,6 @@ typedef enum : NSUInteger {
 @interface MVMessageModel : NSObject
 @property (strong, nonatomic) NSString *text;
 @property (assign, nonatomic) MessageDirection direction;
+@property (strong, nonatomic) NSDate *sendDate;
 @property (strong, nonatomic) MVContactModel *contact;
 @end

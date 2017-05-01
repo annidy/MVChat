@@ -49,9 +49,6 @@
                             <constraint firstAttribute="trailing" secondItem="1cy-4A-UOo" secondAttribute="trailing" id="roY-cz-0Lw"/>
                         </constraints>
                     </view>
-                    <connections>
-                        <outlet property="messagesTableTrailingConstraint" destination="WrY-pV-hIm" id="2Ss-l2-HYW"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
@@ -141,7 +138,6 @@
                     </view>
                     <connections>
                         <outlet property="messagesTableView" destination="ySx-5M-MSu" id="dpW-1G-d06"/>
-                        <outlet property="messagesTrailingConstraint" destination="ydy-Q2-sY5" id="uPu-Qo-zPq"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="u8w-uf-e8U" userLabel="First Responder" sceneMemberID="firstResponder"/>

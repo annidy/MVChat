@@ -10,5 +10,6 @@
 #import "MVSlidingCell.h"
 
 @interface MVMessageCell : UITableViewCell <MVSlidingCell>
-@property (strong, nonatomic) UILabel *label;
+@property (strong, nonatomic) UILabel *messageLabel;
+@property (strong, nonatomic) UILabel *timeLabel;
 @end

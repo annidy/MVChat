@@ -12,7 +12,6 @@
 
 @interface MVChatViewController () <UIGestureRecognizerDelegate>
 @property (weak, nonatomic) MVMessagesViewController *MessagesController;
-@property (strong, nonatomic) IBOutlet NSLayoutConstraint *messagesTableTrailingConstraint;
 @property (weak, nonatomic) MVFooterViewController *FooterController;
 @end
 
