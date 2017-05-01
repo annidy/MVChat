@@ -10,10 +10,14 @@
 #import "MVMessageModel.h"
 #import "MVChatManager.h"
 #import "MVMessageCell.h"
+#import "MVMessageHeader.h"
 
 @interface MVMessagesViewController () <UITableViewDelegate, UITableViewDataSource, UIGestureRecognizerDelegate>
 @property (strong, nonatomic) IBOutlet UITableView *messagesTableView;
-@property (strong, nonatomic) NSArray <MVMessageModel *> *messages;
+@property (strong, nonatomic) NSArray <MVMessageModel *> *messageModels;
+
+@property (strong, nonatomic) NSMutableArray <NSString *> *sections;
+@property (strong, nonatomic) NSMutableDictionary <NSString *, NSMutableArray <MVMessageModel *>*> *messages;
 @property (assign, nonatomic) CGFloat sliderOffset;
 @end
 
@@ -25,43 +29,72 @@
     self.sliderOffset = 0;
     [self.messagesTableView registerClass:[MVMessageCell class] forCellReuseIdentifier:@"MessageCellIncoming"];
     [self.messagesTableView registerClass:[MVMessageCell class] forCellReuseIdentifier:@"MessageCellOutgoing"];
+    [self.messagesTableView registerClass:[MVMessageHeader class] forHeaderFooterViewReuseIdentifier:@"MessageHeader"];
     self.messagesTableView.tableFooterView = [UIView new];
     self.messagesTableView.delegate = self;
     self.messagesTableView.dataSource = self;
     
-    self.messages = [MVChatManager messages];
+    self.messageModels = [MVChatManager messages];
     self.messagesTableView.estimatedRowHeight = 30;
-    
+    self.messagesTableView.contentInset = UIEdgeInsetsMake(-44, 0, 0, 0);
     UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
     [self.view addGestureRecognizer:panRecognizer];
     panRecognizer.delegate = self;
+    
+    [self mapWithSections];
+}
+
+- (void)mapWithSections {
+    self.sections = [NSMutableArray new];
+    self.messages = [NSMutableDictionary new];
+    
+    for (MVMessageModel *model in self.messageModels) {
+        NSString *key = [self headerTitleFromDate:model.sendDate];
+        NSMutableArray *rows = self.messages[key];
+        if (!rows) {
+            rows = [NSMutableArray new];
+            [self.sections addObject:key];
+        }
+        [rows addObject:model];
+        [self.messages setObject:rows forKey:key];
+    }
 }
 
 #pragma mark - Table view
--(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.messages.count;
+-(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return self.sections.count;
+}
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return self.messages[self.sections[section]].count;
 }
 
--(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return UITableViewAutomaticDimension;
 }
 
--(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+-(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    return 44;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSString *cellId = @"MessageCell";
-    if (self.messages[indexPath.row].direction == MessageDirectionOutgoing) {
+    NSString *section = self.sections[indexPath.section];
+    MVMessageModel *model = self.messages[section][indexPath.row];
+    
+    if (model.direction == MessageDirectionOutgoing) {
         cellId = [cellId stringByAppendingString:@"Outgoing"];
     } else {
         cellId = [cellId stringByAppendingString:@"Incoming"];
     }
     
     MVMessageCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
-    cell.messageLabel.text = self.messages[indexPath.row].text;
-    cell.timeLabel.text = [self timeFromDate:self.messages[indexPath.row].sendDate];
+    cell.messageLabel.text = model.text;
+    cell.timeLabel.text = [self timeFromDate:model.sendDate];
     
     return cell;
 }
 
--(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell <MVSlidingCell> *slidingCell = (UITableViewCell <MVSlidingCell> *)cell;
     CGFloat oldSlidingConstraint = slidingCell.slidingConstraint;
     
@@ -69,6 +102,14 @@
         [slidingCell setSlidingConstraint:self.sliderOffset];
         [slidingCell layoutIfNeeded];
     }
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    NSString *sectionTitle = self.sections[section];
+    MVMessageHeader *header = [tableView dequeueReusableHeaderFooterViewWithIdentifier:@"MessageHeader"];
+    header.titleLabel.text = sectionTitle;
+    
+    return header;
 }
 
 #pragma mark - Gesture recognizers
@@ -140,5 +181,14 @@
     timeFormatter.dateFormat = @"HH:mm";
     
     return [timeFormatter stringFromDate:date];
+}
+
+- (NSString *)headerTitleFromDate:(NSDate *)date {
+    NSDateFormatter *formatter = [NSDateFormatter new];
+    formatter.timeStyle = NSDateFormatterNoStyle;
+    formatter.dateStyle = NSDateFormatterShortStyle;
+    formatter.doesRelativeDateFormatting = YES;
+    
+    return [formatter stringFromDate:date];
 }
 @end

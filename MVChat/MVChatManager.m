@@ -26,6 +26,16 @@
         [messages addObject:message];
     }
     
+    [messages sortUsingComparator:^NSComparisonResult(MVMessageModel *obj1, MVMessageModel *obj2) {
+        if (obj1.sendDate.timeIntervalSinceReferenceDate > obj2.sendDate.timeIntervalSinceReferenceDate) {
+            return NSOrderedDescending;
+        } else if (obj1.sendDate.timeIntervalSinceReferenceDate < obj2.sendDate.timeIntervalSinceReferenceDate) {
+            return NSOrderedAscending;
+        } else {
+            return NSOrderedSame;
+        }
+    }];
+    
     return [messages copy];
 }
 
@@ -49,10 +59,9 @@ static char *letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123
 
 + (NSDate *)randomDate {
     NSDate *date = [NSDate new];
+    double time = arc4random_uniform(5000000);
     
-    NSUInteger days = arc4random_uniform(500000);
-    
-    return [date dateByAddingTimeInterval:days];
+    return [date dateByAddingTimeInterval:-time];
 }
 
 @end
