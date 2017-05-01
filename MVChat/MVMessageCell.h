@@ -7,9 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "MVSlidingCell.h"
 
-@interface MVMessageCell : UITableViewCell
+@interface MVMessageCell : UITableViewCell <MVSlidingCell>
 @property (strong, nonatomic) UILabel *label;
-@property (strong, nonatomic) NSLayoutConstraint *rightConstraint;
-@property (strong, nonatomic) NSLayoutConstraint *leftConstraint;
 @end

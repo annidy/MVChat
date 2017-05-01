@@ -85,14 +85,24 @@
                                 </constraints>
                                 <state key="normal" title="Send"/>
                             </button>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IT2-qm-4x2">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="1"/>
+                                <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="1" id="8ph-CC-gQr"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="IT2-qm-4x2" firstAttribute="leading" secondItem="gYn-gJ-2JN" secondAttribute="leading" id="BXk-wT-boY"/>
+                            <constraint firstItem="IT2-qm-4x2" firstAttribute="top" secondItem="gYn-gJ-2JN" secondAttribute="top" id="DSv-KD-ruU"/>
                             <constraint firstItem="dza-yB-rKy" firstAttribute="centerY" secondItem="gYn-gJ-2JN" secondAttribute="centerY" id="IRb-EO-qNh"/>
                             <constraint firstItem="dza-yB-rKy" firstAttribute="leading" secondItem="NHf-wI-Dbb" secondAttribute="trailing" constant="15" id="TXt-qh-ibH"/>
                             <constraint firstItem="NHf-wI-Dbb" firstAttribute="leading" secondItem="gYn-gJ-2JN" secondAttribute="leadingMargin" id="dhD-r7-y1v"/>
                             <constraint firstAttribute="trailing" secondItem="dza-yB-rKy" secondAttribute="trailing" constant="15" id="ugp-eY-hii"/>
                             <constraint firstItem="NHf-wI-Dbb" firstAttribute="centerY" secondItem="gYn-gJ-2JN" secondAttribute="centerY" id="v39-sM-Yu7"/>
+                            <constraint firstAttribute="trailing" secondItem="IT2-qm-4x2" secondAttribute="trailing" id="xqP-eI-gmR"/>
                         </constraints>
                     </view>
                     <connections>
