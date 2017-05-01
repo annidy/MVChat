@@ -37,6 +37,8 @@ static CGFloat bubbleTailessMargin = 10;
 }
 
 - (void)build {
+    self.selectionStyle = UITableViewCellSelectionStyleNone;
+    
     UIImageView *bubbleImageView = [UIImageView new];
     self.messageLabel = [UILabel new];
     self.timeLabel = [UILabel new];
