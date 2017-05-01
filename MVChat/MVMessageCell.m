@@ -41,9 +41,14 @@
     [[bubble.rightAnchor constraintEqualToAnchor:self.label.rightAnchor constant:15] setActive:YES];
     
     [[self.label.topAnchor constraintEqualToAnchor:bubble.topAnchor constant:5] setActive:YES];
-    [[self.label.leftAnchor constraintGreaterThanOrEqualToAnchor:self.contentView.leftAnchor constant:50] setActive:YES];
-    [[self.label.rightAnchor constraintEqualToAnchor:self.contentView.rightAnchor constant:-25] setActive:YES];
+    self.leftConstraint = [self.label.leftAnchor constraintGreaterThanOrEqualToAnchor:self.contentView.leftAnchor constant:90];
+    [self.leftConstraint setActive:YES];
+    
+    
+    self.rightConstraint = [self.label.rightAnchor constraintEqualToAnchor:self.contentView.rightAnchor constant:-25];
+    [self.rightConstraint setActive:YES];
     [[self.label.bottomAnchor constraintEqualToAnchor:bubble.bottomAnchor constant:-5] setActive:YES];
+    
     
     
     UIImage *image = [UIImage imageNamed:@"bubble"];
@@ -52,5 +57,13 @@
     bubble.image = resizedImage;
     
     [bubble setTintColor:[UIColor colorWithRed:0.5 green:0.8 blue:0.8 alpha:0.4]];
+    
+    UILabel *time = [UILabel new];
+    [self.contentView addSubview:time];
+    [[time.leftAnchor constraintEqualToAnchor:self.label.rightAnchor constant:25]setActive:YES];
+    [[time.topAnchor constraintEqualToAnchor:self.contentView.topAnchor constant:5] setActive:YES];
+    [[time.bottomAnchor constraintEqualToAnchor:self.contentView.bottomAnchor constant:-5] setActive:YES];
+    [time setText:@"12:23"];
+    time.translatesAutoresizingMaskIntoConstraints = NO;
 }
 @end

@@ -10,4 +10,6 @@
 
 @interface MVMessageCell : UITableViewCell
 @property (strong, nonatomic) UILabel *label;
+@property (strong, nonatomic) NSLayoutConstraint *rightConstraint;
+@property (strong, nonatomic) NSLayoutConstraint *leftConstraint;
 @end

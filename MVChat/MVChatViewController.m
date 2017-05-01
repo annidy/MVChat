@@ -10,8 +10,9 @@
 #import "MVMessagesViewController.h"
 #import "MVFooterViewController.h"
 
-@interface MVChatViewController ()
+@interface MVChatViewController () <UIGestureRecognizerDelegate>
 @property (weak, nonatomic) MVMessagesViewController *MessagesController;
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *messagesTableTrailingConstraint;
 @property (weak, nonatomic) MVFooterViewController *FooterController;
 @end
 
@@ -20,8 +21,9 @@
 #pragma mark - Lifecycle
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    
 }
-
 
 #pragma mark - Segues
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {

@@ -49,6 +49,9 @@
                             <constraint firstAttribute="trailing" secondItem="1cy-4A-UOo" secondAttribute="trailing" id="roY-cz-0Lw"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="messagesTableTrailingConstraint" destination="WrY-pV-hIm" id="2Ss-l2-HYW"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
@@ -58,6 +61,10 @@
         <scene sceneID="hDp-Km-xFt">
             <objects>
                 <viewController id="xyr-sn-PIh" customClass="MVFooterViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Ndm-lc-Ltl"/>
+                        <viewControllerLayoutGuide type="bottom" id="BVj-7p-20I"/>
+                    </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="gYn-gJ-2JN">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="60"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -101,6 +108,10 @@
         <scene sceneID="zRc-v6-Mai">
             <objects>
                 <viewController id="e0v-Ll-oyT" customClass="MVMessagesViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="VwF-g9-z6T"/>
+                        <viewControllerLayoutGuide type="bottom" id="g1W-ar-IzZ"/>
+                    </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="9sj-hO-NKE">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="587"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -120,6 +131,7 @@
                     </view>
                     <connections>
                         <outlet property="messagesTableView" destination="ySx-5M-MSu" id="dpW-1G-d06"/>
+                        <outlet property="messagesTrailingConstraint" destination="ydy-Q2-sY5" id="uPu-Qo-zPq"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="u8w-uf-e8U" userLabel="First Responder" sceneMemberID="firstResponder"/>
