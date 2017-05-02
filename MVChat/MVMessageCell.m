@@ -12,12 +12,17 @@
 @interface MVMessageCell ()
 @property (strong, nonatomic) NSLayoutConstraint *timeLeftConstraint;
 @property (assign, nonatomic) MessageDirection direction;
+@property (assign, nonatomic) BOOL hasTail;
+@property (assign, nonatomic) BOOL firstInTailessSection;
+@property (assign, nonatomic) BOOL lastInTailessSection;
 @end
 
 static CGFloat innerMargin = 25;
 static CGFloat verticalMargin = 7;
+static CGFloat tailessVerticalMargin = 1;
 static CGFloat bubbleTailMargin = 15;
 static CGFloat bubbleTailessMargin = 10;
+static CGFloat tailWidth = 5;
 
 
 @implementation MVMessageCell
@@ -28,6 +33,18 @@ static CGFloat bubbleTailessMargin = 10;
             _direction = MessageDirectionIncoming;
         } else {
             _direction = MessageDirectionOutgoing;
+        }
+        
+        if ([reuseIdentifier containsString:@"Tailess"]) {
+            self.hasTail = NO;
+        } else {
+            self.hasTail = YES;
+        }
+        
+        if ([reuseIdentifier containsString:@"First"]) {
+            self.firstInTailessSection = YES;
+        } else if ([reuseIdentifier containsString:@"Last"]) {
+            self.lastInTailessSection = YES;
         }
         
         [self build];
@@ -60,6 +77,10 @@ static CGFloat bubbleTailessMargin = 10;
         bubbleImage = [UIImage imageNamed:@"bubbleIncoming"];
     }
     
+    if (!self.hasTail) {
+        bubbleImage = [UIImage imageNamed:@"bubbleTailess"];
+    }
+    
     bubbleImage = [[bubbleImage resizableImageWithCapInsets:UIEdgeInsetsMake(15, 25, 25, 25) resizingMode:UIImageResizingModeStretch] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     bubbleImageView.image = bubbleImage;
     [bubbleImageView setTintColor:color];
@@ -68,23 +89,46 @@ static CGFloat bubbleTailessMargin = 10;
     self.messageLabel.translatesAutoresizingMaskIntoConstraints = NO;
     self.timeLabel.translatesAutoresizingMaskIntoConstraints = NO;
     
-    [[bubbleImageView.topAnchor constraintEqualToAnchor:self.contentView.topAnchor constant:verticalMargin] setActive:YES];
-    [[self.contentView.bottomAnchor constraintEqualToAnchor:bubbleImageView.bottomAnchor constant:verticalMargin] setActive:YES];
+    if (!self.hasTail && !self.firstInTailessSection) {
+        [[bubbleImageView.topAnchor constraintEqualToAnchor:self.contentView.topAnchor constant:1] setActive:YES];
+    } else if (self.hasTail && self.lastInTailessSection) {
+        [[bubbleImageView.topAnchor constraintEqualToAnchor:self.contentView.topAnchor constant:1] setActive:YES];
+    } else {
+        [[bubbleImageView.topAnchor constraintEqualToAnchor:self.contentView.topAnchor constant:verticalMargin] setActive:YES];
+    }
+    
+    if (!self.hasTail) {
+        [[self.contentView.bottomAnchor constraintEqualToAnchor:bubbleImageView.bottomAnchor constant:1] setActive:YES];
+    } else {
+        [[self.contentView.bottomAnchor constraintEqualToAnchor:bubbleImageView.bottomAnchor constant:verticalMargin] setActive:YES];
+    }
+    
     [[self.messageLabel.topAnchor constraintEqualToAnchor:bubbleImageView.topAnchor constant:verticalMargin] setActive:YES];
     [[bubbleImageView.bottomAnchor constraintEqualToAnchor:self.messageLabel.bottomAnchor constant:verticalMargin] setActive:YES];
     [[self.timeLabel.topAnchor constraintEqualToAnchor:self.contentView.topAnchor constant:verticalMargin] setActive:YES];
     [[self.contentView.bottomAnchor constraintEqualToAnchor:self.timeLabel.bottomAnchor constant:verticalMargin] setActive:YES];
     
-    [[bubbleImageView.widthAnchor constraintLessThanOrEqualToAnchor:self.contentView.widthAnchor multiplier:0.8] setActive:YES];
+    if (self.hasTail) {
+        [[bubbleImageView.widthAnchor constraintLessThanOrEqualToAnchor:self.contentView.widthAnchor multiplier:0.8] setActive:YES];
+    } else {
+        [[bubbleImageView.widthAnchor constraintLessThanOrEqualToAnchor:self.contentView.widthAnchor multiplier:0.785] setActive:YES];
+    }
+    
     [self.timeLeftConstraint = [self.timeLabel.leftAnchor constraintEqualToAnchor:self.contentView.rightAnchor] setActive:YES];
     
+    CGFloat tailessOffset = bubbleTailessMargin;
+    CGFloat tailOffset = bubbleTailMargin;
+    if (!self.hasTail) {
+        tailOffset -= tailWidth;
+        tailessOffset -= tailWidth;
+    }
     if (self.direction == MessageDirectionOutgoing) {
         [[self.timeLabel.leftAnchor constraintLessThanOrEqualToAnchor:self.messageLabel.rightAnchor constant:innerMargin] setActive:YES];
-        [[bubbleImageView.rightAnchor constraintEqualToAnchor:self.messageLabel.rightAnchor constant:bubbleTailMargin] setActive:YES];
+        [[bubbleImageView.rightAnchor constraintEqualToAnchor:self.messageLabel.rightAnchor constant:tailOffset] setActive:YES];
         [[self.messageLabel.leftAnchor constraintEqualToAnchor:bubbleImageView.leftAnchor constant:bubbleTailessMargin] setActive:YES];
     } else {
         [[self.messageLabel.leftAnchor constraintEqualToAnchor:self.contentView.leftAnchor constant:innerMargin] setActive:YES];
-        [[self.messageLabel.leftAnchor constraintEqualToAnchor:bubbleImageView.leftAnchor constant:bubbleTailMargin] setActive:YES];
+        [[self.messageLabel.leftAnchor constraintEqualToAnchor:bubbleImageView.leftAnchor constant:tailOffset] setActive:YES];
         [[bubbleImageView.rightAnchor constraintEqualToAnchor:self.messageLabel.rightAnchor constant:bubbleTailessMargin] setActive:YES];
     }
 }

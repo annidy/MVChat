@@ -29,6 +29,12 @@
     self.sliderOffset = 0;
     [self.messagesTableView registerClass:[MVMessageCell class] forCellReuseIdentifier:@"MessageCellIncoming"];
     [self.messagesTableView registerClass:[MVMessageCell class] forCellReuseIdentifier:@"MessageCellOutgoing"];
+    [self.messagesTableView registerClass:[MVMessageCell class] forCellReuseIdentifier:@"MessageCellIncomingLast"];
+    [self.messagesTableView registerClass:[MVMessageCell class] forCellReuseIdentifier:@"MessageCellOutgoingLast"];
+    [self.messagesTableView registerClass:[MVMessageCell class] forCellReuseIdentifier:@"MessageCellOutgoingTailess"];
+    [self.messagesTableView registerClass:[MVMessageCell class] forCellReuseIdentifier:@"MessageCellIncomingTailess"];
+    [self.messagesTableView registerClass:[MVMessageCell class] forCellReuseIdentifier:@"MessageCellOutgoingTailessFirst"];
+    [self.messagesTableView registerClass:[MVMessageCell class] forCellReuseIdentifier:@"MessageCellIncomingTailessFirst"];
     [self.messagesTableView registerClass:[MVMessageHeader class] forHeaderFooterViewReuseIdentifier:@"MessageHeader"];
     self.messagesTableView.tableFooterView = [UIView new];
     self.messagesTableView.delegate = self;
@@ -87,6 +93,17 @@
         cellId = [cellId stringByAppendingString:@"Incoming"];
     }
     
+    if (![self messageHasTailAtIndexPath:indexPath]) {
+        cellId = [cellId stringByAppendingString:@"Tailess"];
+        if ([self messageIsFirstInTailessGroup:indexPath]) {
+            cellId = [cellId stringByAppendingString:@"First"];
+        }
+    } else {
+        if ([self messageIsLastInTailessGroup:indexPath]) {
+            cellId = [cellId stringByAppendingString:@"Last"];
+        }
+    }
+
     MVMessageCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
     cell.messageLabel.text = model.text;
     cell.timeLabel.text = [self timeFromDate:model.sendDate];
@@ -190,5 +207,62 @@
     formatter.doesRelativeDateFormatting = YES;
     
     return [formatter stringFromDate:date];
+}
+
+- (BOOL) messageHasTailAtIndexPath:(NSIndexPath *)indexPath {
+    NSString *section = self.sections[indexPath.section];
+    NSArray *messages = self.messages[section];
+    BOOL hasTail = YES;
+    if (messages.count > indexPath.row + 1) {
+        MVMessageModel *model = messages[indexPath.row];
+        MVMessageModel *nextModel = messages[indexPath.row + 1];
+        NSTimeInterval interval = [nextModel.sendDate timeIntervalSinceDate:model.sendDate];
+        if (model.direction == nextModel.direction && interval < 60) {
+            hasTail = NO;
+        }
+    }
+    return hasTail;
+}
+
+- (MessageDirection) messageDirectionAtIndexPath:(NSIndexPath *)indexPath {
+    NSString *section = self.sections[indexPath.section];
+    MVMessageModel *message = self.messages[section][indexPath.row];
+    
+    return message.direction;
+}
+
+- (BOOL) messageIsFirstInTailessGroup:(NSIndexPath *)indexPath {
+    BOOL first = NO;
+    BOOL hasTail = [self messageHasTailAtIndexPath:indexPath];
+    if (!hasTail) {
+        if (indexPath.row - 1 >= 0) {
+            NSIndexPath *previousIndexPath = [NSIndexPath indexPathForRow:indexPath.row - 1 inSection:indexPath.section];
+            BOOL sameDirection = [self messageDirectionAtIndexPath:indexPath] == [self messageDirectionAtIndexPath:previousIndexPath];
+            BOOL previousHasTail = [self messageHasTailAtIndexPath:previousIndexPath];
+            if (previousHasTail && sameDirection) {
+                first = YES;
+            }
+        } else {
+            first = YES;
+        }
+    }
+    
+    return first;
+}
+
+- (BOOL) messageIsLastInTailessGroup:(NSIndexPath *)indexPath {
+    BOOL last = NO;
+    BOOL hasTail = [self messageHasTailAtIndexPath:indexPath];
+    if (hasTail) {
+        if (indexPath.row - 1 >= 0) {
+            NSIndexPath *previousIndexPath = [NSIndexPath indexPathForRow:indexPath.row - 1 inSection:indexPath.section];
+            BOOL sameDirection = [self messageDirectionAtIndexPath:indexPath] == [self messageDirectionAtIndexPath:previousIndexPath];
+            BOOL previousHasTail = [self messageHasTailAtIndexPath:previousIndexPath];
+            if (!previousHasTail && sameDirection) {
+                last = YES;
+            }
+        }
+    }
+    return last;
 }
 @end
