@@ -11,6 +11,7 @@
 #import "MVChatManager.h"
 #import "MVMessageCell.h"
 #import "MVMessageHeader.h"
+#import "MVContactManager.h"
 
 @interface MVMessagesViewController () <UITableViewDelegate, UITableViewDataSource, UIGestureRecognizerDelegate>
 @property (strong, nonatomic) IBOutlet UITableView *messagesTableView;
@@ -48,6 +49,7 @@
     panRecognizer.delegate = self;
     
     [self mapWithSections];
+    [MVContactManager startSendingAvatarUpdates];
 }
 
 - (void)mapWithSections {
@@ -108,6 +110,13 @@
     cell.messageLabel.text = model.text;
     cell.timeLabel.text = [self timeFromDate:model.sendDate];
     
+    __weak MVMessageCell *weakCell = cell;
+    [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+//        NSString *id = note.userInfo[@"Id"];
+        NSString *avatarName = note.userInfo[@"Avatar"];
+        weakCell.avatarImage.image = [UIImage imageNamed:avatarName];
+    }];
+    
     return cell;
 }
 
@@ -117,8 +126,10 @@
     
     if (oldSlidingConstraint != self.sliderOffset) {
         [slidingCell setSlidingConstraint:self.sliderOffset];
-        [slidingCell layoutIfNeeded];
     }
+    
+    [slidingCell.contentView layoutIfNeeded];
+    
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
@@ -132,7 +143,7 @@
 #pragma mark - Gesture recognizers
 -(BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
     CGPoint translation = [(UIPanGestureRecognizer *)gestureRecognizer translationInView:self.view];
-    if (ABS(translation.y) > 5) {
+    if (ABS(translation.y) > 1) {
         return NO;
     } else {
         return YES;
@@ -187,7 +198,7 @@
         self.sliderOffset = constant;
         
         [UIView animateWithDuration:duration animations:^{
-            [self.view layoutIfNeeded];
+            [self.messagesTableView layoutIfNeeded];
         }];
     }
 }
@@ -235,7 +246,7 @@
     BOOL first = NO;
     BOOL hasTail = [self messageHasTailAtIndexPath:indexPath];
     if (!hasTail) {
-        if (indexPath.row - 1 >= 0) {
+        if (indexPath.row - 1 >=                    0) {
             NSIndexPath *previousIndexPath = [NSIndexPath indexPathForRow:indexPath.row - 1 inSection:indexPath.section];
             BOOL sameDirection = [self messageDirectionAtIndexPath:indexPath] == [self messageDirectionAtIndexPath:previousIndexPath];
             BOOL previousHasTail = [self messageHasTailAtIndexPath:previousIndexPath];

@@ -12,4 +12,5 @@
 @interface MVMessageCell : UITableViewCell <MVSlidingCell>
 @property (strong, nonatomic) UILabel *messageLabel;
 @property (strong, nonatomic) UILabel *timeLabel;
+@property (strong, nonatomic) UIImageView *avatarImage;
 @end

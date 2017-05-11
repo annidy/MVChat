@@ -108,10 +108,11 @@ static CGFloat tailWidth = 5;
     [[self.timeLabel.topAnchor constraintEqualToAnchor:self.contentView.topAnchor constant:verticalMargin] setActive:YES];
     [[self.contentView.bottomAnchor constraintEqualToAnchor:self.timeLabel.bottomAnchor constant:verticalMargin] setActive:YES];
     
-    if (self.hasTail) {
+
+    if (self.direction == MessageDirectionOutgoing) {
         [[bubbleImageView.widthAnchor constraintLessThanOrEqualToAnchor:self.contentView.widthAnchor multiplier:0.8] setActive:YES];
     } else {
-        [[bubbleImageView.widthAnchor constraintLessThanOrEqualToAnchor:self.contentView.widthAnchor multiplier:0.785] setActive:YES];
+        [[bubbleImageView.widthAnchor constraintLessThanOrEqualToAnchor:self.contentView.widthAnchor multiplier:0.7] setActive:YES];
     }
     
     [self.timeLeftConstraint = [self.timeLabel.leftAnchor constraintEqualToAnchor:self.contentView.rightAnchor] setActive:YES];
@@ -127,7 +128,19 @@ static CGFloat tailWidth = 5;
         [[bubbleImageView.rightAnchor constraintEqualToAnchor:self.messageLabel.rightAnchor constant:tailOffset] setActive:YES];
         [[self.messageLabel.leftAnchor constraintEqualToAnchor:bubbleImageView.leftAnchor constant:bubbleTailessMargin] setActive:YES];
     } else {
-        [[self.messageLabel.leftAnchor constraintEqualToAnchor:self.contentView.leftAnchor constant:innerMargin] setActive:YES];
+        UIImageView *avatarImageView = [UIImageView new];
+        avatarImageView.layer.cornerRadius = 20;
+        avatarImageView.layer.masksToBounds = YES;
+        avatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
+        [self.contentView addSubview:avatarImageView];
+        [[avatarImageView.widthAnchor constraintEqualToConstant:40] setActive:YES];
+        [[avatarImageView.heightAnchor constraintEqualToConstant:40] setActive:YES];
+        [[avatarImageView.leftAnchor constraintEqualToAnchor:self.contentView.leftAnchor constant:5] setActive:YES];
+        [[avatarImageView.rightAnchor constraintEqualToAnchor:self.messageLabel.leftAnchor constant:-15] setActive:YES];
+        [[avatarImageView.bottomAnchor constraintEqualToAnchor:bubbleImageView.bottomAnchor] setActive:YES];
+        self.avatarImage = avatarImageView;
+        //avatarImageView.image = [UIImage imageNamed:@"avatar01"];
+        //[[self.messageLabel.leftAnchor constraintEqualToAnchor:self.contentView.leftAnchor constant:innerMargin] setActive:YES];
         [[self.messageLabel.leftAnchor constraintEqualToAnchor:bubbleImageView.leftAnchor constant:tailOffset] setActive:YES];
         [[bubbleImageView.rightAnchor constraintEqualToAnchor:self.messageLabel.rightAnchor constant:bubbleTailessMargin] setActive:YES];
     }

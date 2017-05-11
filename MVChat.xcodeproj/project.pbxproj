@@ -14,6 +14,7 @@
 		CD28B3611EB6A63300BFFCAA /* MVContactModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD28B35D1EB6A63300BFFCAA /* MVContactModel.m */; };
 		CD28B3621EB6A63300BFFCAA /* MVMessageModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD28B35F1EB6A63300BFFCAA /* MVMessageModel.m */; };
 		CD28B38F1EB7E1D100BFFCAA /* MVMessageHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = CD28B38E1EB7E1D100BFFCAA /* MVMessageHeader.m */; };
+		CD28B3961EBCA72E00BFFCAA /* MVContactManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CD28B3951EBCA72E00BFFCAA /* MVContactManager.m */; };
 		CDAB09871E7DE2D800A142DC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAB09861E7DE2D800A142DC /* main.m */; };
 		CDAB09921E7DE2D800A142DC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CDAB09911E7DE2D800A142DC /* Assets.xcassets */; };
 		CDF479AF1EB66C00003B3C8E /* MVChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF479AE1EB66C00003B3C8E /* MVChatViewController.m */; };
@@ -36,6 +37,8 @@
 		CD28B3671EB7694700BFFCAA /* MVSlidingCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVSlidingCell.h; sourceTree = "<group>"; };
 		CD28B38D1EB7E1D100BFFCAA /* MVMessageHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVMessageHeader.h; sourceTree = "<group>"; };
 		CD28B38E1EB7E1D100BFFCAA /* MVMessageHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVMessageHeader.m; sourceTree = "<group>"; };
+		CD28B3941EBCA72E00BFFCAA /* MVContactManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVContactManager.h; sourceTree = "<group>"; };
+		CD28B3951EBCA72E00BFFCAA /* MVContactManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVContactManager.m; sourceTree = "<group>"; };
 		CDAB09821E7DE2D800A142DC /* MVChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MVChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CDAB09861E7DE2D800A142DC /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		CDAB09911E7DE2D800A142DC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -118,6 +121,8 @@
 		CDF479BC1EB68DE3003B3C8E /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				CD28B3941EBCA72E00BFFCAA /* MVContactManager.h */,
+				CD28B3951EBCA72E00BFFCAA /* MVContactManager.m */,
 				CD28B35A1EB6A63300BFFCAA /* MVChatManager.h */,
 				CD28B35B1EB6A63300BFFCAA /* MVChatManager.m */,
 				CD28B35C1EB6A63300BFFCAA /* MVContactModel.h */,
@@ -171,6 +176,7 @@
 				TargetAttributes = {
 					CDAB09811E7DE2D800A142DC = {
 						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = FS86HTCRQ5;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -215,6 +221,7 @@
 				CDF479C51EB6993A003B3C8E /* MVMessageCell.m in Sources */,
 				CD28B34A1EB6A5F800BFFCAA /* AppDelegate.m in Sources */,
 				CDAB09871E7DE2D800A142DC /* main.m in Sources */,
+				CD28B3961EBCA72E00BFFCAA /* MVContactManager.m in Sources */,
 				CD28B3611EB6A63300BFFCAA /* MVContactModel.m in Sources */,
 				CD28B3601EB6A63300BFFCAA /* MVChatManager.m in Sources */,
 				CDF479AF1EB66C00003B3C8E /* MVChatViewController.m in Sources */,
@@ -291,8 +298,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = FS86HTCRQ5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INFOPLIST_FILE = MVChat/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = markvasiv.MVChat;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -344,8 +353,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = FS86HTCRQ5;
 				GCC_OPTIMIZATION_LEVEL = s;
 				INFOPLIST_FILE = MVChat/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = markvasiv.MVChat;
 				PRODUCT_NAME = "$(TARGET_NAME)";
