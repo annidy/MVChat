@@ -9,9 +9,22 @@
 #import <Foundation/Foundation.h>
 
 @class MVMessageModel;
+@class MVChatModel;
+
+@protocol MessagesUpdatesListener <NSObject>
+- (void)handleNewMessage:(MVMessageModel *)message;
+- (NSString *)chatId;
+@end
 
 @interface MVChatManager : NSObject
-
-+ (NSArray <MVMessageModel *> *)messages;
++ (instancetype) sharedInstance;
+//From outside
+- (void)handleUpdatedChats:(NSArray<MVChatModel *> *)updatedChats removedChats:(NSArray<MVChatModel *> *)removedChats;
+- (void)handleNewMessages:(NSArray <MVMessageModel *> *)messages;
+//From inside
+@property (weak, nonatomic) id <MessagesUpdatesListener> messagesListener;
+- (NSArray <MVChatModel *> *)chatsList;
+- (NSArray <MVMessageModel *> *)messagesForChatWithId:(NSString *)chatId;
+- (void)sendMessage:(MVMessageModel *)message;
 
 @end

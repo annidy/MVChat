@@ -15,6 +15,8 @@ typedef enum : NSUInteger {
 } MessageDirection;
 
 @interface MVMessageModel : NSObject
+@property (strong, nonatomic) NSString *id;
+@property (strong, nonatomic) NSString *chatId;
 @property (strong, nonatomic) NSString *text;
 @property (assign, nonatomic) MessageDirection direction;
 @property (strong, nonatomic) NSDate *sendDate;
