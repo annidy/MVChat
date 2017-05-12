@@ -47,6 +47,7 @@ static MVChatManager *sharedManager;
         for (MVChatModel *chat in removedChats) {
             [self removeChat:chat];
         }
+        [self.chatsListener handleChatsUpdate];
     });
 }
 

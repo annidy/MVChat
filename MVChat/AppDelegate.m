@@ -7,11 +7,12 @@
 //
 
 #import "AppDelegate.h"
+#import "MVRandomGenerator.h"
+#import "MVChatManager.h"
 
 
 
-
-@interface AppDelegate ()
+@interface AppDelegate () <AppListener>
 
 @end
 
@@ -19,11 +20,17 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    
-
+    [MVRandomGenerator sharedInstance].updatesListener = self;
+    [[MVRandomGenerator sharedInstance] generateContacts];
+    [[MVRandomGenerator sharedInstance] generateChats];
     return YES;
 }
 
+-(void)updateWithType:(MVUpdateType)type andObjects:(NSArray *)objects {
+    if (type == MVUpdateTypeChats) {
+        [[MVChatManager sharedInstance] handleUpdatedChats:objects removedChats:nil];
+    }
+}
 
 
 - (void)applicationWillResignActive:(UIApplication *)application {

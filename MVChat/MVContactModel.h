@@ -14,7 +14,7 @@ typedef enum : NSUInteger {
     ContactStatusDoNotDisturb
 } ContactStatus;
 
-@interface MVContactModel : NSObject
+@interface MVContactModel : NSObject <NSCopying>
 @property (strong, nonatomic) NSString *id;
 @property (strong, nonatomic) NSString *name;
 @property (assign, nonatomic) BOOL iam;

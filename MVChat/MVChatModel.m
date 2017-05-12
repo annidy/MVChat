@@ -9,5 +9,12 @@
 #import "MVChatModel.h"
 
 @implementation MVChatModel
-
+- (instancetype)initWithId:(NSString *)id andTitle:(NSString *)title {
+    if (self = [super init]) {
+        _id = id;
+        _title = title;
+    }
+    
+    return self;
+}
 @end

@@ -14,4 +14,5 @@
 @property (strong, nonatomic) NSString *title;
 @property (strong, nonatomic) NSArray <MVContactModel *> *participants;
 @property (strong, nonatomic) NSDate *lastUpdateDate;
+- (instancetype)initWithId:(NSString *)id andTitle:(NSString *)title;
 @end

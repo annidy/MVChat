@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="Oy1-wc-JZB">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -10,6 +10,61 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
+        <!--Chats List View Controller-->
+        <scene sceneID="eYF-01-euX">
+            <objects>
+                <viewController id="Oy1-wc-JZB" customClass="MVChatsListViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="y3Z-Vf-Brj"/>
+                        <viewControllerLayoutGuide type="bottom" id="a13-x5-PJE"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="lyn-4H-BC1">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="jTo-Wi-sBa">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ChatsListCell" id="VmU-Sg-tfD">
+                                        <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="VmU-Sg-tfD" id="MjB-Pp-Ebt">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" tag="100" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IZd-ng-uV2">
+                                                    <rect key="frame" x="29" y="12" width="42" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="IZd-ng-uV2" firstAttribute="centerY" secondItem="MjB-Pp-Ebt" secondAttribute="centerY" id="9Wz-iz-Cl9"/>
+                                                <constraint firstItem="IZd-ng-uV2" firstAttribute="leading" secondItem="MjB-Pp-Ebt" secondAttribute="leadingMargin" constant="21" id="j0I-dh-avB"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="a13-x5-PJE" firstAttribute="top" secondItem="jTo-Wi-sBa" secondAttribute="bottom" id="F1y-eZ-Dzf"/>
+                            <constraint firstAttribute="trailing" secondItem="jTo-Wi-sBa" secondAttribute="trailing" id="iDj-nQ-8Fd"/>
+                            <constraint firstItem="jTo-Wi-sBa" firstAttribute="top" secondItem="lyn-4H-BC1" secondAttribute="top" id="r3x-jO-pPk"/>
+                            <constraint firstItem="jTo-Wi-sBa" firstAttribute="leading" secondItem="lyn-4H-BC1" secondAttribute="leading" id="zWJ-Ta-G20"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="chatsList" destination="jTo-Wi-sBa" id="AFf-xk-0nT"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="p0N-v7-x1x" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-980" y="23.838080959520241"/>
+        </scene>
         <!--Chat View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>

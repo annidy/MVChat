@@ -16,6 +16,10 @@
 - (NSString *)chatId;
 @end
 
+@protocol ChatsUpdatesListener <NSObject>
+- (void)handleChatsUpdate;
+@end
+
 @interface MVChatManager : NSObject
 + (instancetype) sharedInstance;
 //From outside
@@ -23,6 +27,7 @@
 - (void)handleNewMessages:(NSArray <MVMessageModel *> *)messages;
 //From inside
 @property (weak, nonatomic) id <MessagesUpdatesListener> messagesListener;
+@property (weak, nonatomic) id <ChatsUpdatesListener> chatsListener;
 - (NSArray <MVChatModel *> *)chatsList;
 - (NSArray <MVMessageModel *> *)messagesForChatWithId:(NSString *)chatId;
 - (void)sendMessage:(MVMessageModel *)message;

@@ -20,4 +20,36 @@
     
     return self;
 }
+
+- (BOOL)isEqual:(id)object {
+    if ([object isKindOfClass:[self class]]) {
+        return NO;
+    }
+    
+    return [self isEqualToContact:object];
+}
+
+- (BOOL)isEqualToContact:(MVContactModel *)contact {
+    return  (self.id == contact.id || [self.id isEqualToString:contact.id]) &&
+            (self.name == contact.name || [self.name isEqualToString:contact.name]) &&
+            (self.avatarName == contact.avatarName || [self.avatarName isEqualToString:contact.avatarName]) &&
+            self.status == contact.status &&
+            self.iam == contact.iam;
+}
+
+-(NSUInteger)hash {
+    return self.id.hash;
+}
+
+-(id)copyWithZone:(NSZone *)zone {
+    MVContactModel *copy = [[MVContactModel allocWithZone:zone] init];
+    copy.id = [self.id copy];
+    copy.name = [self.name copy];
+    copy.iam = self.iam;
+    copy.status = self.status;
+    copy.avatarName = [self.avatarName copy];
+    
+    return copy;
+}
+
 @end
