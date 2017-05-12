@@ -24,6 +24,7 @@
     
     self.chatsList.delegate = self;
     self.chatsList.dataSource = self;
+    self.chatsList.tableFooterView = [UIView new];
 }
 
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
