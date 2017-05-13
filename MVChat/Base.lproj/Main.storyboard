@@ -26,23 +26,41 @@
                                 <rect key="frame" x="0.0" y="64" width="375" height="603"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ChatsListCell" id="VmU-Sg-tfD">
-                                        <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ChatsListCell" rowHeight="50" id="VmU-Sg-tfD">
+                                        <rect key="frame" x="0.0" y="28" width="375" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="VmU-Sg-tfD" id="MjB-Pp-Ebt">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="49.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" tag="100" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IZd-ng-uV2">
-                                                    <rect key="frame" x="29" y="12" width="42" height="21"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IZd-ng-uV2">
+                                                    <rect key="frame" x="58" y="5" width="33.5" height="20.5"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
+                                                <imageView userInteractionEnabled="NO" tag="100" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="puB-cX-xqd">
+                                                    <rect key="frame" x="8" y="5" width="40" height="40"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="40" id="1SC-PA-TnV"/>
+                                                        <constraint firstAttribute="height" constant="40" id="d2U-dE-nF3"/>
+                                                    </constraints>
+                                                </imageView>
+                                                <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" horizontalHuggingPriority="251" verticalCompressionResistancePriority="730" text="Message" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="66e-In-UtG">
+                                                    <rect key="frame" x="58" y="27.5" width="51" height="17.5"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                                    <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <color key="highlightedColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                                </label>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="IZd-ng-uV2" firstAttribute="centerY" secondItem="MjB-Pp-Ebt" secondAttribute="centerY" id="9Wz-iz-Cl9"/>
-                                                <constraint firstItem="IZd-ng-uV2" firstAttribute="leading" secondItem="MjB-Pp-Ebt" secondAttribute="leadingMargin" constant="21" id="j0I-dh-avB"/>
+                                                <constraint firstItem="puB-cX-xqd" firstAttribute="centerY" secondItem="MjB-Pp-Ebt" secondAttribute="centerY" id="1gB-oX-n4l"/>
+                                                <constraint firstItem="IZd-ng-uV2" firstAttribute="leading" secondItem="puB-cX-xqd" secondAttribute="trailing" constant="10" id="HWF-78-nnO"/>
+                                                <constraint firstItem="66e-In-UtG" firstAttribute="top" secondItem="IZd-ng-uV2" secondAttribute="bottom" constant="2" id="JZV-eu-8Rq"/>
+                                                <constraint firstItem="66e-In-UtG" firstAttribute="leading" secondItem="IZd-ng-uV2" secondAttribute="leading" id="eZG-gy-nZo"/>
+                                                <constraint firstItem="IZd-ng-uV2" firstAttribute="top" secondItem="puB-cX-xqd" secondAttribute="top" id="iMg-Tw-VWR"/>
+                                                <constraint firstItem="puB-cX-xqd" firstAttribute="leading" secondItem="MjB-Pp-Ebt" secondAttribute="leadingMargin" id="l1z-RC-149"/>
+                                                <constraint firstItem="66e-In-UtG" firstAttribute="bottom" secondItem="puB-cX-xqd" secondAttribute="bottom" id="n3P-ey-Msu"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -64,7 +82,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="p0N-v7-x1x" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1002" y="108"/>
+            <point key="canvasLocation" x="-1002.4" y="107.49625187406298"/>
         </scene>
         <!--Root View Controller-->
         <scene sceneID="QQV-Zr-FPx">

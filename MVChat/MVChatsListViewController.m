@@ -9,6 +9,7 @@
 #import "MVChatsListViewController.h"
 #import "MVChatManager.h"
 #import "MVChatModel.h"
+#import "MVRandomGenerator.h"
 
 @interface MVChatsListViewController () <UITableViewDelegate, UITableViewDataSource, ChatsUpdatesListener>
 @property (strong, nonatomic) IBOutlet UITableView *chatsList;
@@ -43,8 +44,18 @@
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ChatsListCell"];
     
-    UILabel *title = [cell viewWithTag:100];
-    title.text = self.chats[indexPath.row].title;
+    UILabel *titleLabel = [cell viewWithTag:101];
+    titleLabel.text = self.chats[indexPath.row].title;
+    
+    UILabel *messageLabel = [cell viewWithTag:102];
+    messageLabel.text = @"sample message";
+    
+    UIImageView *avatarImageView = [cell viewWithTag:100];
+    NSString *avatarName = [NSString stringWithFormat:@"avatar0%ld",(long)[[MVRandomGenerator sharedInstance] getRandomIndexWithMax:5]];
+    avatarImageView.image = [UIImage imageNamed:avatarName];
+    
+    avatarImageView.layer.cornerRadius = 20;
+    avatarImageView.layer.masksToBounds = YES;
     
     return cell;
 }

@@ -25,4 +25,5 @@ typedef enum : NSUInteger {
 
 - (void)generateContacts;
 - (void)generateChats;
+- (NSInteger)getRandomIndexWithMax:(NSInteger)max;
 @end
