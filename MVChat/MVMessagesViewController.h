@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface MVMessagesViewController : UIViewController
-
+@property(strong, nonatomic) NSString *chatId;
 @end

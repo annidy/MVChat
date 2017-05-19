@@ -9,10 +9,13 @@
 #import "MVChatViewController.h"
 #import "MVMessagesViewController.h"
 #import "MVFooterViewController.h"
+#import "MVChatModel.h"
+#import "MVChatManager.h"
 
 @interface MVChatViewController () <UIGestureRecognizerDelegate>
 @property (weak, nonatomic) MVMessagesViewController *MessagesController;
 @property (weak, nonatomic) MVFooterViewController *FooterController;
+
 @end
 
 @implementation MVChatViewController
@@ -21,13 +24,14 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    
+    self.navigationItem.title = self.chat.title;
 }
 
 #pragma mark - Segues
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if ([segue.identifier isEqualToString:@"EmbedMessages"]) {
         self.MessagesController = segue.destinationViewController;
+        self.MessagesController.chatId = self.chat.id;
     } else if ([segue.identifier isEqualToString:@"EmbedFooter"]) {
         self.FooterController = segue.destinationViewController;
     }

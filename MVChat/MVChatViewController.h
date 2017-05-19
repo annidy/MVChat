@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+@class MVChatModel;
 
 @interface MVChatViewController : UIViewController
-
+@property (strong, nonatomic) MVChatModel *chat;
 @end

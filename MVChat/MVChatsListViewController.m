@@ -10,6 +10,7 @@
 #import "MVChatManager.h"
 #import "MVChatModel.h"
 #import "MVRandomGenerator.h"
+#import "MVChatViewController.h"
 
 @interface MVChatsListViewController () <UITableViewDelegate, UITableViewDataSource, ChatsUpdatesListener>
 @property (strong, nonatomic) IBOutlet UITableView *chatsList;
@@ -50,14 +51,31 @@
     UILabel *messageLabel = [cell viewWithTag:102];
     messageLabel.text = @"sample message";
     
+    UILabel *dateLabel = [cell viewWithTag:103];
+    dateLabel.text = @"12.03.2015";
+    
     UIImageView *avatarImageView = [cell viewWithTag:100];
-    NSString *avatarName = [NSString stringWithFormat:@"avatar0%ld",(long)[[MVRandomGenerator sharedInstance] getRandomIndexWithMax:5]];
+    NSString *avatarName = [NSString stringWithFormat:@"avatar0%ld",(long)[[MVRandomGenerator sharedInstance] randomIndexWithMax:4] + 1];
     avatarImageView.image = [UIImage imageNamed:avatarName];
     
-    avatarImageView.layer.cornerRadius = 20;
+    avatarImageView.layer.cornerRadius = 24;
     avatarImageView.layer.masksToBounds = YES;
     
     return cell;
+}
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    [self showChatViewWithChat:self.chats[indexPath.row]];
+}
+
+- (void)showChatViewWithChat:(MVChatModel *)chat {
+    UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    
+    MVChatViewController *chatVC = [sb instantiateViewControllerWithIdentifier:@"ChatViewController"];
+    chatVC.chat = chat;
+    [self.navigationController pushViewController:chatVC animated:YES];
 }
 
 @end

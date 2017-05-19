@@ -9,10 +9,12 @@
 #import "MVRandomGenerator.h"
 #import "MVChatModel.h"
 #import "MVContactModel.h"
+#import "MVMessageModel.h"
 
 @interface MVRandomGenerator()
-//@property (strong, nonatomic) NSMutableArray *contacts;
-//@property (strong, nonatomic) NSMutableArray *chats;
+@property (strong, nonatomic) NSMutableArray *contacts;
+@property (strong, nonatomic) NSMutableArray *chats;
+@property (strong, nonatomic) NSMutableDictionary *messages;
 @end
 
 @implementation MVRandomGenerator
@@ -24,6 +26,12 @@ static MVRandomGenerator *singleton;
     });
     
     return singleton;
+}
+
+-(void)generateData {
+    [self generateContacts];
+    [self generateChats];
+    [self generateMessages];
 }
 
 - (void)generateContacts {
@@ -84,6 +92,34 @@ static MVRandomGenerator *singleton;
     [self.updatesListener updateWithType:MVUpdateTypeChats andObjects:[self.chats copy]];
 }
 
+- (void)generateMessages {
+    self.messages = [NSMutableDictionary new];
+    
+    for (MVChatModel *chat in self.chats) {
+        NSMutableArray *messages = [NSMutableArray new];
+        for (int i = 0; i < [self randomIndexWithMax:100] + 1; i++) {
+            MVMessageModel *message = [MVMessageModel new];
+            message.id = [self randomString];
+            message.chatId = chat.id;
+            message.text = [self randomString];
+            message.sendDate = [self randomDate];
+            message.contact = self.contacts[[self randomIndexWithMax:self.contacts.count]];
+            
+            if ([self randomBool]) {
+                message.direction = MessageDirectionIncoming;
+            } else {
+                message.direction = MessageDirectionOutgoing;
+            }
+            
+            [messages addObject:message];
+        }
+        [self.messages setObject:messages forKey:chat.id];
+    }
+    
+    for (NSArray *messages in self.messages.allValues) {
+        [self.updatesListener updateWithType:MVUpdateTypeMessages andObjects:messages];
+    }
+}
 
 - (MVContactModel *)getMe {
     return [[MVContactModel alloc] initWithId:@"7" name:@"Mark" iam:YES status:ContactStatusOnline andAvatarName:nil];
@@ -92,7 +128,7 @@ static MVRandomGenerator *singleton;
 - (NSArray *)getRandomContactsWithCount:(NSInteger)count withMe:(bool)withMe {
     NSMutableSet *contacts = [NSMutableSet new];
     while (contacts.count < count) {
-        [contacts addObject:self.contacts[[self getRandomIndexWithMax:self.contacts.count - 1]]];
+        [contacts addObject:self.contacts[[self randomIndexWithMax:self.contacts.count - 1]]];
     }
     
     if (withMe) {
@@ -102,8 +138,32 @@ static MVRandomGenerator *singleton;
     return [contacts allObjects];
 }
 
-- (NSInteger)getRandomIndexWithMax:(NSInteger)max {
+- (NSInteger)randomIndexWithMax:(NSInteger)max {
     return (NSInteger) arc4random_uniform((int)max);
+}
+
+static char *letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+- (NSString *)randomString {
+    NSUInteger length = arc4random_uniform(50);
+    NSMutableString *randomString = [NSMutableString stringWithCapacity: length];
+    
+    for (int i = 0; i < length; i++) {
+        [randomString appendFormat: @"%c", letters[arc4random_uniform((int)strlen(letters))]];
+    }
+    
+    return randomString;
+}
+
+- (NSDate *)randomDate {
+    NSDate *date = [NSDate new];
+    double time = arc4random_uniform(5000000);
+    
+    return [date dateByAddingTimeInterval:-time];
+}
+
+- (BOOL)randomBool {
+    return arc4random_uniform(50) % 2;
 }
 
 @end

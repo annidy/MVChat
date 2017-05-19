@@ -129,12 +129,12 @@ static CGFloat tailWidth = 5;
         [[self.messageLabel.leftAnchor constraintEqualToAnchor:bubbleImageView.leftAnchor constant:bubbleTailessMargin] setActive:YES];
     } else {
         UIImageView *avatarImageView = [UIImageView new];
-        avatarImageView.layer.cornerRadius = 20;
+        avatarImageView.layer.cornerRadius = 18;
         avatarImageView.layer.masksToBounds = YES;
         avatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
         [self.contentView addSubview:avatarImageView];
-        [[avatarImageView.widthAnchor constraintEqualToConstant:40] setActive:YES];
-        [[avatarImageView.heightAnchor constraintEqualToConstant:40] setActive:YES];
+        [[avatarImageView.widthAnchor constraintEqualToConstant:36] setActive:YES];
+        [[avatarImageView.heightAnchor constraintEqualToConstant:36] setActive:YES];
         [[avatarImageView.leftAnchor constraintEqualToAnchor:self.contentView.leftAnchor constant:5] setActive:YES];
         [[avatarImageView.rightAnchor constraintEqualToAnchor:self.messageLabel.leftAnchor constant:-15] setActive:YES];
         [[avatarImageView.bottomAnchor constraintEqualToAnchor:bubbleImageView.bottomAnchor] setActive:YES];

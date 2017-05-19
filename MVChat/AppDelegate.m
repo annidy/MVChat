@@ -21,14 +21,15 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [MVRandomGenerator sharedInstance].updatesListener = self;
-    [[MVRandomGenerator sharedInstance] generateContacts];
-    [[MVRandomGenerator sharedInstance] generateChats];
+    [[MVRandomGenerator sharedInstance] generateData];
     return YES;
 }
 
 -(void)updateWithType:(MVUpdateType)type andObjects:(NSArray *)objects {
     if (type == MVUpdateTypeChats) {
         [[MVChatManager sharedInstance] handleUpdatedChats:objects removedChats:nil];
+    } else if (type == MVUpdateTypeMessages) {
+        [[MVChatManager sharedInstance] handleNewMessages:objects];
     }
 }
 

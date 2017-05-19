@@ -134,7 +134,31 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		CDF479B81EB68DB4003B3C8E /* Controller */ = {
+		CDEA5CBD1EC746AF004C7433 /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				CD28B3941EBCA72E00BFFCAA /* MVContactManager.h */,
+				CD28B3951EBCA72E00BFFCAA /* MVContactManager.m */,
+				CD28B35A1EB6A63300BFFCAA /* MVChatManager.h */,
+				CD28B35B1EB6A63300BFFCAA /* MVChatManager.m */,
+			);
+			name = Managers;
+			sourceTree = "<group>";
+		};
+		CDEA5CBE1EC746BA004C7433 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				CD28B35C1EB6A63300BFFCAA /* MVContactModel.h */,
+				CD28B35D1EB6A63300BFFCAA /* MVContactModel.m */,
+				CD28B35E1EB6A63300BFFCAA /* MVMessageModel.h */,
+				CD28B35F1EB6A63300BFFCAA /* MVMessageModel.m */,
+				CD2048A41EC4F17C00EDDFA8 /* MVChatModel.h */,
+				CD2048A51EC4F17C00EDDFA8 /* MVChatModel.m */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
+		CDEA5CBF1EC746C6004C7433 /* Chat */ = {
 			isa = PBXGroup;
 			children = (
 				CDF479AD1EB66C00003B3C8E /* MVChatViewController.h */,
@@ -143,30 +167,20 @@
 				CDF479B31EB68980003B3C8E /* MVMessagesViewController.m */,
 				CDF479B51EB68AAF003B3C8E /* MVFooterViewController.h */,
 				CDF479B61EB68AAF003B3C8E /* MVFooterViewController.m */,
+			);
+			name = Chat;
+			sourceTree = "<group>";
+		};
+		CDEA5CC01EC746D0004C7433 /* Chats List */ = {
+			isa = PBXGroup;
+			children = (
 				CD6C2A4C1EC61A640007BA05 /* MVChatsListViewController.h */,
 				CD6C2A4D1EC61A640007BA05 /* MVChatsListViewController.m */,
 			);
-			name = Controller;
+			name = "Chats List";
 			sourceTree = "<group>";
 		};
-		CDF479BC1EB68DE3003B3C8E /* Model */ = {
-			isa = PBXGroup;
-			children = (
-				CD28B3941EBCA72E00BFFCAA /* MVContactManager.h */,
-				CD28B3951EBCA72E00BFFCAA /* MVContactManager.m */,
-				CD28B35A1EB6A63300BFFCAA /* MVChatManager.h */,
-				CD28B35B1EB6A63300BFFCAA /* MVChatManager.m */,
-				CD28B35C1EB6A63300BFFCAA /* MVContactModel.h */,
-				CD28B35D1EB6A63300BFFCAA /* MVContactModel.m */,
-				CD28B35E1EB6A63300BFFCAA /* MVMessageModel.h */,
-				CD28B35F1EB6A63300BFFCAA /* MVMessageModel.m */,
-				CD2048A41EC4F17C00EDDFA8 /* MVChatModel.h */,
-				CD2048A51EC4F17C00EDDFA8 /* MVChatModel.m */,
-			);
-			name = Model;
-			sourceTree = "<group>";
-		};
-		CDF479C61EB6993F003B3C8E /* View */ = {
+		CDEA5CC11EC746E6004C7433 /* Chat */ = {
 			isa = PBXGroup;
 			children = (
 				CDF479C31EB6993A003B3C8E /* MVMessageCell.h */,
@@ -174,6 +188,32 @@
 				CD28B3671EB7694700BFFCAA /* MVSlidingCell.h */,
 				CD28B38D1EB7E1D100BFFCAA /* MVMessageHeader.h */,
 				CD28B38E1EB7E1D100BFFCAA /* MVMessageHeader.m */,
+			);
+			name = Chat;
+			sourceTree = "<group>";
+		};
+		CDF479B81EB68DB4003B3C8E /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				CDEA5CBF1EC746C6004C7433 /* Chat */,
+				CDEA5CC01EC746D0004C7433 /* Chats List */,
+			);
+			name = Controller;
+			sourceTree = "<group>";
+		};
+		CDF479BC1EB68DE3003B3C8E /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				CDEA5CBD1EC746AF004C7433 /* Managers */,
+				CDEA5CBE1EC746BA004C7433 /* Models */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
+		CDF479C61EB6993F003B3C8E /* View */ = {
+			isa = PBXGroup;
+			children = (
+				CDEA5CC11EC746E6004C7433 /* Chat */,
 			);
 			name = View;
 			sourceTree = "<group>";

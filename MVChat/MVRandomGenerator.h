@@ -18,12 +18,9 @@ typedef enum : NSUInteger {
 @end
 
 @interface MVRandomGenerator : NSObject
-@property (strong, nonatomic) NSMutableArray *contacts;
-@property (strong, nonatomic) NSMutableArray *chats;
+
 @property (weak, nonatomic) id <AppListener> updatesListener;
 +(instancetype)sharedInstance;
-
-- (void)generateContacts;
-- (void)generateChats;
-- (NSInteger)getRandomIndexWithMax:(NSInteger)max;
+- (void)generateData;
+- (NSInteger)randomIndexWithMax:(NSInteger)max;
 @end

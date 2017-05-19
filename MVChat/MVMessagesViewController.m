@@ -41,7 +41,7 @@
     self.messagesTableView.delegate = self;
     self.messagesTableView.dataSource = self;
     
-    //self.messageModels = [MVChatManager messages];
+    self.messageModels = [[MVChatManager sharedInstance] messagesForChatWithId:self.chatId];
     self.messagesTableView.estimatedRowHeight = 30;
     self.messagesTableView.contentInset = UIEdgeInsetsMake(-44, 0, 0, 0);
     UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
