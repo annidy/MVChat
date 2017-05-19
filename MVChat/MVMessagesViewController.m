@@ -43,6 +43,10 @@
     
     self.messageModels = [[MVChatManager sharedInstance] messagesForChatWithId:self.chatId];
     self.messagesTableView.estimatedRowHeight = 30;
+    
+    CGFloat dummyViewHeight = 44;
+    UIView *dummyView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.messagesTableView.bounds.size.width, dummyViewHeight)];
+    self.messagesTableView.tableHeaderView = dummyView;
     self.messagesTableView.contentInset = UIEdgeInsetsMake(-44, 0, 0, 0);
     UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
     [self.view addGestureRecognizer:panRecognizer];
