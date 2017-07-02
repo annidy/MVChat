@@ -8,6 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
+@class MVContactModel;
+@class MVChatModel;
+
 typedef enum : NSUInteger {
     MVUpdateTypeChats,
     MVUpdateTypeMessages
@@ -18,9 +21,10 @@ typedef enum : NSUInteger {
 @end
 
 @interface MVRandomGenerator : NSObject
-
 @property (weak, nonatomic) id <AppListener> updatesListener;
 +(instancetype)sharedInstance;
-- (void)generateData;
-- (NSInteger)randomIndexWithMax:(NSInteger)max;
+- (NSArray <MVContactModel *> *)generateContacts;
+- (NSArray <MVChatModel *> *)generateChatsWithContacts:(NSArray<MVContactModel *> *)contacts;
+
+- (NSUInteger)randomUIntegerWithMin:(NSUInteger)min andMax:(NSUInteger)max;
 @end

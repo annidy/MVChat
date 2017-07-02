@@ -55,8 +55,8 @@
     dateLabel.text = @"12.03.2015";
     
     UIImageView *avatarImageView = [cell viewWithTag:100];
-    NSString *avatarName = [NSString stringWithFormat:@"avatar0%ld",(long)[[MVRandomGenerator sharedInstance] randomIndexWithMax:4] + 1];
-    avatarImageView.image = [UIImage imageNamed:avatarName];
+    //NSString *avatarName = [NSString stringWithFormat:@"avatar0%ld",(long)[[MVRandomGenerator sharedInstance] randomIndexWithMax:4] + 1];
+    //avatarImageView.image = [UIImage imageNamed:avatarName];
     
     avatarImageView.layer.cornerRadius = 24;
     avatarImageView.layer.masksToBounds = YES;

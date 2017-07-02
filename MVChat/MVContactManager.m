@@ -8,6 +8,7 @@
 
 #import "MVContactManager.h"
 #import "MVContactModel.h"
+#import "MVJsonHelper.h"
 
 @implementation MVContactManager
 + (NSArray *)getContacts {
@@ -21,6 +22,8 @@
     [arr addObject:contact2];
     [arr addObject:contact3];
 
+    
+    
     return [arr copy];
 }
 
@@ -59,5 +62,11 @@
 + (NSString *)getRandomAvatarName {
     int value = arc4random_uniform(5);
     return [NSString stringWithFormat:@"avatar0%d", value+1];
+}
+
+- (void) readJson {
+    NSData *data = [[NSFileManager defaultManager] contentsAtPath:@""];
+    NSArray *contacts = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
+    
 }
 @end

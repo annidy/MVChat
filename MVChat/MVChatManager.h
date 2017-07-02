@@ -21,15 +21,14 @@
 @end
 
 @interface MVChatManager : NSObject
-+ (instancetype) sharedInstance;
-//From outside
-- (void)handleUpdatedChats:(NSArray<MVChatModel *> *)updatedChats removedChats:(NSArray<MVChatModel *> *)removedChats;
-- (void)handleNewMessages:(NSArray <MVMessageModel *> *)messages;
-//From inside
 @property (weak, nonatomic) id <MessagesUpdatesListener> messagesListener;
 @property (weak, nonatomic) id <ChatsUpdatesListener> chatsListener;
++ (instancetype) sharedInstance;
+
+- (void)handleUpdatedChats:(NSArray<MVChatModel *> *)updatedChats removedChats:(NSArray<MVChatModel *> *)removedChats;
+- (void)handleNewMessages:(NSArray <MVMessageModel *> *)messages;
 - (NSArray <MVChatModel *> *)chatsList;
+- (MVChatModel *)chatWithId:(NSString *)chatId;
 - (NSArray <MVMessageModel *> *)messagesForChatWithId:(NSString *)chatId;
 - (void)sendMessage:(MVMessageModel *)message;
-
 @end

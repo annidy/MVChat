@@ -10,11 +10,17 @@
 #import "MVChatModel.h"
 #import "MVContactModel.h"
 #import "MVMessageModel.h"
+#import "MVJsonHelper.h"
+#import "MVNameGenerator.h"
+#import "MVTextGenerator.h"
+
+static NSUInteger minContactsCount = 20;
+static NSUInteger maxContactsCount = 50;
+static NSUInteger minChatsCount = 20;
+static NSUInteger maxChatsCount = 50;
 
 @interface MVRandomGenerator()
-@property (strong, nonatomic) NSMutableArray *contacts;
-@property (strong, nonatomic) NSMutableArray *chats;
-@property (strong, nonatomic) NSMutableDictionary *messages;
+@property (strong, nonatomic) NSCache *generatorsCache;
 @end
 
 @implementation MVRandomGenerator
@@ -28,70 +34,101 @@ static MVRandomGenerator *singleton;
     return singleton;
 }
 
--(void)generateData {
-    [self generateContacts];
-    [self generateChats];
-    [self generateMessages];
+- (instancetype)init {
+    if (self = [super init]) {
+        _generatorsCache = [NSCache new];
+    }
+    
+    return self;
 }
 
-- (void)generateContacts {
-    MVContactModel *contact1 = [[MVContactModel alloc] initWithId:@"0" name:@"Matt" iam:NO status:ContactStatusOffline andAvatarName:nil];
-    MVContactModel *contact2 = [[MVContactModel alloc] initWithId:@"1" name:@"Andrew" iam:NO status:ContactStatusOffline andAvatarName:nil];
-    MVContactModel *contact3 = [[MVContactModel alloc] initWithId:@"2" name:@"Alex" iam:NO status:ContactStatusOffline andAvatarName:nil];
-    MVContactModel *contact4 = [[MVContactModel alloc] initWithId:@"3" name:@"Clark" iam:NO status:ContactStatusOffline andAvatarName:nil];
-    MVContactModel *contact5 = [[MVContactModel alloc] initWithId:@"4" name:@"Rob" iam:NO status:ContactStatusOffline andAvatarName:nil];
-    MVContactModel *contact6 = [[MVContactModel alloc] initWithId:@"5" name:@"Adam" iam:NO status:ContactStatusOffline andAvatarName:nil];
-    MVContactModel *contact7 = [[MVContactModel alloc] initWithId:@"6" name:@"Lucie" iam:NO status:ContactStatusOffline andAvatarName:nil];
+#pragma mark - Cache
+- (MVNameGenerator *)nameGenerator {
+    if (![self.generatorsCache objectForKey:@"name"]) {
+        [self.generatorsCache setObject:[MVNameGenerator new] forKey:@"name"];
+    }
     
-    self.contacts = [NSMutableArray arrayWithCapacity:7];
-    [self.contacts addObject:contact1];
-    [self.contacts addObject:contact2];
-    [self.contacts addObject:contact3];
-    [self.contacts addObject:contact4];
-    [self.contacts addObject:contact5];
-    [self.contacts addObject:contact6];
-    [self.contacts addObject:contact7];
+    return (MVNameGenerator *)[self.generatorsCache objectForKey:@"name"];
 }
 
-- (void)generateChats {
-    MVChatModel *chat1 = [[MVChatModel alloc] initWithId:@"0" andTitle:@"Work chat"];
-    chat1.participants = [self getRandomContactsWithCount:2 withMe:YES];
-    chat1.lastUpdateDate = [NSDate new];
+- (MVTextGenerator *)textGenerator {
+    if (![self.generatorsCache objectForKey:@"text"]) {
+        [self.generatorsCache setObject:[MVTextGenerator new] forKey:@"text"];
+    }
     
-    MVChatModel *chat2 = [[MVChatModel alloc] initWithId:@"1" andTitle:@"Design"];
-    chat2.participants = [self getRandomContactsWithCount:3 withMe:YES];
-    chat2.lastUpdateDate = [NSDate new];
-    
-    MVChatModel *chat3 = [[MVChatModel alloc] initWithId:@"2" andTitle:@"Dev"];
-    chat3.participants = [self getRandomContactsWithCount:4 withMe:YES];
-    chat3.lastUpdateDate = [NSDate new];
-    
-    
-    MVChatModel *chat4 = [[MVChatModel alloc] initWithId:@"3" andTitle:@"Friday"];
-    chat4.participants = [self getRandomContactsWithCount:3 withMe:YES];
-    chat4.lastUpdateDate = [NSDate new];
-    
-    
-    MVChatModel *chat5 = [[MVChatModel alloc] initWithId:@"4" andTitle:@"Cool stuff"];
-    chat5.participants = [self getRandomContactsWithCount:5 withMe:YES];
-    chat5.lastUpdateDate = [NSDate new];
-    
-    
-    MVChatModel *chat6 = [[MVChatModel alloc] initWithId:@"5" andTitle:@"Yoyoyoy"];
-    chat6.participants = [self getRandomContactsWithCount:1 withMe:YES];
-    chat6.lastUpdateDate = [NSDate new];
-    
-    self.chats = [NSMutableArray new];
-    [self.chats addObject:chat1];
-    [self.chats addObject:chat2];
-    [self.chats addObject:chat3];
-    [self.chats addObject:chat4];
-    [self.chats addObject:chat5];
-    [self.chats addObject:chat6];
-    
-    [self.updatesListener updateWithType:MVUpdateTypeChats andObjects:[self.chats copy]];
+    return (MVTextGenerator *)[self.generatorsCache objectForKey:@"text"];
 }
 
+#pragma mark - Randoms
+- (NSUInteger)randomUIntegerWithMin:(NSUInteger)min andMax:(NSUInteger)max {
+    NSAssert(max > min, @"max must be > than min");
+    return min + (NSUInteger) arc4random_uniform((uint32_t)(max - min));
+}
+
+- (NSString *)randomUserName {
+    return [[self nameGenerator] getName];
+}
+
+- (NSString *)randomChatTitle {
+    return [[self textGenerator] words:[self randomUIntegerWithMin:1 andMax:3]];
+}
+
+- (NSString *)randomAvatarName {
+    return [NSString stringWithFormat:@"avatar0%lu", (unsigned long)[self randomUIntegerWithMin:1 andMax:5]];
+}
+
+- (MVContactModel *)randomContact {
+    return [[MVContactModel alloc] initWithId:nil name:[self randomUserName] iam:NO status:ContactStatusOffline andAvatarName:[self randomAvatarName]];
+}
+
+- (MVChatModel *)randomChatWithContacts:(NSArray <MVContactModel *> *)contacts {
+    MVChatModel *chat = [[MVChatModel alloc] initWithId:nil andTitle:[self randomChatTitle]];
+    NSMutableArray *chatContacts = [NSMutableArray new];
+    NSMutableSet *indices = [NSMutableSet new];
+    for (int i = 0; i < [self randomUIntegerWithMin:1 andMax:contacts.count]; i++) {
+        NSUInteger index;
+        do {
+            index = [self randomUIntegerWithMin:0 andMax:contacts.count - 1];
+        }
+        while ([indices containsObject:@(index)]);
+        
+        [indices addObject:@(index)];
+        [chatContacts addObject:contacts[index]];
+    }
+    chat.participants = [chatContacts copy];
+    
+    return chat;
+}
+
+#pragma mark - Generators
+- (NSArray <MVContactModel *> *)generateContacts {
+    return [self generateContactsWithCount:[self randomUIntegerWithMin:minContactsCount andMax:maxContactsCount]];
+}
+
+- (NSArray <MVContactModel *> *)generateContactsWithCount:(NSUInteger)count {
+    NSMutableArray *contacts = [NSMutableArray new];
+    for (int i = 0; i<count; i++) {
+        [contacts addObject:[self randomContact]];
+    }
+    return [contacts copy];
+}
+
+- (NSArray <MVChatModel *> *)generateChatsWithCount:(NSUInteger)count andContacts:(NSArray<MVContactModel *> *)contacts {
+    NSMutableArray *chats = [NSMutableArray new];
+    for (int i = 0; i<count; i++) {
+        [chats addObject:[self randomChatWithContacts:contacts]];
+    }
+    
+    return [chats copy];
+}
+
+- (NSArray <MVChatModel *> *)generateChatsWithContacts:(NSArray<MVContactModel *> *)contacts {
+    return [self generateChatsWithCount:[self randomUIntegerWithMin:minChatsCount andMax:maxChatsCount] andContacts:contacts];
+}
+
+
+#pragma mark - Obsolete
+/*
 - (void)generateMessages {
     self.messages = [NSMutableDictionary new];
     
@@ -165,5 +202,6 @@ static char *letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123
 - (BOOL)randomBool {
     return arc4random_uniform(50) % 2;
 }
+ */
 
 @end

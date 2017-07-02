@@ -9,7 +9,7 @@
 #import "AppDelegate.h"
 #import "MVRandomGenerator.h"
 #import "MVChatManager.h"
-
+#import "MVDatabaseManager.h"
 
 
 @interface AppDelegate () <AppListener>
@@ -21,7 +21,13 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [MVRandomGenerator sharedInstance].updatesListener = self;
-    [[MVRandomGenerator sharedInstance] generateData];
+    //[[MVRandomGenerator sharedInstance] generateData];
+    MVDatabaseManager *db = [MVDatabaseManager new];
+    [db generateData];
+    
+    NSArray *con = [db allContacts];
+    NSArray *chats = [db allChats];
+    
     return YES;
 }
 
