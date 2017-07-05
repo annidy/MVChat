@@ -40,6 +40,9 @@ typedef void (*doubleSetter)(void *, SEL, double);
 typedef void (*boolSetter)(void *, SEL, bool);
 typedef void (*objectSetter)(void *, SEL, id);
 
+//TODO: cache date formatter
+//TODO: cleanup
+//TODO: support sets (and other collections)
 @implementation NSObject (Serialization)
 - (NSDictionary *)serialize {
     NSMutableDictionary *dictionary = [NSMutableDictionary new];
@@ -63,7 +66,6 @@ typedef void (*objectSetter)(void *, SEL, id);
         
         NSString *propertyAttributes = [NSString stringWithUTF8String:property_getAttributes(property)];
         NSString *propertyType = [[propertyAttributes componentsSeparatedByString:@","][0] substringFromIndex:1];
-        
         const char *rawPropertyType = [propertyType UTF8String];
         
         if (strcmp(rawPropertyType, @encode(char)) == 0) {
@@ -119,27 +121,44 @@ typedef void (*objectSetter)(void *, SEL, id);
             bool value = func((__bridge void *)(self), getter);
             [dictionary setObject:@(value) forKey:propertyName];
         } else {
-            //TODO: support dictionaries
             objectGetter func = (objectGetter)objc_msgSend;
             id value = func((__bridge void *)(self), getter);
-            if (value) {
-                if ([value isKindOfClass:[NSArray class]]) {
-                    NSMutableArray *serialized = [NSMutableArray new];
-                    for (id complexObj in value) {
-                        if ([complexObj isPrimitiveObject]) {
-                            [serialized addObject:complexObj];
-                        } else {
-                            [serialized addObject:[complexObj serialize]];
-                        }
-                    }
-                    [dictionary setObject:serialized forKey:propertyName];
+            
+            if (!value) {
+                continue;
+            }
+            
+            id (^handleComplexObject)(id) = ^id (id complexObj){
+                if ([complexObj isPrimitiveObject]) {
+                    return complexObj;
                 } else {
-                    [dictionary setObject:value forKey:propertyName];
+                    return [complexObj serialize];
                 }
-                
+            };
+            
+            if ([value isKindOfClass:[NSArray class]]) {
+                NSMutableArray *serialized = [NSMutableArray new];
+                for (id complexObj in value) {
+                    [serialized addObject:handleComplexObject(complexObj)];
+                }
+                [dictionary setObject:serialized forKey:propertyName];
+            } else if ([value isKindOfClass:[NSDictionary class]]) {
+                NSMutableDictionary *serialized = [NSMutableDictionary new];
+                for (id key in [value allKeys]) {
+                    [serialized setObject:handleComplexObject(value[key]) forKey:key];
+                }
+                [dictionary setObject:serialized forKey:propertyName];
+            } else if ([value isKindOfClass:[NSDate class]]) {
+                NSDateFormatter *dateFormatter = [NSDateFormatter new];
+                [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+                NSString *stringDate = [dateFormatter stringFromDate:value];
+                [dictionary setObject:stringDate forKey:propertyName];
+            } else {
+                [dictionary setObject:handleComplexObject(value) forKey:propertyName];
             }
         }
     }
+    
     free(properties);
     [dictionary setObject:NSStringFromClass([self class]) forKey:@"Class"];
     
@@ -168,73 +187,99 @@ typedef void (*objectSetter)(void *, SEL, id);
         NSString *propertyType = [[propertyAttributes componentsSeparatedByString:@","][0] substringFromIndex:1];
         const char *rawPropertyType = [propertyType UTF8String];
         
+        id object = [data objectForKey:propertyName];
+        
+        if (!object) {
+            continue;
+        }
+        
         if (strcmp(rawPropertyType, @encode(char)) == 0) {
             charSetter func = (charSetter)objc_msgSend;
-            id object = [data objectForKey:propertyName];
-            if (object) func((__bridge void *)(self), setter, [object charValue]);
+            func((__bridge void *)(self), setter, [object charValue]);
         } else if (strcmp(rawPropertyType, @encode(int)) == 0) {
             intSetter func = (intSetter)objc_msgSend;
-            id object = [data objectForKey:propertyName];
-            if (object) func((__bridge void *)(self), setter, [object intValue]);
+            func((__bridge void *)(self), setter, [object intValue]);
         } else if (strcmp(rawPropertyType, @encode(short)) == 0) {
             shortSetter func = (shortSetter)objc_msgSend;
-            id object = [data objectForKey:propertyName];
-            if (object) func((__bridge void *)(self), setter, [object shortValue]);
+            func((__bridge void *)(self), setter, [object shortValue]);
         } else if (strcmp(rawPropertyType, @encode(long)) == 0) {
             longSetter func = (longSetter)objc_msgSend;
-            id object = [data objectForKey:propertyName];
-            if (object) func((__bridge void *)(self), setter, [object longValue]);
+            func((__bridge void *)(self), setter, [object longValue]);
         } else if (strcmp(rawPropertyType, @encode(long long)) == 0) {
             longLongSetter func = (longLongSetter)objc_msgSend;
-            id object = [data objectForKey:propertyName];
-            if (object) func((__bridge void *)(self), setter, [object longLongValue]);
+            func((__bridge void *)(self), setter, [object longLongValue]);
         } else if (strcmp(rawPropertyType, @encode(unsigned char)) == 0) {
             unsignedCharSetter func = (unsignedCharSetter)objc_msgSend;
-            id object = [data objectForKey:propertyName];
-            if (object) func((__bridge void *)(self), setter, [object unsignedCharValue]);
+            func((__bridge void *)(self), setter, [object unsignedCharValue]);
         } else if (strcmp(rawPropertyType, @encode(unsigned int)) == 0) {
             unsignedIntSetter func = (unsignedIntSetter)objc_msgSend;
-            id object = [data objectForKey:propertyName];
-            if (object) func((__bridge void *)(self), setter, [object unsignedIntValue]);
+            func((__bridge void *)(self), setter, [object unsignedIntValue]);
         } else if (strcmp(rawPropertyType, @encode(unsigned short)) == 0) {
             unsignedShortSetter func = (unsignedShortSetter)objc_msgSend;
-            id object = [data objectForKey:propertyName];
-            if (object) func((__bridge void *)(self), setter, [object unsignedShortValue]);
+            func((__bridge void *)(self), setter, [object unsignedShortValue]);
         } else if (strcmp(rawPropertyType, @encode(unsigned long)) == 0) {
             unsignedLongSetter func = (unsignedLongSetter)objc_msgSend;
-            id object = [data objectForKey:propertyName];
-            if (object) func((__bridge void *)(self), setter, [object unsignedLongValue]);
+            func((__bridge void *)(self), setter, [object unsignedLongValue]);
         } else if (strcmp(rawPropertyType, @encode(unsigned long long)) == 0) {
             unsignedLongLongSetter func = (unsignedLongLongSetter)objc_msgSend;
-            id object = [data objectForKey:propertyName];
-            if (object) func((__bridge void *)(self), setter, [object unsignedLongLongValue]);
+            func((__bridge void *)(self), setter, [object unsignedLongLongValue]);
         } else if (strcmp(rawPropertyType, @encode(float)) == 0) {
             floatSetter func = (floatSetter)objc_msgSend;
-            id object = [data objectForKey:propertyName];
-            if (object) func((__bridge void *)(self), setter, [object floatValue]);
+            func((__bridge void *)(self), setter, [object floatValue]);
         } else if (strcmp(rawPropertyType, @encode(double)) == 0) {
             doubleSetter func = (doubleSetter)objc_msgSend;
-            id object = [data objectForKey:propertyName];
-            if (object) func((__bridge void *)(self), setter, [object doubleValue]);
+            func((__bridge void *)(self), setter, [object doubleValue]);
         } else if (strcmp(rawPropertyType, @encode(bool)) == 0) {
             boolSetter func = (boolSetter)objc_msgSend;
-            id object = [data objectForKey:propertyName];
-            if (object) func((__bridge void *)(self), setter, [object boolValue]);
+            func((__bridge void *)(self), setter, [object boolValue]);
         } else {
             objectSetter func = (objectSetter)objc_msgSend;
-            id object = [data objectForKey:propertyName];
+            
+            NSString* (^classForComplexObj)(id) = ^NSString*(id complexObj) {
+                if ([complexObj isKindOfClass:[NSDictionary class]]) {
+                    return [complexObj objectForKey:@"Class"];
+                }
+                return nil;
+            };
+            
+            id (^handleComplexObj)(id) = ^id(id complexObj) {
+                if ([complexObj isKindOfClass:[NSDictionary class]]) {
+                    NSString *complexClass = classForComplexObj(complexObj);
+                    if (complexClass) {
+                        return [[NSClassFromString(complexClass) new] fillWithData:complexObj];
+                    }
+                }
+                return complexObj;
+            };
+            
             if ([object isKindOfClass:[NSArray class]]) {
                 NSMutableArray *mutable = [NSMutableArray new];
                 for (id obj in object) {
-                    if ([obj isPrimitiveObject]) {
-                        [mutable addObject:obj];
-                    } else {
-                        NSString *objClass = [obj objectForKey:@"Class"];
-                        [mutable addObject:[[NSClassFromString(objClass) new] fillWithData:obj]];
-                    }
+                    [mutable addObject:handleComplexObj(obj)];
                 }
                 func((__bridge void *)(self), setter, [mutable copy]);
-            } else {
+            } else if ([object isKindOfClass:[NSDictionary class]]) {
+                if (classForComplexObj(object)) {
+                    func((__bridge void *)(self), setter, handleComplexObj(object));
+                } else {
+                    NSMutableDictionary *serialized = [NSMutableDictionary new];
+                    for (id key in [object allKeys]) {
+                        [serialized setObject:handleComplexObj([object objectForKey:key]) forKey:key];
+                    }
+                    func((__bridge void *)(self), setter, [serialized copy]);
+                }
+            } else if ([object isKindOfClass:[NSString class]]) {
+                NSString *propertyClassName = [propertyType substringWithRange:NSMakeRange(2, [propertyType length]-4)];
+                if ([propertyClassName isEqualToString:@"NSDate"]) {
+                    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+                    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+                    NSDate *date = [dateFormatter dateFromString:object];
+                    func((__bridge void *)(self), setter, date);
+                } else {
+                    func((__bridge void *)(self), setter, object);
+                }
+            }
+            else {
                 func((__bridge void *)(self), setter, object);
             }
         }
