@@ -10,6 +10,7 @@
 
 @class MVContactModel;
 @class MVChatModel;
+@class MVMessageModel;
 
 typedef enum : NSUInteger {
     MVUpdateTypeChats,
@@ -25,6 +26,7 @@ typedef enum : NSUInteger {
 +(instancetype)sharedInstance;
 - (NSArray <MVContactModel *> *)generateContacts;
 - (NSArray <MVChatModel *> *)generateChatsWithContacts:(NSArray<MVContactModel *> *)contacts;
+- (NSArray <MVMessageModel *> *)generateMessagesForChat:(MVChatModel *)chat;
 
 - (NSUInteger)randomUIntegerWithMin:(NSUInteger)min andMax:(NSUInteger)max;
 @end

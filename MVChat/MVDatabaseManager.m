@@ -9,15 +9,18 @@
 #import "MVDatabaseManager.h"
 #import "MVContactModel.h"
 #import "MVChatModel.h"
+#import "MVMessageModel.h"
 #import "MVJsonHelper.h"
 #import "MVRandomGenerator.h"
 
 static NSString *contactsFile = @"contacts";
 static NSString *chatsFile = @"chats";
+static NSString *messagesFile = @"messages";
 
 @interface MVDatabaseManager()
 @property (strong, nonatomic) NSString *lastContactId;
 @property (strong, nonatomic) NSString *lastChatId;
+@property (strong, nonatomic) NSString *lastMessageId;
 @end
 
 @implementation MVDatabaseManager
@@ -30,6 +33,12 @@ static NSString *chatsFile = @"chats";
 
 - (NSArray <MVChatModel *> *)allChats {
     NSArray *chats = [MVJsonHelper parseEnitiesWithClass:[MVChatModel class] fromJson:[MVJsonHelper loadJsonFromFileWithName:chatsFile]];
+    if (!chats) chats = [NSArray new];
+    return chats;
+}
+
+- (NSArray <MVMessageModel *> *)allMessages {
+    NSArray *chats = [MVJsonHelper parseEnitiesWithClass:[MVMessageModel class] fromJson:[MVJsonHelper loadJsonFromFileWithName:messagesFile]];
     if (!chats) chats = [NSArray new];
     return chats;
 }
@@ -72,6 +81,17 @@ static NSString *chatsFile = @"chats";
     return [MVJsonHelper writeData:[MVJsonHelper parseArrayToJson:existingChats] toFileWithName:chatsFile];
 }
 
+- (BOOL)insertMessages:(NSArray <MVMessageModel *> *)messages {
+    NSMutableArray *existingMessages = [[self allMessages] mutableCopy];
+    for (MVMessageModel *message in messages) {
+        [self incrementLastMessageId];
+        message.id = self.lastMessageId;
+        [existingMessages addObject:message];
+    }
+    
+    return [MVJsonHelper writeData:[MVJsonHelper parseArrayToJson:existingMessages] toFileWithName:messagesFile];
+}
+
 -(MVContactModel *)contactWithId:(NSString *)id {
     for (MVContactModel *contact in [self allContacts]) {
         if ([contact.id isEqualToString:id]) {
@@ -104,12 +124,22 @@ static NSString *chatsFile = @"chats";
     return _lastChatId;
 }
 
+- (NSString *)lastMessageId {
+    if (!_lastMessageId) [self updateLastMessageId];
+    
+    return _lastMessageId;
+}
+
 - (void)updateLastContactId {
     _lastContactId = [[[self allContacts] lastObject] id];
 }
 
 - (void)updateLastChatId {
     _lastChatId = [[[self allChats] lastObject] id];
+}
+
+- (void)updateLastMessageId {
+    _lastMessageId = [[[self allMessages] lastObject] id];
 }
 
 - (void)incrementLastContactId {
@@ -120,13 +150,60 @@ static NSString *chatsFile = @"chats";
     self.lastChatId = [NSString stringWithFormat:@"%ld", [self.lastChatId integerValue] + 1];
 }
 
+- (void)incrementLastMessageId {
+    self.lastMessageId = [NSString stringWithFormat:@"%ld", [self.lastMessageId integerValue] + 1];
+}
+
+-(MVContactModel *)myContact {
+    MVContactModel *me = [MVContactModel new];
+    me.id = @"0";
+    me.name = @"Mark";
+    me.iam = YES;
+    me.status = ContactStatusOnline;
+    return me;
+}
 
 //test
 - (void)generateData {
     NSArray <MVContactModel *> *contacts = [[MVRandomGenerator sharedInstance] generateContacts];
-    NSArray <MVChatModel *> *chats = [[MVRandomGenerator sharedInstance] generateChatsWithContacts:contacts];
     [self insertContacts:contacts];
+    
+    NSArray <MVChatModel *> *chats = [[MVRandomGenerator sharedInstance] generateChatsWithContacts:contacts];
     [self insertChats:chats];
+    
+    NSMutableArray *allMessages = [NSMutableArray new];
+    for (MVChatModel *chat in chats) {
+        NSArray <MVMessageModel *> *messages = [[MVRandomGenerator sharedInstance] generateMessagesForChat:chat];
+        messages = [self sortMessages:messages];
+        for (MVMessageModel *message in messages) {
+            message.chatId = chat.id;
+            [allMessages addObject:message];
+        }
+    }
+    
+    [self insertMessages:allMessages];
+    
+    NSArray *allContacts = [self allContacts];
+    NSArray *allChats = [self allChats];
+    NSArray *messages = [self allMessages];
+    
+    NSString *a;
+    
+}
+
+- (NSArray <MVMessageModel *> *)sortMessages:(NSArray<MVMessageModel *> *)messages {
+    return [messages sortedArrayUsingComparator:^NSComparisonResult(MVMessageModel *obj1, MVMessageModel *obj2) {
+        NSTimeInterval first = obj1.sendDate.timeIntervalSinceReferenceDate;
+        NSTimeInterval second = obj2.sendDate.timeIntervalSinceReferenceDate;
+        
+        if (first == second) {
+            return NSOrderedSame;
+        } else if (first > second) {
+            return NSOrderedDescending;
+        } else {
+            return NSOrderedAscending;
+        }
+    }];
 }
 
 

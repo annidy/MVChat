@@ -59,10 +59,8 @@
 
 + (BOOL)writeData:(NSData *)data toFileWithName:(NSString *)name {
     NSString *path = [self pathToFile:name];
-//    if (![[NSFileManager defaultManager] fileExistsAtPath:path]) {
-//        [[NSFileManager defaultManager] createFileAtPath:path contents:data attributes:nil];
-//    }
     NSError *error;
+    
     return [data writeToFile:path options:NSDataWritingAtomic error:&error];
 }
 

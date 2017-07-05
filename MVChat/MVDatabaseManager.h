@@ -17,6 +17,7 @@
 - (BOOL)insertChat:(MVChatModel *)chat;
 - (MVContactModel *)contactWithId:(NSString *)id;
 - (MVChatModel *)chatWithId:(NSString *)id;
+- (MVContactModel *)myContact;
 
 - (void)generateData;
 @end

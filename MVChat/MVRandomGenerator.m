@@ -13,11 +13,14 @@
 #import "MVJsonHelper.h"
 #import "MVNameGenerator.h"
 #import "MVTextGenerator.h"
+#import "MVDatabaseManager.h"
 
 static NSUInteger minContactsCount = 20;
 static NSUInteger maxContactsCount = 50;
 static NSUInteger minChatsCount = 20;
 static NSUInteger maxChatsCount = 50;
+static NSUInteger minMessagesCount = 30;
+static NSUInteger maxMessagesCount = 70;
 
 @interface MVRandomGenerator()
 @property (strong, nonatomic) NSCache *generatorsCache;
@@ -65,6 +68,26 @@ static MVRandomGenerator *singleton;
     return min + (NSUInteger) arc4random_uniform((uint32_t)(max - min));
 }
 
+- (NSDate *)randomDateAfter:(NSDate *)afterDate {
+    __block NSDate *date = [NSDate new];
+    
+    void (^generate)() = ^void() {
+        double time = arc4random_uniform(5000000);
+        date = [date dateByAddingTimeInterval:-time];
+    };
+    
+    generate();
+    
+    
+    if (afterDate) {
+        while (date.timeIntervalSinceReferenceDate < afterDate.timeIntervalSinceReferenceDate) {
+            generate();
+        }
+    }
+    
+    return date;
+}
+
 - (NSString *)randomUserName {
     return [[self nameGenerator] getName];
 }
@@ -79,6 +102,10 @@ static MVRandomGenerator *singleton;
 
 - (MVContactModel *)randomContact {
     return [[MVContactModel alloc] initWithId:nil name:[self randomUserName] iam:NO status:ContactStatusOffline andAvatarName:[self randomAvatarName]];
+}
+
+- (MVContactModel *)randomContactFromArray:(NSArray *)contacts {
+    return contacts[[self randomUIntegerWithMin:0 andMax:contacts.count - 1]];
 }
 
 - (MVChatModel *)randomChatWithContacts:(NSArray <MVContactModel *> *)contacts {
@@ -98,6 +125,22 @@ static MVRandomGenerator *singleton;
     chat.participants = [chatContacts copy];
     
     return chat;
+}
+
+- (MVMessageModel *)randomMessageWithChatId:(NSString *)chatId sender:(MVContactModel *)sender afterDate:(NSDate *)date {
+    MVMessageModel *message = [MVMessageModel new];
+    message.chatId = chatId;
+    message.text = [[self textGenerator] sentences:[self randomUIntegerWithMin:1 andMax:5]];
+    message.contact = sender;
+    
+    if ([sender.id isEqualToString:[[MVDatabaseManager new] myContact].id]) {
+        message.direction = MessageDirectionOutgoing;
+    } else {
+        message.direction = MessageDirectionOutgoing;
+    }
+    message.sendDate = [self randomDateAfter:date];
+    
+    return message;
 }
 
 #pragma mark - Generators
@@ -126,82 +169,17 @@ static MVRandomGenerator *singleton;
     return [self generateChatsWithCount:[self randomUIntegerWithMin:minChatsCount andMax:maxChatsCount] andContacts:contacts];
 }
 
-
-#pragma mark - Obsolete
-/*
-- (void)generateMessages {
-    self.messages = [NSMutableDictionary new];
+- (NSArray <MVMessageModel *> *)generateMessagesForChat:(MVChatModel *)chat {
+    NSMutableArray *messages = [NSMutableArray new];
     
-    for (MVChatModel *chat in self.chats) {
-        NSMutableArray *messages = [NSMutableArray new];
-        for (int i = 0; i < [self randomIndexWithMax:100] + 1; i++) {
-            MVMessageModel *message = [MVMessageModel new];
-            message.id = [self randomString];
-            message.chatId = chat.id;
-            message.text = [self randomString];
-            message.sendDate = [self randomDate];
-            message.contact = self.contacts[[self randomIndexWithMax:self.contacts.count]];
-            
-            if ([self randomBool]) {
-                message.direction = MessageDirectionIncoming;
-            } else {
-                message.direction = MessageDirectionOutgoing;
-            }
-            
-            [messages addObject:message];
-        }
-        [self.messages setObject:messages forKey:chat.id];
+    NSDate *lastMessageDate = [[NSDate new] dateByAddingTimeInterval:-10000000];
+    for (int i = 0; i < [self randomUIntegerWithMin:minMessagesCount andMax:maxMessagesCount]; i++) {
+        MVMessageModel *message = [self randomMessageWithChatId:chat.id sender:[self randomContactFromArray:chat.participants] afterDate:nil];
+        lastMessageDate = message.sendDate;
+        [messages addObject:message];
     }
     
-    for (NSArray *messages in self.messages.allValues) {
-        [self.updatesListener updateWithType:MVUpdateTypeMessages andObjects:messages];
-    }
+    return messages;
 }
-
-- (MVContactModel *)getMe {
-    return [[MVContactModel alloc] initWithId:@"7" name:@"Mark" iam:YES status:ContactStatusOnline andAvatarName:nil];
-}
-
-- (NSArray *)getRandomContactsWithCount:(NSInteger)count withMe:(bool)withMe {
-    NSMutableSet *contacts = [NSMutableSet new];
-    while (contacts.count < count) {
-        [contacts addObject:self.contacts[[self randomIndexWithMax:self.contacts.count - 1]]];
-    }
-    
-    if (withMe) {
-        [contacts addObject:[self getMe]];
-    }
-    
-    return [contacts allObjects];
-}
-
-- (NSInteger)randomIndexWithMax:(NSInteger)max {
-    return (NSInteger) arc4random_uniform((int)max);
-}
-
-static char *letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-- (NSString *)randomString {
-    NSUInteger length = arc4random_uniform(50);
-    NSMutableString *randomString = [NSMutableString stringWithCapacity: length];
-    
-    for (int i = 0; i < length; i++) {
-        [randomString appendFormat: @"%c", letters[arc4random_uniform((int)strlen(letters))]];
-    }
-    
-    return randomString;
-}
-
-- (NSDate *)randomDate {
-    NSDate *date = [NSDate new];
-    double time = arc4random_uniform(5000000);
-    
-    return [date dateByAddingTimeInterval:-time];
-}
-
-- (BOOL)randomBool {
-    return arc4random_uniform(50) % 2;
-}
- */
 
 @end
