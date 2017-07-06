@@ -44,8 +44,10 @@ static NSString *messagesFile = @"messages";
 }
 
 - (BOOL)insertContact:(MVContactModel *)contact {
-    [self incrementLastContactId];
-    contact.id = self.lastContactId;
+    if (!contact.id) {
+        contact.id = [self incrementId:self.lastContactId];
+    }
+    self.lastContactId = contact.id;
     NSMutableArray *existingContacts = [[self allContacts] mutableCopy];
     [existingContacts addObject:contact];
     return [MVJsonHelper writeData:[MVJsonHelper parseArrayToJson:existingContacts] toFileWithName:contactsFile];
@@ -54,8 +56,10 @@ static NSString *messagesFile = @"messages";
 - (BOOL)insertContacts:(NSArray <MVContactModel *> *)contacts {
     NSMutableArray *existingContacts = [[self allContacts] mutableCopy];
     for (MVContactModel *contact in contacts) {
-        [self incrementLastContactId];
-        contact.id = self.lastContactId;
+        if (!contact.id) {
+            contact.id = [self incrementId:self.lastContactId];
+        }
+        self.lastContactId = contact.id;
         [existingContacts addObject:contact];
     }
     
@@ -63,8 +67,10 @@ static NSString *messagesFile = @"messages";
 }
 
 - (BOOL)insertChat:(MVChatModel *)chat {
-    [self incrementLastChatId];
-    chat.id = self.lastChatId;
+    if (!chat.id) {
+        chat.id = [self incrementId:self.lastChatId];
+    }
+    self.lastChatId = chat.id;
     NSMutableArray *existingChats = [[self allChats] mutableCopy];
     [existingChats addObject:chat];
     return [MVJsonHelper writeData:[MVJsonHelper parseArrayToJson:existingChats] toFileWithName:chatsFile];
@@ -73,8 +79,10 @@ static NSString *messagesFile = @"messages";
 - (BOOL)insertChats:(NSArray <MVChatModel *> *)chats {
     NSMutableArray *existingChats = [[self allChats] mutableCopy];
     for (MVChatModel *chat in chats) {
-        [self incrementLastChatId];
-        chat.id = self.lastChatId;
+        if (!chat.id) {
+            chat.id = [self incrementId:self.lastChatId];
+        }
+        self.lastChatId = chat.id;
         [existingChats addObject:chat];
     }
     
@@ -84,9 +92,11 @@ static NSString *messagesFile = @"messages";
 - (BOOL)insertMessages:(NSArray <MVMessageModel *> *)messages {
     NSMutableArray *existingMessages = [[self allMessages] mutableCopy];
     for (MVMessageModel *message in messages) {
-        [self incrementLastMessageId];
-        message.id = self.lastMessageId;
+        if (!message.id) {
+            message.id = [self incrementId:self.lastMessageId];
+        }
         [existingMessages addObject:message];
+        self.lastMessageId = message.id;
     }
     
     return [MVJsonHelper writeData:[MVJsonHelper parseArrayToJson:existingMessages] toFileWithName:messagesFile];
@@ -142,16 +152,8 @@ static NSString *messagesFile = @"messages";
     _lastMessageId = [[[self allMessages] lastObject] id];
 }
 
-- (void)incrementLastContactId {
-    self.lastContactId = [NSString stringWithFormat:@"%ld", [self.lastContactId integerValue] + 1];
-}
-
-- (void)incrementLastChatId {
-    self.lastChatId = [NSString stringWithFormat:@"%ld", [self.lastChatId integerValue] + 1];
-}
-
-- (void)incrementLastMessageId {
-    self.lastMessageId = [NSString stringWithFormat:@"%ld", [self.lastMessageId integerValue] + 1];
+- (NSString *)incrementId:(NSString *)oldId {
+    return [NSString stringWithFormat:@"%d", [oldId intValue] + 1];
 }
 
 -(MVContactModel *)myContact {
@@ -165,30 +167,53 @@ static NSString *messagesFile = @"messages";
 
 //test
 - (void)generateData {
+    //Contacts
+    NSMutableArray *mutableContacts = [NSMutableArray new];
     NSArray <MVContactModel *> *contacts = [[MVRandomGenerator sharedInstance] generateContacts];
-    [self insertContacts:contacts];
+    NSString *lastContactId = self.lastContactId;
+    for (MVContactModel *contact in contacts) {
+        lastContactId = [self incrementId:lastContactId];
+        contact.id = lastContactId;
+        [mutableContacts addObject:contact];
+    }
+    [self insertContacts:[mutableContacts copy]];
     
-    NSArray <MVChatModel *> *chats = [[MVRandomGenerator sharedInstance] generateChatsWithContacts:contacts];
-    [self insertChats:chats];
-    
-    NSMutableArray *allMessages = [NSMutableArray new];
+    //Chats
+    [mutableContacts addObject:[self myContact]];
+    NSMutableArray *mutableChats = [NSMutableArray new];
+    NSArray <MVChatModel *> *chats = [[MVRandomGenerator sharedInstance] generateChatsWithContacts:[mutableContacts copy]];
+    NSString *lastChatId = self.lastChatId;
     for (MVChatModel *chat in chats) {
+        lastChatId = [self incrementId:lastChatId];
+        chat.id = lastChatId;
+        [mutableChats addObject:chat];
+    }
+    
+    
+    //Messages
+    NSMutableArray *allMessages = [NSMutableArray new];
+    NSString *lastMessageId = self.lastMessageId;
+    for (MVChatModel *chat in mutableChats) {
         NSArray <MVMessageModel *> *messages = [[MVRandomGenerator sharedInstance] generateMessagesForChat:chat];
         messages = [self sortMessages:messages];
         for (MVMessageModel *message in messages) {
+            lastMessageId = [self incrementId:lastMessageId];
+            message.id = lastMessageId;
             message.chatId = chat.id;
             [allMessages addObject:message];
         }
+        chat.lastMessage = [messages lastObject];
+        chat.lastUpdateDate = [[messages lastObject] sendDate];
     }
     
-    [self insertMessages:allMessages];
+    [self insertChats:[mutableChats copy]];
+    [self insertMessages:[allMessages copy]];
     
     NSArray *allContacts = [self allContacts];
     NSArray *allChats = [self allChats];
     NSArray *messages = [self allMessages];
     
     NSString *a;
-    
 }
 
 - (NSArray <MVMessageModel *> *)sortMessages:(NSArray<MVMessageModel *> *)messages {
