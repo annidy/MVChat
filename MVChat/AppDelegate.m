@@ -21,12 +21,6 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [MVRandomGenerator sharedInstance].updatesListener = self;
-    //[[MVRandomGenerator sharedInstance] generateData];
-    MVDatabaseManager *db = [MVDatabaseManager new];
-    [db generateData];
-    
-    NSArray *con = [db allContacts];
-    NSArray *chats = [db allChats];
     
     return YES;
 }

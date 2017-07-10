@@ -21,141 +21,194 @@ static NSString *messagesFile = @"messages";
 @property (strong, nonatomic) NSString *lastContactId;
 @property (strong, nonatomic) NSString *lastChatId;
 @property (strong, nonatomic) NSString *lastMessageId;
+@property (strong, nonatomic) dispatch_queue_t managerQueue;
 @end
 
 @implementation MVDatabaseManager
 
-- (NSArray <MVContactModel *> *)allContacts {
-    NSArray *contacts = [MVJsonHelper parseEnitiesWithClass:[MVContactModel class] fromJson:[MVJsonHelper loadJsonFromFileWithName:contactsFile]];
-    if (!contacts) contacts = [NSArray new];
-    return contacts;
+static MVDatabaseManager *instance;
++ (instancetype)sharedInstance {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [MVDatabaseManager new];
+    });
+    
+    return instance;
 }
 
-- (NSArray <MVChatModel *> *)allChats {
-    NSArray *chats = [MVJsonHelper parseEnitiesWithClass:[MVChatModel class] fromJson:[MVJsonHelper loadJsonFromFileWithName:chatsFile]];
-    if (!chats) chats = [NSArray new];
-    return chats;
-}
-
-- (NSArray <MVMessageModel *> *)allMessages {
-    NSArray *chats = [MVJsonHelper parseEnitiesWithClass:[MVMessageModel class] fromJson:[MVJsonHelper loadJsonFromFileWithName:messagesFile]];
-    if (!chats) chats = [NSArray new];
-    return chats;
-}
-
-- (BOOL)insertContact:(MVContactModel *)contact {
-    if (!contact.id) {
-        contact.id = [self incrementId:self.lastContactId];
-    }
-    self.lastContactId = contact.id;
-    NSMutableArray *existingContacts = [[self allContacts] mutableCopy];
-    [existingContacts addObject:contact];
-    return [MVJsonHelper writeData:[MVJsonHelper parseArrayToJson:existingContacts] toFileWithName:contactsFile];
-}
-
-- (BOOL)insertContacts:(NSArray <MVContactModel *> *)contacts {
-    NSMutableArray *existingContacts = [[self allContacts] mutableCopy];
-    for (MVContactModel *contact in contacts) {
-        if (!contact.id) {
-            contact.id = [self incrementId:self.lastContactId];
-        }
-        self.lastContactId = contact.id;
-        [existingContacts addObject:contact];
+-(instancetype)init {
+    if (self = [super init]) {
+        _managerQueue = dispatch_queue_create("com.markvasiv.databaseManager", DISPATCH_QUEUE_SERIAL);
     }
     
-    return [MVJsonHelper writeData:[MVJsonHelper parseArrayToJson:existingContacts] toFileWithName:contactsFile];
+    return self;
 }
 
-- (BOOL)insertChat:(MVChatModel *)chat {
-    if (!chat.id) {
-        chat.id = [self incrementId:self.lastChatId];
-    }
-    self.lastChatId = chat.id;
-    NSMutableArray *existingChats = [[self allChats] mutableCopy];
-    [existingChats addObject:chat];
-    return [MVJsonHelper writeData:[MVJsonHelper parseArrayToJson:existingChats] toFileWithName:chatsFile];
-}
-
-- (BOOL)insertChats:(NSArray <MVChatModel *> *)chats {
-    NSMutableArray *existingChats = [[self allChats] mutableCopy];
-    for (MVChatModel *chat in chats) {
-        if (!chat.id) {
-            chat.id = [self incrementId:self.lastChatId];
-        }
-        self.lastChatId = chat.id;
-        [existingChats addObject:chat];
-    }
-    
-    return [MVJsonHelper writeData:[MVJsonHelper parseArrayToJson:existingChats] toFileWithName:chatsFile];
-}
-
-- (BOOL)insertMessages:(NSArray <MVMessageModel *> *)messages {
-    NSMutableArray *existingMessages = [[self allMessages] mutableCopy];
-    for (MVMessageModel *message in messages) {
-        if (!message.id) {
-            message.id = [self incrementId:self.lastMessageId];
-        }
-        [existingMessages addObject:message];
-        self.lastMessageId = message.id;
-    }
-    
-    return [MVJsonHelper writeData:[MVJsonHelper parseArrayToJson:existingMessages] toFileWithName:messagesFile];
-}
-
--(MVContactModel *)contactWithId:(NSString *)id {
-    for (MVContactModel *contact in [self allContacts]) {
-        if ([contact.id isEqualToString:id]) {
-            return contact;
-        }
-    }
-    
-    return nil;
-}
-
--(MVChatModel *)chatWithId:(NSString *)id {
-    for (MVChatModel *chat in [self allChats]) {
-        if ([chat.id isEqualToString:id]) {
-            return chat;
-        }
-    }
-    
-    return nil;
-}
-
+#pragma mark - Ids
 - (NSString *)lastContactId {
-    if (!_lastContactId) [self updateLastContactId];
+    if (!_lastContactId) _lastContactId = [[[self allContactsSync] lastObject] id];
     
     return _lastContactId;
 }
 
 - (NSString *)lastChatId {
-    if (!_lastChatId) [self updateLastChatId];
+    if (!_lastChatId) _lastChatId = [[[self allChatsSync] lastObject] id];
     
     return _lastChatId;
 }
 
 - (NSString *)lastMessageId {
-    if (!_lastMessageId) [self updateLastMessageId];
+    if (!_lastMessageId) _lastMessageId = [[[self allMessagesSync] lastObject] id];
     
     return _lastMessageId;
-}
-
-- (void)updateLastContactId {
-    _lastContactId = [[[self allContacts] lastObject] id];
-}
-
-- (void)updateLastChatId {
-    _lastChatId = [[[self allChats] lastObject] id];
-}
-
-- (void)updateLastMessageId {
-    _lastMessageId = [[[self allMessages] lastObject] id];
 }
 
 - (NSString *)incrementId:(NSString *)oldId {
     return [NSString stringWithFormat:@"%d", [oldId intValue] + 1];
 }
 
+#pragma mark - Select
+- (NSArray <MVContactModel *> *)allContactsSync {
+    NSArray *contacts = [MVJsonHelper parseEnitiesWithClass:[MVContactModel class] fromJson:[MVJsonHelper loadJsonFromFileWithName:contactsFile]];
+    if (!contacts) contacts = [NSArray new];
+    return contacts;
+}
+
+- (NSArray <MVChatModel *> *)allChatsSync {
+    NSArray *chats = [MVJsonHelper parseEnitiesWithClass:[MVChatModel class] fromJson:[MVJsonHelper loadJsonFromFileWithName:chatsFile]];
+    if (!chats) chats = [NSArray new];
+    return chats;
+}
+
+- (NSArray <MVMessageModel *> *)allMessagesSync {
+    NSArray *chats = [MVJsonHelper parseEnitiesWithClass:[MVMessageModel class] fromJson:[MVJsonHelper loadJsonFromFileWithName:messagesFile]];
+    if (!chats) chats = [NSArray new];
+    return chats;
+}
+
+- (void)allContacts:(void (^)(NSArray <MVContactModel *> *))completion {
+    dispatch_async(self.managerQueue, ^{
+        completion([self allContactsSync]);
+    });
+}
+
+- (void)allChats:(void (^)(NSArray <MVChatModel *> *))completion {
+    dispatch_async(self.managerQueue, ^{
+        completion([self allChatsSync]);
+    });
+}
+
+#pragma mark - Select with condition
+- (void)contactWithId:(NSString *)id completion:(void (^)(MVContactModel *))completion {
+    dispatch_async(self.managerQueue, ^{
+        BOOL found = NO;
+        for (MVContactModel *contact in [self allContactsSync]) {
+            if ([contact.id isEqualToString:id]) {
+                found = YES;
+                completion(contact);
+            }
+        }
+        if (!found) {
+            completion(nil);
+        }
+    });
+}
+
+- (void)chatWithId:(NSString *)id completion:(void (^)(MVChatModel *))completion {
+    dispatch_async(self.managerQueue, ^{
+        BOOL found = NO;
+        for (MVChatModel *chat in [self allChatsSync]) {
+            if ([chat.id isEqualToString:id]) {
+                found = YES;
+                completion(chat);
+            }
+        }
+        if (!found) {
+            completion(nil);
+        }
+    });
+}
+
+- (void)messageWithId:(NSString *)id completion:(void (^)(MVMessageModel *))completion {
+    dispatch_async(self.managerQueue, ^{
+        BOOL found = NO;
+        for (MVMessageModel *message in [self allMessagesSync]) {
+            if ([message.id isEqualToString:id]) {
+                found = YES;
+                completion(message);
+            }
+        }
+        if (!found) {
+            completion(nil);
+        }
+    });
+}
+
+- (void)messagesFromChatWithId:(NSString *)chatId completion:(void (^)(NSArray <MVMessageModel *> *))completion {
+    dispatch_async(self.managerQueue, ^{
+        NSMutableArray *messages = [NSMutableArray new];
+        for (MVMessageModel *message in [self allMessagesSync]) {
+            [messages addObject:message];
+        }
+        completion([messages copy]);
+    });
+}
+
+#pragma mark - Insert
+- (void)insertContacts:(NSArray <MVContactModel *> *)contacts withCompletion:(void (^)(BOOL success))completion {
+    dispatch_async(self.managerQueue, ^{
+        NSMutableArray *existingContacts = [[self allContactsSync] mutableCopy];
+        for (MVContactModel *contact in contacts) {
+            if (!contact.id) {
+                contact.id = [self incrementId:self.lastContactId];
+            }
+            self.lastContactId = contact.id;
+            [existingContacts addObject:contact];
+        }
+        BOOL success = [MVJsonHelper writeData:[MVJsonHelper parseArrayToJson:existingContacts] toFileWithName:contactsFile];
+        if (completion) {
+            completion(success);
+        }
+    });
+}
+
+- (void)insertChats:(NSArray <MVChatModel *> *)chats withCompletion:(void (^)(BOOL success))completion {
+    dispatch_async(self.managerQueue, ^{
+        NSMutableArray *existingChats = [[self allChatsSync] mutableCopy];
+        for (MVChatModel *chat in chats) {
+            if (!chat.id) {
+                chat.id = [self incrementId:self.lastChatId];
+            }
+            self.lastChatId = chat.id;
+            [existingChats addObject:chat];
+        }
+        
+        BOOL success = [MVJsonHelper writeData:[MVJsonHelper parseArrayToJson:existingChats] toFileWithName:chatsFile];
+        if (completion) {
+            completion(success);
+        }
+    });
+}
+
+- (void)insertMessages:(NSArray <MVMessageModel *> *)messages withCompletion:(void (^)(BOOL success))completion {
+    dispatch_async(self.managerQueue, ^{
+        NSMutableArray *existingMessages = [[self allMessagesSync] mutableCopy];
+        for (MVMessageModel *message in messages) {
+            if (!message.id) {
+                message.id = [self incrementId:self.lastMessageId];
+            }
+            [existingMessages addObject:message];
+            self.lastMessageId = message.id;
+        }
+        
+        BOOL success = [MVJsonHelper writeData:[MVJsonHelper parseArrayToJson:existingMessages] toFileWithName:messagesFile];
+        if (completion) {
+            completion(success);
+        }
+    });
+}
+
+#pragma mark - Helpers
 -(MVContactModel *)myContact {
     MVContactModel *me = [MVContactModel new];
     me.id = @"0";
@@ -176,7 +229,7 @@ static NSString *messagesFile = @"messages";
         contact.id = lastContactId;
         [mutableContacts addObject:contact];
     }
-    [self insertContacts:[mutableContacts copy]];
+    [self insertContacts:[mutableContacts copy] withCompletion:nil];
     
     //Chats
     [mutableContacts addObject:[self myContact]];
@@ -188,7 +241,6 @@ static NSString *messagesFile = @"messages";
         chat.id = lastChatId;
         [mutableChats addObject:chat];
     }
-    
     
     //Messages
     NSMutableArray *allMessages = [NSMutableArray new];
@@ -206,14 +258,8 @@ static NSString *messagesFile = @"messages";
         chat.lastUpdateDate = [[messages lastObject] sendDate];
     }
     
-    [self insertChats:[mutableChats copy]];
-    [self insertMessages:[allMessages copy]];
-    
-    NSArray *allContacts = [self allContacts];
-    NSArray *allChats = [self allChats];
-    NSArray *messages = [self allMessages];
-    
-    NSString *a;
+    [self insertChats:[mutableChats copy] withCompletion:nil];
+    [self insertMessages:[allMessages copy] withCompletion:nil];
 }
 
 - (NSArray <MVMessageModel *> *)sortMessages:(NSArray<MVMessageModel *> *)messages {
@@ -230,7 +276,5 @@ static NSString *messagesFile = @"messages";
         }
     }];
 }
-
-
 
 @end

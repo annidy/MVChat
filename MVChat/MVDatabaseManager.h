@@ -9,15 +9,23 @@
 #import <Foundation/Foundation.h>
 @class MVContactModel;
 @class MVChatModel;
+@class MVMessageModel;
 
 @interface MVDatabaseManager : NSObject
-- (NSArray <MVContactModel *> *)allContacts;
-- (NSArray <MVChatModel *> *)allChats;
-- (BOOL)insertContact:(MVContactModel *)contact;
-- (BOOL)insertChat:(MVChatModel *)chat;
-- (MVContactModel *)contactWithId:(NSString *)id;
-- (MVChatModel *)chatWithId:(NSString *)id;
-- (MVContactModel *)myContact;
++ (instancetype)sharedInstance;
 
+- (void)allContacts:(void (^)(NSArray <MVContactModel *> *))completion;
+- (void)allChats:(void (^)(NSArray <MVChatModel *> *))completion;
+
+- (void)contactWithId:(NSString *)id completion:(void (^)(MVContactModel *))completion;
+- (void)chatWithId:(NSString *)id completion:(void (^)(MVChatModel *))completion;
+- (void)messageWithId:(NSString *)id completion:(void (^)(MVMessageModel *))completion;
+- (void)messagesFromChatWithId:(NSString *)chatId completion:(void (^)(NSArray <MVMessageModel *> *))completion;
+
+- (void)insertContacts:(NSArray <MVContactModel *> *)contacts withCompletion:(void (^)(BOOL success))completion;
+- (void)insertChats:(NSArray <MVChatModel *> *)chats withCompletion:(void (^)(BOOL success))completion;
+- (void)insertMessages:(NSArray <MVMessageModel *> *)messages withCompletion:(void (^)(BOOL success))completion;
+
+- (MVContactModel *)myContact;
 - (void)generateData;
 @end
