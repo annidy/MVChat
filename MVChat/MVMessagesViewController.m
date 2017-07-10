@@ -13,7 +13,7 @@
 #import "MVMessageHeader.h"
 #import "MVContactManager.h"
 
-@interface MVMessagesViewController () <UITableViewDelegate, UITableViewDataSource, UIGestureRecognizerDelegate>
+@interface MVMessagesViewController () <UITableViewDelegate, UITableViewDataSource, UIGestureRecognizerDelegate, MessagesUpdatesListener>
 @property (strong, nonatomic) IBOutlet UITableView *messagesTableView;
 @property (strong, nonatomic) NSArray <MVMessageModel *> *messageModels;
 
@@ -26,6 +26,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    [MVChatManager sharedInstance].messagesListener = self;
     
     self.sliderOffset = 0;
     [self.messagesTableView registerClass:[MVMessageCell class] forCellReuseIdentifier:@"MessageCellIncoming"];
@@ -53,7 +55,14 @@
     panRecognizer.delegate = self;
     
     [self mapWithSections];
-    [MVContactManager startSendingAvatarUpdates];
+}
+
+-(void)handleNewMessage:(MVMessageModel *)message {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.messageModels = [[MVChatManager sharedInstance] messagesForChatWithId:self.chatId];
+        [self mapWithSections];
+        [self.messagesTableView reloadData];
+    });
 }
 
 - (void)mapWithSections {
@@ -113,6 +122,7 @@
     MVMessageCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
     cell.messageLabel.text = model.text;
     cell.timeLabel.text = [self timeFromDate:model.sendDate];
+    cell.avatarImage.image = [UIImage imageNamed:model.contact.avatarName];
     
     __weak MVMessageCell *weakCell = cell;
     [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {

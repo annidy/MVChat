@@ -11,6 +11,7 @@
 #import "MVChatModel.h"
 #import "MVRandomGenerator.h"
 #import "MVChatViewController.h"
+#import "MVMessageModel.h"
 
 @interface MVChatsListViewController () <UITableViewDelegate, UITableViewDataSource, ChatsUpdatesListener>
 @property (strong, nonatomic) IBOutlet UITableView *chatsList;
@@ -38,8 +39,10 @@
 }
 
 -(void)handleChatsUpdate {
-    self.chats = [[MVChatManager sharedInstance] chatsList];
-    [self.chatsList reloadData];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.chats = [[MVChatManager sharedInstance] chatsList];
+        [self.chatsList reloadData];
+    });
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -49,7 +52,7 @@
     titleLabel.text = self.chats[indexPath.row].title;
     
     UILabel *messageLabel = [cell viewWithTag:102];
-    messageLabel.text = @"sample message";
+    messageLabel.text = self.chats[indexPath.row].lastMessage.text;
     
     UILabel *dateLabel = [cell viewWithTag:103];
     dateLabel.text = @"12.03.2015";
@@ -67,6 +70,7 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
+    [[MVChatManager sharedInstance] loadMessagesForChatWithId:self.chats[indexPath.row].id];
     [self showChatViewWithChat:self.chats[indexPath.row]];
 }
 

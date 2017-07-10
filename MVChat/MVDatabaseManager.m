@@ -232,7 +232,6 @@ static MVDatabaseManager *instance;
     [self insertContacts:[mutableContacts copy] withCompletion:nil];
     
     //Chats
-    [mutableContacts addObject:[self myContact]];
     NSMutableArray *mutableChats = [NSMutableArray new];
     NSArray <MVChatModel *> *chats = [[MVRandomGenerator sharedInstance] generateChatsWithContacts:[mutableContacts copy]];
     NSString *lastChatId = self.lastChatId;

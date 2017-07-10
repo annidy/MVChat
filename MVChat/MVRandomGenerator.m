@@ -65,7 +65,7 @@ static MVRandomGenerator *singleton;
 #pragma mark - Randoms
 - (NSUInteger)randomUIntegerWithMin:(NSUInteger)min andMax:(NSUInteger)max {
     NSAssert(max > min, @"max must be > than min");
-    return min + (NSUInteger) arc4random_uniform((uint32_t)(max - min));
+    return min + (NSUInteger) arc4random_uniform((uint32_t)(max - min + 1));
 }
 
 - (NSDate *)randomDateAfter:(NSDate *)afterDate {
@@ -122,6 +122,7 @@ static MVRandomGenerator *singleton;
         [indices addObject:@(index)];
         [chatContacts addObject:contacts[index]];
     }
+    [chatContacts addObject:[[MVDatabaseManager sharedInstance] myContact]];
     chat.participants = [chatContacts copy];
     
     return chat;
@@ -136,7 +137,7 @@ static MVRandomGenerator *singleton;
     if ([sender.id isEqualToString:[[MVDatabaseManager new] myContact].id]) {
         message.direction = MessageDirectionOutgoing;
     } else {
-        message.direction = MessageDirectionOutgoing;
+        message.direction = MessageDirectionIncoming;
     }
     message.sendDate = [self randomDateAfter:date];
     

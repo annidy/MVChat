@@ -9,6 +9,7 @@
 #import "MVChatManager.h"
 #import "MVMessageModel.h"
 #import "MVChatModel.h"
+#import "MVDatabaseManager.h"
 
 @interface MVChatManager()
 @property (strong, nonatomic) NSMutableArray *chats;
@@ -36,6 +37,28 @@ static MVChatManager *sharedManager;
     }
     
     return self;
+}
+
+- (void)loadAllChats {
+    [[MVDatabaseManager sharedInstance] allChats:^(NSArray<MVChatModel *> *chats) {
+        @synchronized (self.chats) {
+            [self.chats addObjectsFromArray:chats];
+        }
+        [self.chatsListener handleChatsUpdate];
+    }];
+}
+
+- (void)loadMessagesForChatWithId:(NSString *)chatId {
+    [[MVDatabaseManager sharedInstance] messagesFromChatWithId:chatId completion:^(NSArray<MVMessageModel *> *messages) {
+        @synchronized (self.chatsMessages) {
+            [self.chatsMessages setObject:messages forKey:chatId];
+        }
+        if ([self.messagesListener.chatId isEqualToString:chatId]) {
+            //for (MVMessageModel *message in messages) {
+                [self.messagesListener handleNewMessage:messages[0]];
+            //}
+        }
+    }];
 }
 
 #pragma mark - Handle updates
@@ -70,7 +93,6 @@ static MVChatManager *sharedManager;
         }
     }
 }
-
 
 - (void)handleNewMessages:(NSArray <MVMessageModel *> *)messages {
     dispatch_async(self.managerQueue, ^{

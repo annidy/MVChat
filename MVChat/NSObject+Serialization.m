@@ -269,7 +269,7 @@ typedef void (*objectSetter)(void *, SEL, id);
                     func((__bridge void *)(self), setter, [serialized copy]);
                 }
             } else if ([object isKindOfClass:[NSString class]]) {
-                NSString *propertyClassName = [propertyType substringWithRange:NSMakeRange(2, [propertyType length]-4)];
+                NSString *propertyClassName = [propertyType substringWithRange:NSMakeRange(2, [propertyType length]-3)];
                 if ([propertyClassName isEqualToString:@"NSDate"]) {
                     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
                     [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];

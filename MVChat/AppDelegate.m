@@ -22,6 +22,9 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [MVRandomGenerator sharedInstance].updatesListener = self;
     
+    //[[MVDatabaseManager sharedInstance] generateData];
+    [[MVChatManager sharedInstance] loadAllChats];
+    
     return YES;
 }
 

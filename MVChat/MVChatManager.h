@@ -31,4 +31,7 @@
 - (MVChatModel *)chatWithId:(NSString *)chatId;
 - (NSArray <MVMessageModel *> *)messagesForChatWithId:(NSString *)chatId;
 - (void)sendMessage:(MVMessageModel *)message;
+
+- (void)loadAllChats;
+- (void)loadMessagesForChatWithId:(NSString *)chatId;
 @end
