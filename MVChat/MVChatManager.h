@@ -9,15 +9,26 @@
 #import <Foundation/Foundation.h>
 
 @class MVMessageModel;
+@class MVMessageUpdateModel;
 @class MVChatModel;
 
+typedef enum : NSUInteger {
+    MessageUpdatePositionStart,
+    MessageUpdatePositionEnd
+} MessageUpdatePosition;
+
 @protocol MessagesUpdatesListener <NSObject>
-- (void)handleNewMessage:(MVMessageModel *)message;
+- (void)handleNewMessage:(MVMessageUpdateModel *)messageUpdate;
 - (NSString *)chatId;
 @end
 
 @protocol ChatsUpdatesListener <NSObject>
 - (void)handleChatsUpdate;
+@end
+
+@interface MVMessageUpdateModel : NSObject
+@property (strong, nonatomic) MVMessageModel *message;
+@property (assign, nonatomic) MessageUpdatePosition position;
 @end
 
 @interface MVChatManager : NSObject

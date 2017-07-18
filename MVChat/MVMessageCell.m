@@ -17,14 +17,6 @@
 @property (assign, nonatomic) BOOL lastInTailessSection;
 @end
 
-static CGFloat innerMargin = 25;
-static CGFloat verticalMargin = 7;
-static CGFloat tailessVerticalMargin = 1;
-static CGFloat bubbleTailMargin = 15;
-static CGFloat bubbleTailessMargin = 10;
-static CGFloat tailWidth = 5;
-
-
 @implementation MVMessageCell
 #pragma mark - Lifecycle
 -(instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {

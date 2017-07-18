@@ -9,8 +9,8 @@
 #import "MVMessageHeader.h"
 
 @implementation MVMessageHeader
-- (instancetype) initWithReuseIdentifier:(NSString *)reuseIdentifier {
-    if (self = [super initWithReuseIdentifier:reuseIdentifier]) {
+-(instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
+    if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
         [self build];
     }
     
@@ -25,7 +25,11 @@
     container.layer.masksToBounds = YES;
     container.translatesAutoresizingMaskIntoConstraints = NO;
     [self.contentView addSubview:container];
-    [[container.centerYAnchor constraintEqualToAnchor:self.contentView.centerYAnchor] setActive:YES];
+    //[[container.centerYAnchor constraintEqualToAnchor:self.contentView.centerYAnchor] setActive:YES];
+    //[[container.centerXAnchor constraintEqualToAnchor:self.contentView.centerXAnchor] setActive:YES];
+    //[[container.heightAnchor constraintEqualToConstant:44] setActive:YES];
+    [[container.topAnchor constraintEqualToAnchor:self.contentView.topAnchor constant:2] setActive:YES];
+    [[container.bottomAnchor constraintEqualToAnchor:self.contentView.bottomAnchor constant:2] setActive:YES];
     [[container.centerXAnchor constraintEqualToAnchor:self.contentView.centerXAnchor] setActive:YES];
     
     UILabel *label = [UILabel new];

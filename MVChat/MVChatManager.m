@@ -11,6 +11,16 @@
 #import "MVChatModel.h"
 #import "MVDatabaseManager.h"
 
+@implementation MVMessageUpdateModel
++ (instancetype)updateModelWithMessage:(MVMessageModel *)message andPosition:(MessageUpdatePosition)position {
+    MVMessageUpdateModel *updateModel = [MVMessageUpdateModel new];
+    updateModel.message = message;
+    updateModel.position = position;
+    
+    return updateModel;
+}
+@end
+
 @interface MVChatManager()
 @property (strong, nonatomic) NSMutableArray *chats;
 @property (strong, nonatomic) NSMutableDictionary *chatsMessages;
@@ -50,13 +60,23 @@ static MVChatManager *sharedManager;
 
 - (void)loadMessagesForChatWithId:(NSString *)chatId {
     [[MVDatabaseManager sharedInstance] messagesFromChatWithId:chatId completion:^(NSArray<MVMessageModel *> *messages) {
+        NSMutableArray *messagesCopy = [messages mutableCopy];
+        [self sortMessages:messagesCopy];
+        
         @synchronized (self.chatsMessages) {
-            [self.chatsMessages setObject:messages forKey:chatId];
+            [self.chatsMessages setObject:[messagesCopy copy] forKey:chatId];
         }
+        
         if ([self.messagesListener.chatId isEqualToString:chatId]) {
-            //for (MVMessageModel *message in messages) {
-                [self.messagesListener handleNewMessage:messages[0]];
-            //}
+            
+            //double delayInSeconds = 0.0;
+            for (MVMessageModel *message in [messagesCopy reverseObjectEnumerator]) {
+                //delayInSeconds += 2;
+                //dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+                //dispatch_after(popTime, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+                    [self.messagesListener handleNewMessage:[MVMessageUpdateModel updateModelWithMessage:message andPosition:MessageUpdatePositionStart]];
+                //});
+            }
         }
     }];
 }
@@ -97,7 +117,10 @@ static MVChatManager *sharedManager;
 - (void)handleNewMessages:(NSArray <MVMessageModel *> *)messages {
     dispatch_async(self.managerQueue, ^{
         NSMutableSet *changedChatIds = [NSMutableSet new];
-        for (MVMessageModel *message in messages) {
+        NSMutableArray *messagesCopy = [messages mutableCopy];
+        [self sortMessages:messagesCopy];
+        
+        for (MVMessageModel *message in messagesCopy) {
             @synchronized (self.chatsMessages) {
                 if (![self.chatsMessages objectForKey:message.chatId]) {
                     [self.chatsMessages setObject:[NSMutableArray new] forKey:message.chatId];
@@ -107,7 +130,7 @@ static MVChatManager *sharedManager;
             [changedChatIds addObject:message.chatId];
             
             if ([self.messagesListener.chatId isEqualToString:message.chatId]) {
-                [self.messagesListener handleNewMessage:message];
+                [self.messagesListener handleNewMessage:[MVMessageUpdateModel updateModelWithMessage:message andPosition:MessageUpdatePositionEnd]];
             }
         }
         

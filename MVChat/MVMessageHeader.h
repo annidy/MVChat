@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface MVMessageHeader : UITableViewHeaderFooterView
+@interface MVMessageHeader : UITableViewCell
 @property (strong, nonatomic) UILabel *titleLabel;
 @end

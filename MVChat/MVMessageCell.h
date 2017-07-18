@@ -8,6 +8,14 @@
 
 #import <UIKit/UIKit.h>
 #import "MVSlidingCell.h"
+@class MVMessageModel;
+
+static CGFloat innerMargin = 25;
+static CGFloat verticalMargin = 7;
+static CGFloat tailessVerticalMargin = 1;
+static CGFloat bubbleTailMargin = 15;
+static CGFloat bubbleTailessMargin = 10;
+static CGFloat tailWidth = 5;
 
 @interface MVMessageCell : UITableViewCell <MVSlidingCell>
 @property (strong, nonatomic) UILabel *messageLabel;
