@@ -34,6 +34,7 @@
         self.MessagesController.chatId = self.chat.id;
     } else if ([segue.identifier isEqualToString:@"EmbedFooter"]) {
         self.FooterController = segue.destinationViewController;
+        self.FooterController.chatId = self.chat.id;
     }
 }
 

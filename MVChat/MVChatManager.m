@@ -53,8 +53,10 @@ static MVChatManager *sharedManager;
 
 - (void)loadAllChats {
     [[MVDatabaseManager sharedInstance] allChats:^(NSArray<MVChatModel *> *chats) {
+        NSMutableArray *mutableChats = [chats mutableCopy];
+        [self sortChats:mutableChats];
         @synchronized (self.chats) {
-            [self.chats addObjectsFromArray:chats];
+            [self.chats addObjectsFromArray:mutableChats];
         }
         [self.chatsListener handleChatsUpdate];
     }];
@@ -158,6 +160,39 @@ static MVChatManager *sharedManager;
     }
 }
 
+- (void)sendTextMessage:(NSString *)text toChatWithId:(NSString *)chatId{
+    MVMessageModel *message = [MVMessageModel new];
+    message.chatId = chatId;
+    message.text = text;
+    message.direction = MessageDirectionOutgoing;
+    message.sendDate = [NSDate new];
+    message.contact = [[MVDatabaseManager sharedInstance] myContact];
+    
+    [[MVDatabaseManager sharedInstance] insertMessages:@[message] withCompletion:nil];
+    
+    @synchronized (self.chatsMessages) {
+        NSMutableArray *messages = [self.chatsMessages[chatId] mutableCopy];
+        if (!messages) {
+            messages = [NSMutableArray new];
+        }
+        [messages addObject:message];
+        [self.chatsMessages setObject:[messages copy] forKey:chatId];
+    }
+    
+    [self.messagesListener handleNewMessage:[MVMessageUpdateModel updateModelWithMessage:message andPosition:MessageUpdatePositionEnd]];
+
+    MVChatModel *chat;
+    @synchronized (self.chats) {
+        chat = [self chatWithId:chatId];
+        chat.lastUpdateDate = message.sendDate;
+        chat.lastMessage = message;
+    }
+    
+    [[MVDatabaseManager sharedInstance] updateChat:chat withCompletion:nil];
+    [self sortChats];
+    [self.chatsListener handleChatsUpdate];
+}
+
 - (void)sendMessage:(MVMessageModel *)message {
     
 }
@@ -228,19 +263,24 @@ static MVChatManager *sharedManager;
 
 - (void)sortChats {
     @synchronized (self.chats) {
-        [self.chats sortUsingComparator:^NSComparisonResult(MVChatModel *chat1, MVChatModel *chat2) {
-            NSTimeInterval first = chat1.lastUpdateDate.timeIntervalSinceReferenceDate;
-            NSTimeInterval second = chat2.lastUpdateDate.timeIntervalSinceReferenceDate;
-            
-            if (first > second) {
-                return NSOrderedAscending;
-            } else if (first < second) {
-                return NSOrderedDescending;
-            } else {
-                return NSOrderedSame;
-            }
-        }];
+        NSMutableArray *mutableChats = [self.chats mutableCopy];
+        [self sortChats:mutableChats];
+        self.chats = [mutableChats copy];
     }
+}
+- (void)sortChats:(NSMutableArray *)chats {
+    [chats sortUsingComparator:^NSComparisonResult(MVChatModel *chat1, MVChatModel *chat2) {
+        NSTimeInterval first = chat1.lastUpdateDate.timeIntervalSinceReferenceDate;
+        NSTimeInterval second = chat2.lastUpdateDate.timeIntervalSinceReferenceDate;
+        
+        if (first > second) {
+            return NSOrderedAscending;
+        } else if (first < second) {
+            return NSOrderedDescending;
+        } else {
+            return NSOrderedSame;
+        }
+    }];
 }
 
 - (void)sortMessagesInChatsWithIds:(NSArray <NSString *> *)chatIds {

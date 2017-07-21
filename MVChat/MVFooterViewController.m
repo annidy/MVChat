@@ -7,6 +7,7 @@
 //
 
 #import "MVFooterViewController.h"
+#import "MVChatManager.h"
 
 @interface MVFooterViewController () <UITextFieldDelegate>
 @property (strong, nonatomic) IBOutlet UITextField *messageTextField;
@@ -23,6 +24,11 @@
 
 - (IBAction)messageTextFieldChanged:(id)sender {
     self.sendButton.enabled = [self.messageTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]].length > 0;
+}
+- (IBAction)sendButtonPress:(id)sender {
+    self.sendButton.enabled = NO;
+    [[MVChatManager sharedInstance] sendTextMessage:self.messageTextField.text toChatWithId:self.chatId];
+    self.messageTextField.text = @"";
 }
 
 @end

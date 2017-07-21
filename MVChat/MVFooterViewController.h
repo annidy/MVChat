@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface MVFooterViewController : UIViewController
-
+@property (strong, nonatomic) NSString *chatId;
 @end

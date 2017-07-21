@@ -190,6 +190,26 @@ static MVDatabaseManager *instance;
     });
 }
 
+- (void)updateChat:(MVChatModel *)chatModel withCompletion:(void (^)(BOOL success))completion {
+    dispatch_async(self.managerQueue, ^{
+        NSMutableArray *existingChats = [[self allChatsSync] mutableCopy];
+        NSUInteger index = 0;
+        for (MVChatModel *chat in existingChats) {
+            if ([chat.id isEqualToString:chatModel.id]) {
+                break;
+            }
+            index ++;
+        }
+        
+        [existingChats replaceObjectAtIndex:index withObject:chatModel];
+        
+        BOOL success = [MVJsonHelper writeData:[MVJsonHelper parseArrayToJson:existingChats] toFileWithName:chatsFile];
+        if (completion) {
+            completion(success);
+        }
+    });
+}
+
 - (void)insertMessages:(NSArray <MVMessageModel *> *)messages withCompletion:(void (^)(BOOL success))completion {
     dispatch_async(self.managerQueue, ^{
         NSMutableArray *existingMessages = [[self allMessagesSync] mutableCopy];

@@ -216,6 +216,9 @@
                                     <constraint firstAttribute="width" constant="36" id="RBy-r3-fGs"/>
                                 </constraints>
                                 <state key="normal" title="Send"/>
+                                <connections>
+                                    <action selector="sendButtonPress:" destination="xyr-sn-PIh" eventType="touchUpInside" id="mUw-iT-qUA"/>
+                                </connections>
                             </button>
                             <view opaque="NO" alpha="0.20000000000000001" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IT2-qm-4x2">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="1"/>
