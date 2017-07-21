@@ -74,7 +74,7 @@ static MVChatManager *sharedManager;
             }
             
             @synchronized (self.chatsMessages) {
-                [self.chatsMessages setObject:[messagesCopy copy] forKey:chatId];
+                [self.chatsMessages setObject:[[messagesCopy reverseObjectEnumerator] allObjects] forKey:chatId];
                 [self.chatsMessagesPages setObject:@(numberOfPages) forKey:chatId];
             }
             
@@ -175,7 +175,7 @@ static MVChatManager *sharedManager;
         if (!messages) {
             messages = [NSMutableArray new];
         }
-        [messages addObject:message];
+        [messages insertObject:message atIndex:0];
         [self.chatsMessages setObject:[messages copy] forKey:chatId];
     }
     

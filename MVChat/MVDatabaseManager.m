@@ -148,7 +148,10 @@ static MVDatabaseManager *instance;
     dispatch_async(self.managerQueue, ^{
         NSMutableArray *messages = [NSMutableArray new];
         for (MVMessageModel *message in [self allMessagesSync]) {
-            [messages addObject:message];
+            if ([message.chatId isEqualToString:chatId]) {
+                [messages addObject:message];
+            }
+            
         }
         completion([messages copy]);
     });
