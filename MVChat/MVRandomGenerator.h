@@ -11,6 +11,7 @@
 @class MVContactModel;
 @class MVChatModel;
 @class MVMessageModel;
+@class UIColor;
 
 typedef enum : NSUInteger {
     MVUpdateTypeChats,
@@ -29,4 +30,5 @@ typedef enum : NSUInteger {
 - (NSArray <MVMessageModel *> *)generateMessagesForChat:(MVChatModel *)chat;
 
 - (NSUInteger)randomUIntegerWithMin:(NSUInteger)min andMax:(NSUInteger)max;
+- (UIColor *)randomColor;
 @end

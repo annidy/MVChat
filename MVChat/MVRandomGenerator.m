@@ -14,6 +14,7 @@
 #import "MVNameGenerator.h"
 #import "MVTextGenerator.h"
 #import "MVDatabaseManager.h"
+#import <UIKit/UIKit.h>
 
 static NSUInteger minContactsCount = 20;
 static NSUInteger maxContactsCount = 50;
@@ -126,6 +127,10 @@ static MVRandomGenerator *singleton;
     chat.participants = [chatContacts copy];
     
     return chat;
+}
+
+- (UIColor *)randomColor {
+    return [UIColor colorWithRed:(CGFloat)[self randomUIntegerWithMin:0 andMax:255]/255 green:(CGFloat)[self randomUIntegerWithMin:0 andMax:255]/255 blue:(CGFloat)[self randomUIntegerWithMin:0 andMax:255]/255 alpha:1];
 }
 
 - (MVMessageModel *)randomMessageWithChatId:(NSString *)chatId sender:(MVContactModel *)sender afterDate:(NSDate *)date {
