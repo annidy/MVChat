@@ -34,6 +34,8 @@
 @property (assign, nonatomic) BOOL autoscrollEnabled;
 @property (strong, nonatomic) MVDataAggregator *messageCallbackHandler;
 @property (strong, nonatomic) UILabel *referenceLabel;
+@property (assign, nonatomic) NSUInteger loadedPageIndex;
+@property (assign, nonatomic) BOOL loadingNewPage;
 @end
 
 @implementation MVMessagesViewController
@@ -72,6 +74,19 @@
     self.messageCallbackHandler = [[MVDataAggregator alloc] initWithThrottle:3 allowingFirst:YES maxObjectsCount:50 andBlock:^(NSArray *models) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self handleNewMessages:models];
+        });
+    }];
+    
+    self.loadedPageIndex = 0;
+    
+    [[MVChatManager sharedInstance] messagesPage:0 forChatWithId:self.chatId withCallback:^(NSArray<MVMessageModel *> *messages) {
+        NSMutableArray *updates = [NSMutableArray new];
+        for (MVMessageModel *message in messages) {
+            [updates addObject:[MVMessageUpdateModel updateModelWithMessage:message andPosition:MessageUpdatePositionStart]];
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self handleNewMessages:updates];
         });
     }];
 }
@@ -457,6 +472,40 @@
     }
     else {
         self.autoscrollEnabled = NO;
+    }
+    
+    if(self.messagesTableView.contentOffset.y <= 200) {
+        [self tryToLoadNextPage];
+    }
+}
+
+- (void)tryToLoadNextPage {
+    @synchronized (self) {
+        if (self.loadingNewPage) {
+            return;
+        }
+        
+        self.loadingNewPage = YES;
+    }
+    
+    if ([[MVChatManager sharedInstance] numberOfPagesInChatWithId:self.chatId] > self.loadedPageIndex + 1) {
+        [[MVChatManager sharedInstance] messagesPage:self.loadedPageIndex + 1 forChatWithId:self.chatId withCallback:^(NSArray<MVMessageModel *> *messages) {
+            NSMutableArray *updates = [NSMutableArray new];
+            
+            for (MVMessageModel *message in messages) {
+                [updates addObject:[MVMessageUpdateModel updateModelWithMessage:message andPosition:MessageUpdatePositionStart]];
+            }
+            
+            self.loadedPageIndex++;
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self handleNewMessages:updates];
+                
+                @synchronized (self) {
+                    self.loadingNewPage = NO;
+                }
+            });
+        }];
     }
 }
 

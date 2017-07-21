@@ -17,6 +17,8 @@ typedef enum : NSUInteger {
     MessageUpdatePositionEnd
 } MessageUpdatePosition;
 
+static NSUInteger MVMessagesPageSize = 1000;
+
 @protocol MessagesUpdatesListener <NSObject>
 - (void)handleNewMessage:(MVMessageUpdateModel *)messageUpdate;
 - (NSString *)chatId;
@@ -29,6 +31,7 @@ typedef enum : NSUInteger {
 @interface MVMessageUpdateModel : NSObject
 @property (strong, nonatomic) MVMessageModel *message;
 @property (assign, nonatomic) MessageUpdatePosition position;
++ (instancetype)updateModelWithMessage:(MVMessageModel *)message andPosition:(MessageUpdatePosition)position;
 @end
 
 @interface MVChatManager : NSObject
@@ -45,4 +48,6 @@ typedef enum : NSUInteger {
 
 - (void)loadAllChats;
 - (void)loadMessagesForChatWithId:(NSString *)chatId;
+- (void)messagesPage:(NSUInteger)pageIndex forChatWithId:(NSString *)chatId withCallback:(void (^)(NSArray <MVMessageModel *> *))callback;
+- (NSUInteger)numberOfPagesInChatWithId:(NSString *)chatId;
 @end

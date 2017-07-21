@@ -70,7 +70,6 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    [[MVChatManager sharedInstance] loadMessagesForChatWithId:self.chats[indexPath.row].id];
     [self showChatViewWithChat:self.chats[indexPath.row]];
 }
 

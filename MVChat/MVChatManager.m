@@ -24,6 +24,7 @@
 @interface MVChatManager()
 @property (strong, nonatomic) NSMutableArray *chats;
 @property (strong, nonatomic) NSMutableDictionary *chatsMessages;
+@property (strong, nonatomic) NSMutableDictionary *chatsMessagesPages;
 @property (strong, nonatomic) dispatch_queue_t managerQueue;
 @end
 
@@ -44,6 +45,7 @@ static MVChatManager *sharedManager;
         _managerQueue = dispatch_queue_create("com.markvasiv.chatsManager", nil);
         _chats = [NSMutableArray new];
         _chatsMessages = [NSMutableDictionary new];
+        _chatsMessagesPages = [NSMutableDictionary new];
     }
     
     return self;
@@ -58,26 +60,26 @@ static MVChatManager *sharedManager;
     }];
 }
 
-- (void)loadMessagesForChatWithId:(NSString *)chatId {
+- (void)loadMessagesForChatWithId:(NSString *)chatId withCallback:(void (^)(BOOL))callback {
     [[MVDatabaseManager sharedInstance] messagesFromChatWithId:chatId completion:^(NSArray<MVMessageModel *> *messages) {
-        NSMutableArray *messagesCopy = [messages mutableCopy];
-        [self sortMessages:messagesCopy];
-        
-        @synchronized (self.chatsMessages) {
-            [self.chatsMessages setObject:[messagesCopy copy] forKey:chatId];
-        }
-        
-        if ([self.messagesListener.chatId isEqualToString:chatId]) {
+        dispatch_async(self.managerQueue, ^{
+            NSMutableArray *messagesCopy = [messages mutableCopy];
+            [self sortMessages:messagesCopy];
             
-            //double delayInSeconds = 0.0;
-            for (MVMessageModel *message in [messagesCopy reverseObjectEnumerator]) {
-                //delayInSeconds += 2;
-                //dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-                //dispatch_after(popTime, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
-                    [self.messagesListener handleNewMessage:[MVMessageUpdateModel updateModelWithMessage:message andPosition:MessageUpdatePositionStart]];
-                //});
+            NSUInteger numberOfPages = messagesCopy.count/MVMessagesPageSize;
+            if (messagesCopy.count%MVMessagesPageSize != 0) {
+                numberOfPages++;
             }
-        }
+            
+            @synchronized (self.chatsMessages) {
+                [self.chatsMessages setObject:[messagesCopy copy] forKey:chatId];
+                [self.chatsMessagesPages setObject:@(numberOfPages) forKey:chatId];
+            }
+            
+            if (callback) {
+                callback(YES);
+            }
+        });
     }];
 }
 
@@ -158,6 +160,43 @@ static MVChatManager *sharedManager;
 
 - (void)sendMessage:(MVMessageModel *)message {
     
+}
+
+- (void)messagesPage:(NSUInteger)pageIndex forChatWithId:(NSString *)chatId withCallback:(void (^)(NSArray <MVMessageModel *> *))callback {
+    NSMutableArray *messages;
+    @synchronized (self.chatsMessages) {
+        messages = [self.chatsMessages objectForKey:chatId];
+    }
+    
+    messages = [[[messages reverseObjectEnumerator] allObjects] mutableCopy];
+    NSArray *pagedMessages;
+    
+    if (!messages.count) {
+        [self loadMessagesForChatWithId:chatId withCallback:^(BOOL success) {
+            [self messagesPage:pageIndex forChatWithId:chatId withCallback:callback];
+        }];
+    } else {
+        NSUInteger startIndex = MVMessagesPageSize * pageIndex;
+        NSUInteger length = MVMessagesPageSize;
+        
+        if (MVMessagesPageSize * pageIndex + MVMessagesPageSize > messages.count) {
+            length = messages.count - MVMessagesPageSize * pageIndex;
+        }
+        
+        pagedMessages = [messages subarrayWithRange:NSMakeRange(startIndex, length)];
+        callback(pagedMessages);
+    }
+}
+
+- (NSUInteger)numberOfPagesInChatWithId:(NSString *)chatId {
+    NSUInteger number = 0;
+    @synchronized (self.chatsMessages) {
+        if ([self.chatsMessagesPages objectForKey:chatId]) {
+            number = [[self.chatsMessagesPages objectForKey:chatId] unsignedIntegerValue];
+        }
+    }
+    
+    return number;
 }
 
 #pragma mark - Helpers
