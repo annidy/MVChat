@@ -15,6 +15,7 @@
             <objects>
                 <navigationController id="oI9-uL-VZW" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Item" id="ylJ-Ho-tRP"/>
+                    <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="7uf-4Y-hNx">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -103,6 +104,7 @@
         <!--Tab Bar Controller-->
         <scene sceneID="vDx-bK-r1N">
             <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="uhh-Mi-xrb" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <tabBarController id="QLG-H3-hHc" sceneMemberID="viewController">
                     <tabBar key="tabBar" contentMode="scaleToFill" id="Phi-Dd-daa">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="49"/>
@@ -114,7 +116,6 @@
                         <segue destination="oI9-uL-VZW" kind="relationship" relationship="viewControllers" id="B5Q-nr-19E"/>
                     </connections>
                 </tabBarController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="uhh-Mi-xrb" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-3735" y="-372"/>
         </scene>
@@ -222,6 +223,7 @@
             <objects>
                 <navigationController id="yHU-g6-bwg" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Item" id="g5N-k6-n4F"/>
+                    <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="oUs-IK-DDy">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -237,7 +239,7 @@
         <!--Chat View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController storyboardIdentifier="ChatViewController" automaticallyAdjustsScrollViewInsets="NO" hidesBottomBarWhenPushed="YES" id="BYZ-38-t0r" customClass="MVChatViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ChatViewController" extendedLayoutIncludesOpaqueBars="YES" hidesBottomBarWhenPushed="YES" id="BYZ-38-t0r" customClass="MVChatViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -256,7 +258,7 @@
                                 </connections>
                             </containerView>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="F9u-2U-iMk">
-                                <rect key="frame" x="0.0" y="20" width="375" height="597"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="617"/>
                                 <connections>
                                     <segue destination="e0v-Ll-oyT" kind="embed" identifier="EmbedMessages" id="Myl-mA-sCt"/>
                                 </connections>
@@ -264,17 +266,16 @@
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="F9u-2U-iMk" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="6nI-JM-3mc"/>
                             <constraint firstItem="1cy-4A-UOo" firstAttribute="top" secondItem="F9u-2U-iMk" secondAttribute="bottom" id="RrG-aQ-67O"/>
                             <constraint firstAttribute="trailing" secondItem="F9u-2U-iMk" secondAttribute="trailing" id="WrY-pV-hIm"/>
                             <constraint firstItem="1cy-4A-UOo" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="XUn-9y-V1W"/>
-                            <constraint firstItem="F9u-2U-iMk" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="isB-4D-Xqa"/>
-                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="1cy-4A-UOo" secondAttribute="bottom" id="jDv-c5-qIB"/>
+                            <constraint firstAttribute="bottom" secondItem="1cy-4A-UOo" secondAttribute="bottom" id="ei1-UV-LZi"/>
                             <constraint firstItem="F9u-2U-iMk" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="jgJ-6l-dUL"/>
                             <constraint firstAttribute="trailing" secondItem="1cy-4A-UOo" secondAttribute="trailing" id="roY-cz-0Lw"/>
                         </constraints>
                     </view>
-                    <extendedEdge key="edgesForExtendedLayout"/>
-                    <nil key="simulatedBottomBarMetrics"/>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
@@ -331,7 +332,6 @@
                             <constraint firstAttribute="trailing" secondItem="IT2-qm-4x2" secondAttribute="trailing" id="xqP-eI-gmR"/>
                         </constraints>
                     </view>
-                    <extendedEdge key="edgesForExtendedLayout" top="YES"/>
                     <connections>
                         <outlet property="messageTextField" destination="NHf-wI-Dbb" id="E95-IQ-cZX"/>
                         <outlet property="sendButton" destination="dza-yB-rKy" id="WCf-5f-XC2"/>
@@ -344,17 +344,17 @@
         <!--Messages View Controller-->
         <scene sceneID="zRc-v6-Mai">
             <objects>
-                <viewController hidesBottomBarWhenPushed="YES" id="e0v-Ll-oyT" customClass="MVMessagesViewController" sceneMemberID="viewController">
+                <viewController id="e0v-Ll-oyT" customClass="MVMessagesViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="VwF-g9-z6T"/>
                         <viewControllerLayoutGuide type="bottom" id="g1W-ar-IzZ"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="9sj-hO-NKE">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="597"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="617"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="ySx-5M-MSu">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="597"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="617"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </tableView>
                         </subviews>

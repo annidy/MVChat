@@ -24,8 +24,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    //self.navigationItem.title = self.chat.title;
-    //[self.navigationController.tabBarController.tabBar setHidden:YES];
+    self.navigationItem.title = self.chat.title;
 }
 
 #pragma mark - Segues

@@ -27,8 +27,6 @@
     [self.contactsList setTableFooterView:[UIView new]];
     
     [self mapWithSections:[[MVContactManager sharedInstance] getAllContacts]];
-    
-    [self.navigationController.tabBarController.tabBar setHidden:NO];
 }
 
 - (void)handleContactsUpdate {
