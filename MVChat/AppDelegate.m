@@ -9,7 +9,8 @@
 #import "AppDelegate.h"
 #import "MVRandomGenerator.h"
 #import "MVChatManager.h"
-#import "MVDatabaseManager.h"
+#import "MVContactManager.h"
+//#import "MVDatabaseManager.h"
 
 
 @interface AppDelegate () <AppListener>
@@ -24,6 +25,7 @@
     
     //[[MVDatabaseManager sharedInstance] generateData];
     [[MVChatManager sharedInstance] loadAllChats];
+    [[MVContactManager sharedInstance] loadContacts];
     
     return YES;
 }

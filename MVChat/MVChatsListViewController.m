@@ -30,6 +30,8 @@
     self.chatsList.delegate = self;
     self.chatsList.dataSource = self;
     self.chatsList.tableFooterView = [UIView new];
+    
+    [self.navigationController.tabBarController.tabBar setHidden:NO];
 }
 
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {

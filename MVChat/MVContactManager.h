@@ -7,9 +7,19 @@
 //
 
 #import <Foundation/Foundation.h>
+@class MVContactModel;
+
+@protocol MVContactsUpdatesListener <NSObject>
+- (void)handleContactsUpdate;
+@end
 
 @interface MVContactManager : NSObject
+@property (weak, nonatomic) id <MVContactsUpdatesListener> updatesListener;
++ (instancetype)sharedInstance;
+- (void)loadContacts;
+- (NSArray <MVContactModel *> *)getAllContacts;
+
 + (void)startSendingStatusUpdates;
 + (void)startSendingAvatarUpdates;
-+ (NSArray *)getContacts;
+
 @end

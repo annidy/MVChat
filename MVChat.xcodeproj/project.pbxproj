@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CD0503621F27D20700A1C4D2 /* MVContactsListController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0503611F27D20700A1C4D2 /* MVContactsListController.m */; };
+		CD0503661F27D2F300A1C4D2 /* MVContactsListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0503651F27D2F300A1C4D2 /* MVContactsListCell.m */; };
 		CD0550851F0573E50076FB25 /* MVJsonHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0550841F0573E50076FB25 /* MVJsonHelper.m */; };
 		CD05508A1F06E8110076FB25 /* MVDatabaseManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0550891F06E8110076FB25 /* MVDatabaseManager.m */; };
 		CD05508D1F07F67B0076FB25 /* NSObject+Serialization.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05508C1F07F67B0076FB25 /* NSObject+Serialization.m */; };
@@ -37,6 +39,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		CD0503601F27D20700A1C4D2 /* MVContactsListController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVContactsListController.h; sourceTree = "<group>"; };
+		CD0503611F27D20700A1C4D2 /* MVContactsListController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVContactsListController.m; sourceTree = "<group>"; };
+		CD0503641F27D2F300A1C4D2 /* MVContactsListCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVContactsListCell.h; sourceTree = "<group>"; };
+		CD0503651F27D2F300A1C4D2 /* MVContactsListCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVContactsListCell.m; sourceTree = "<group>"; };
 		CD0550831F0573E50076FB25 /* MVJsonHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVJsonHelper.h; sourceTree = "<group>"; };
 		CD0550841F0573E50076FB25 /* MVJsonHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVJsonHelper.m; sourceTree = "<group>"; };
 		CD0550881F06E8110076FB25 /* MVDatabaseManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVDatabaseManager.h; sourceTree = "<group>"; };
@@ -101,6 +107,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		CD0503631F27D20D00A1C4D2 /* Contacts List */ = {
+			isa = PBXGroup;
+			children = (
+				CD0503601F27D20700A1C4D2 /* MVContactsListController.h */,
+				CD0503611F27D20700A1C4D2 /* MVContactsListController.m */,
+			);
+			name = "Contacts List";
+			sourceTree = "<group>";
+		};
+		CD0503671F27D2FB00A1C4D2 /* Contacts List */ = {
+			isa = PBXGroup;
+			children = (
+				CD0503641F27D2F300A1C4D2 /* MVContactsListCell.h */,
+				CD0503651F27D2F300A1C4D2 /* MVContactsListCell.m */,
+			);
+			name = "Contacts List";
+			sourceTree = "<group>";
+		};
 		CD0550911F0938DD0076FB25 /* Text generators */ = {
 			isa = PBXGroup;
 			children = (
@@ -182,13 +206,13 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		CDB89D3B1F2242E10024BFDB /* Chats list */ = {
+		CDB89D3B1F2242E10024BFDB /* Chats List */ = {
 			isa = PBXGroup;
 			children = (
 				CDB89D381F2242DB0024BFDB /* MVChatsListCell.h */,
 				CDB89D391F2242DB0024BFDB /* MVChatsListCell.m */,
 			);
-			name = "Chats list";
+			name = "Chats List";
 			sourceTree = "<group>";
 		};
 		CDEA5CBD1EC746AF004C7433 /* Managers */ = {
@@ -254,8 +278,9 @@
 		CDF479B81EB68DB4003B3C8E /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				CDEA5CBF1EC746C6004C7433 /* Chat */,
+				CD0503631F27D20D00A1C4D2 /* Contacts List */,
 				CDEA5CC01EC746D0004C7433 /* Chats List */,
+				CDEA5CBF1EC746C6004C7433 /* Chat */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -272,8 +297,9 @@
 		CDF479C61EB6993F003B3C8E /* View */ = {
 			isa = PBXGroup;
 			children = (
+				CD0503671F27D2FB00A1C4D2 /* Contacts List */,
+				CDB89D3B1F2242E10024BFDB /* Chats List */,
 				CDEA5CC11EC746E6004C7433 /* Chat */,
-				CDB89D3B1F2242E10024BFDB /* Chats list */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -354,11 +380,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD28B3621EB6A63300BFFCAA /* MVMessageModel.m in Sources */,
+				CD0503621F27D20700A1C4D2 /* MVContactsListController.m in Sources */,
 				CD05508A1F06E8110076FB25 /* MVDatabaseManager.m in Sources */,
 				CDF479C51EB6993A003B3C8E /* MVMessageCell.m in Sources */,
 				CD28B34A1EB6A5F800BFFCAA /* AppDelegate.m in Sources */,
 				CDAB09871E7DE2D800A142DC /* main.m in Sources */,
 				CD28B3961EBCA72E00BFFCAA /* MVContactManager.m in Sources */,
+				CD0503661F27D2F300A1C4D2 /* MVContactsListCell.m in Sources */,
 				CD28B3611EB6A63300BFFCAA /* MVContactModel.m in Sources */,
 				CD28B3601EB6A63300BFFCAA /* MVChatManager.m in Sources */,
 				CD0550901F0938D90076FB25 /* MVNameGenerator.m in Sources */,

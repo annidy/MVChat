@@ -9,23 +9,51 @@
 #import "MVContactManager.h"
 #import "MVContactModel.h"
 #import "MVJsonHelper.h"
+#import "MVDatabaseManager.h"
 
+@interface MVContactManager()
+@property (strong, nonatomic) dispatch_queue_t managerQueue;
+@property (strong, nonatomic) NSArray <MVContactModel *> *contacts;
+
+@end
 @implementation MVContactManager
-+ (NSArray *)getContacts {
-    NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:3];
-    
-    MVContactModel *contact1 = [[MVContactModel alloc] initWithId:@"0" name:@"Seth Davids" iam:NO status:ContactStatusOffline andAvatarName:@"avatar01"];
-    MVContactModel *contact2 = [[MVContactModel alloc] initWithId:@"1" name:@"Andrew Stock" iam:NO status:ContactStatusDoNotDisturb andAvatarName:@"avatar02"];
-    MVContactModel *contact3 = [[MVContactModel alloc] initWithId:@"2" name:@"Matt Daniels" iam:YES status:ContactStatusOnline andAvatarName:@"avatar03"];
-    
-    [arr addObject:contact1];
-    [arr addObject:contact2];
-    [arr addObject:contact3];
 
+
++ (instancetype)sharedInstance {
+    static dispatch_once_t onceToken;
+    static MVContactManager *instance;
+    dispatch_once(&onceToken, ^{
+        instance = [MVContactManager new];
+    });
     
-    
-    return [arr copy];
+    return instance;
 }
+
+- (instancetype)init {
+    if (self = [super init]) {
+        _managerQueue = dispatch_queue_create("com.markvasiv.contactsManager", DISPATCH_QUEUE_SERIAL);
+        _contacts = [NSArray new];
+    }
+    
+    return self;
+}
+
+- (void)loadContacts {
+    [[MVDatabaseManager sharedInstance] allContacts:^(NSArray<MVContactModel *> *allContacts) {
+        @synchronized (self.contacts) {
+            self.contacts = allContacts;
+        }
+        [self.updatesListener handleContactsUpdate];
+    }];
+}
+
+- (NSArray <MVContactModel *> *)getAllContacts {
+    @synchronized (self.contacts) {
+        return self.contacts;
+    }
+}
+
+//Legacy
 
 + (void)startSendingStatusUpdates {
     NSNotification *status = [[NSNotification alloc] initWithName:@"ContactStatusUpdate" object:nil userInfo:@{@"Id" : [self getRandomContactId], @"Status" : @([self getRandomStatus])}];
