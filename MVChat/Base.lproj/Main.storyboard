@@ -122,7 +122,7 @@
         <!--Chats-->
         <scene sceneID="eYF-01-euX">
             <objects>
-                <viewController automaticallyAdjustsScrollViewInsets="NO" id="Oy1-wc-JZB" customClass="MVChatsListViewController" sceneMemberID="viewController">
+                <viewController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="Oy1-wc-JZB" customClass="MVChatsListViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3Z-Vf-Brj"/>
                         <viewControllerLayoutGuide type="bottom" id="a13-x5-PJE"/>
@@ -206,7 +206,6 @@
                             <constraint firstItem="jTo-Wi-sBa" firstAttribute="leading" secondItem="lyn-4H-BC1" secondAttribute="leading" id="zWJ-Ta-G20"/>
                         </constraints>
                     </view>
-                    <extendedEdge key="edgesForExtendedLayout" top="YES"/>
                     <navigationItem key="navigationItem" title="Chats" id="ve7-dG-Hul"/>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                     <nil key="simulatedBottomBarMetrics"/>

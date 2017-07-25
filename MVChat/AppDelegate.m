@@ -10,7 +10,7 @@
 #import "MVRandomGenerator.h"
 #import "MVChatManager.h"
 #import "MVContactManager.h"
-//#import "MVDatabaseManager.h"
+#import "MVDatabaseManager.h"
 
 
 @interface AppDelegate () <AppListener>

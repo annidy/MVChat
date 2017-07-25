@@ -30,6 +30,7 @@
     self.chatsList.delegate = self;
     self.chatsList.dataSource = self;
     self.chatsList.tableFooterView = [UIView new];
+    self.tabBarController.view.backgroundColor = [UIColor whiteColor];
 }
 
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
