@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="yHU-g6-bwg">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="yHU-g6-bwg">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -63,36 +63,16 @@
                                                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <view tag="104" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lNp-Xz-8ZP">
-                                                    <rect key="frame" x="8" y="16" width="48" height="48"/>
-                                                    <subviews>
-                                                        <label opaque="NO" userInteractionEnabled="NO" tag="105" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TPi-NQ-gMH">
-                                                            <rect key="frame" x="1" y="12" width="46.5" height="23"/>
-                                                            <fontDescription key="fontDescription" type="system" pointSize="19"/>
-                                                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                            <nil key="highlightedColor"/>
-                                                        </label>
-                                                    </subviews>
-                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                    <constraints>
-                                                        <constraint firstItem="TPi-NQ-gMH" firstAttribute="centerX" secondItem="lNp-Xz-8ZP" secondAttribute="centerX" id="2Ur-ot-eLT"/>
-                                                        <constraint firstItem="TPi-NQ-gMH" firstAttribute="centerY" secondItem="lNp-Xz-8ZP" secondAttribute="centerY" id="gZM-x6-U1c"/>
-                                                    </constraints>
-                                                </view>
                                             </subviews>
                                             <constraints>
                                                 <constraint firstItem="puB-cX-xqd" firstAttribute="centerY" secondItem="MjB-Pp-Ebt" secondAttribute="centerY" id="1gB-oX-n4l"/>
                                                 <constraint firstItem="sPm-Vv-9zu" firstAttribute="top" secondItem="IZd-ng-uV2" secondAttribute="top" id="41x-B0-aY6"/>
-                                                <constraint firstItem="lNp-Xz-8ZP" firstAttribute="top" secondItem="puB-cX-xqd" secondAttribute="top" id="7VB-nE-hGb"/>
-                                                <constraint firstItem="lNp-Xz-8ZP" firstAttribute="bottom" secondItem="puB-cX-xqd" secondAttribute="bottom" id="AUH-4y-xG5"/>
                                                 <constraint firstAttribute="bottomMargin" secondItem="66e-In-UtG" secondAttribute="bottom" id="B1l-zF-VVj"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="66e-In-UtG" secondAttribute="trailing" id="BcS-9a-JL5"/>
                                                 <constraint firstItem="sPm-Vv-9zu" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="IZd-ng-uV2" secondAttribute="trailing" constant="15" id="G7t-7w-dPI"/>
                                                 <constraint firstItem="IZd-ng-uV2" firstAttribute="leading" secondItem="puB-cX-xqd" secondAttribute="trailing" constant="10" id="HWF-78-nnO"/>
                                                 <constraint firstItem="66e-In-UtG" firstAttribute="top" secondItem="IZd-ng-uV2" secondAttribute="bottom" id="JZV-eu-8Rq"/>
                                                 <constraint firstItem="66e-In-UtG" firstAttribute="leading" secondItem="IZd-ng-uV2" secondAttribute="leading" id="eZG-gy-nZo"/>
-                                                <constraint firstItem="lNp-Xz-8ZP" firstAttribute="leading" secondItem="puB-cX-xqd" secondAttribute="leading" id="gwJ-3P-3Po"/>
-                                                <constraint firstItem="lNp-Xz-8ZP" firstAttribute="trailing" secondItem="puB-cX-xqd" secondAttribute="trailing" id="hyq-WV-1ND"/>
                                                 <constraint firstItem="IZd-ng-uV2" firstAttribute="top" secondItem="puB-cX-xqd" secondAttribute="top" id="iMg-Tw-VWR"/>
                                                 <constraint firstItem="puB-cX-xqd" firstAttribute="leading" secondItem="MjB-Pp-Ebt" secondAttribute="leadingMargin" id="l1z-RC-149"/>
                                                 <constraint firstItem="sPm-Vv-9zu" firstAttribute="trailing" secondItem="MjB-Pp-Ebt" secondAttribute="trailingMargin" id="yyD-FZ-C1N"/>
@@ -100,9 +80,7 @@
                                         </tableViewCellContentView>
                                         <inset key="separatorInset" minX="66" minY="0.0" maxX="0.0" maxY="0.0"/>
                                         <connections>
-                                            <outlet property="avatarBackgroundView" destination="lNp-Xz-8ZP" id="FGH-Od-Fko"/>
                                             <outlet property="avatarImageView" destination="puB-cX-xqd" id="iFu-q1-k7Q"/>
-                                            <outlet property="avatarInitialsLabel" destination="TPi-NQ-gMH" id="36Z-Ja-vTm"/>
                                             <outlet property="dateLabel" destination="sPm-Vv-9zu" id="7dn-fv-jYB"/>
                                             <outlet property="messageLabel" destination="66e-In-UtG" id="PAf-tp-EpI"/>
                                             <outlet property="titleLabel" destination="IZd-ng-uV2" id="Iby-Ap-4jU"/>

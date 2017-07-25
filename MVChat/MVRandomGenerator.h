@@ -31,4 +31,5 @@ typedef enum : NSUInteger {
 
 - (NSUInteger)randomUIntegerWithMin:(NSUInteger)min andMax:(NSUInteger)max;
 - (UIColor *)randomColor;
+- (NSArray <UIColor *> *)randomGradientColors;
 @end

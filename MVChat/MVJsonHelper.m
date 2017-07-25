@@ -17,7 +17,11 @@
 }
 
 + (NSString *)pathToFile:(NSString *)name {
-    return [[[self documentsPath] stringByAppendingPathComponent:name] stringByAppendingString:@".json"];
+    return [self pathToFile:name extenssion:@"json"];
+}
+
++ (NSString *)pathToFile:(NSString *)name extenssion:(NSString *)extenssion {
+    return [[[[self documentsPath] stringByAppendingPathComponent:name] stringByAppendingString:@"."]stringByAppendingString:extenssion];
 }
 
 + (NSArray *)loadJsonFromFileWithName:(NSString *)name {
@@ -64,4 +68,15 @@
     return [data writeToFile:path options:NSDataWritingAtomic error:&error];
 }
 
++ (BOOL)writeData:(NSData *)data toFileWithName:(NSString *)name extenssion:(NSString *)extenssion {
+    NSString *path = [self pathToFile:name extenssion:extenssion];
+    NSError *error;
+    
+    return [data writeToFile:path options:NSDataWritingAtomic error:&error];
+}
+
++ (NSData *)dataFromFileWithName:(NSString *)name extenssion:(NSString *)extenssion {
+    NSString *path = [self pathToFile:name extenssion:extenssion];
+    return [[NSFileManager defaultManager] contentsAtPath:path];
+}
 @end

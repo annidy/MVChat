@@ -14,4 +14,6 @@
 + (NSArray *)parseEnitiesWithClass:(Class)class fromJson:(NSArray *)jsonArray;
 + (NSData *)parseArrayToJson:(NSArray *)array;
 + (BOOL)writeData:(NSData *)data toFileWithName:(NSString *)name;
++ (BOOL)writeData:(NSData *)data toFileWithName:(NSString *)name extenssion:(NSString *)extenssion;
++ (NSData *)dataFromFileWithName:(NSString *)name extenssion:(NSString *)extenssion;
 @end

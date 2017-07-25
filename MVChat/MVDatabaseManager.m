@@ -12,6 +12,10 @@
 #import "MVMessageModel.h"
 #import "MVJsonHelper.h"
 #import "MVRandomGenerator.h"
+#import <UIKit/UIKit.h>
+
+#import <CoreImage/CoreImage.h>
+#import <CoreText/CoreText.h>
 
 static NSString *contactsFile = @"contacts";
 static NSString *chatsFile = @"chats";
@@ -280,8 +284,12 @@ static MVDatabaseManager *instance;
         chat.lastUpdateDate = [[messages lastObject] sendDate];
     }
     
-    [self insertChats:[mutableChats copy] withCompletion:nil];
+    [self insertChats:[mutableChats copy] withCompletion:^(BOOL success) {
+        [self generateImagesForChats:[self allChatsSync]];
+    }];
     [self insertMessages:[allMessages copy] withCompletion:nil];
+    
+
 }
 
 - (NSArray <MVMessageModel *> *)sortMessages:(NSArray<MVMessageModel *> *)messages {
@@ -297,6 +305,73 @@ static MVDatabaseManager *instance;
             return NSOrderedAscending;
         }
     }];
+}
+
+- (void)generateImagesForChats:(NSArray <MVChatModel *> *)chats {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        for (MVChatModel *chat in chats) {
+            NSString *letter = [[chat.title substringToIndex:1] uppercaseString];
+            UIImage *image = [self generateGradientImageForLetter:letter];
+            [MVJsonHelper writeData:UIImagePNGRepresentation(image) toFileWithName:[@"chat" stringByAppendingString:chat.id] extenssion:@"png"];
+        }
+    });
+}
+
+//TODO: release
+//TODO: move somewhere
+//TODO: generate signal??
+- (UIImage *)generateGradientImageForLetter:(NSString *)letter {
+    CGFloat imageScale = (CGFloat)1.0;
+    CGFloat width = (CGFloat)180.0;
+    CGFloat height = (CGFloat)180.0;
+    
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    CGContextRef context = CGBitmapContextCreate(NULL, width * imageScale, height * imageScale, 8, 0, colorSpace, kCGImageAlphaPremultipliedLast);
+    
+    NSArray <UIColor *> *uiColors = [[MVRandomGenerator sharedInstance] randomGradientColors];
+    NSArray *colors = @[(__bridge id)uiColors[0].CGColor, (__bridge id)uiColors[1].CGColor];
+    
+    
+    CGFloat locations[] = {0.0, 0.7};
+    
+    CGGradientRef gradient = CGGradientCreateWithColors(colorSpace, (__bridge CFArrayRef)colors, locations);
+    
+    CGColorSpaceRelease(colorSpace);
+    
+    CGPoint startPoint = CGPointZero;
+    CGPoint endPoint = CGPointMake(180, 180);
+    CGContextDrawLinearGradient(context, gradient, startPoint, endPoint, 0);
+    
+    CGGradientRelease(gradient);
+    
+    CTFontRef font = CTFontCreateWithName((CFStringRef)@"HelveticaNeue-Light", 100, NULL);
+    CFStringRef string = (__bridge CFStringRef)letter;
+    
+    CFStringRef keys[] = {kCTFontAttributeName, kCTForegroundColorAttributeName};
+    CFTypeRef values[] = {font, [UIColor whiteColor].CGColor};
+    
+    CFDictionaryRef attributes = CFDictionaryCreate(kCFAllocatorDefault, (const void**)&keys, (const void**)&values, sizeof(keys) / sizeof(keys[0]), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+    
+    CFAttributedStringRef attrString = CFAttributedStringCreate(kCFAllocatorDefault, string, attributes);
+    
+    CTLineRef line = CTLineCreateWithAttributedString(attrString);
+    
+    CGRect bounds = CTLineGetBoundsWithOptions(line, kCTLineBoundsUseGlyphPathBounds);
+    
+    CGContextSetTextPosition(context, (180 - bounds.size.width)/2 - bounds.origin.x, (180 - bounds.size.height)/2 - bounds.origin.y);
+    CTLineDraw(line, context);
+    
+    
+    CGImageRef cgImage = CGBitmapContextCreateImage(context);
+    
+    CGContextRelease(context);
+    CFRelease(font);
+    CFRelease(string);
+    CFRelease(attributes);
+    CFRelease(attrString);
+    CFRelease(line);
+    
+    return [UIImage imageWithCGImage:cgImage];
 }
 
 @end

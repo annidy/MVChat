@@ -10,6 +10,7 @@
 #import "MVChatModel.h"
 #import "MVMessageModel.h"
 #import "MVRandomGenerator.h"
+#import "MVJsonHelper.h"
 
 static NSDateFormatter *dateFormatter;
 
@@ -18,8 +19,6 @@ static NSDateFormatter *dateFormatter;
 @property (strong, nonatomic) IBOutlet UILabel *messageLabel;
 @property (strong, nonatomic) IBOutlet UILabel *dateLabel;
 @property (strong, nonatomic) IBOutlet UIImageView *avatarImageView;
-@property (strong, nonatomic) IBOutlet UIView *avatarBackgroundView;
-@property (strong, nonatomic) IBOutlet UILabel *avatarInitialsLabel;
 
 @end
 
@@ -43,43 +42,18 @@ static NSDateFormatter *dateFormatter;
         avatar = [UIImage imageNamed:chat.avatarName];
     }
     
-    if (avatar) {
-        self.avatarImageView.image = avatar;
-        [self setAvatarImageVisible:YES];
-    } else {
-        self.avatarInitialsLabel.text = [[chat.title substringToIndex:1] uppercaseString];
-        
-        BOOL hadGradient = NO;
-        CAGradientLayer *gradient;
-        if ([self.avatarBackgroundView.layer.sublayers[0] isKindOfClass:[CAGradientLayer class]]) {
-            hadGradient = YES;
-            gradient = (CAGradientLayer *)self.avatarBackgroundView.layer.sublayers[0];
-        } else {
-            gradient = [CAGradientLayer layer];
-            gradient.frame = self.avatarBackgroundView.bounds;
-        }
-        
-        gradient.colors = @[(id)[[MVRandomGenerator sharedInstance] randomColor].CGColor, (id)[[MVRandomGenerator sharedInstance] randomColor].CGColor];
-        
-        if (!hadGradient) {
-            [self.avatarBackgroundView.layer insertSublayer:gradient atIndex:0];
-        }
-        
-        [self setAvatarImageVisible:NO];
+    if (!avatar) {
+        NSData *imgData = [MVJsonHelper dataFromFileWithName:[@"chat" stringByAppendingString:chat.id] extenssion:@"png"];
+        avatar = [UIImage imageWithData:imgData];
     }
-    
+
+    self.avatarImageView.image = avatar;
 }
 
-- (void)setAvatarImageVisible:(BOOL)visible {
-    self.avatarImageView.alpha = visible;
-    self.avatarBackgroundView.alpha = !visible;
-    self.avatarInitialsLabel.alpha = !visible;
-}
 
 - (void)awakeFromNib {
     [super awakeFromNib];
-    self.avatarBackgroundView.layer.cornerRadius = 24;
-    self.avatarBackgroundView.layer.masksToBounds = YES;
+    
     self.avatarImageView.layer.cornerRadius = 24;
     self.avatarImageView.layer.masksToBounds = YES;
 }
