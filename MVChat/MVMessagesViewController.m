@@ -162,7 +162,6 @@
 
 #pragma mark - Data handling
 - (void)handleNewMessages:(NSArray <MVMessageModel *> *)models {
-    NSLog(@"Number: %d", models.count);
     NSMutableArray *sections = [self.sections mutableCopy];
     NSMutableDictionary *messages = [self.messages mutableCopy];
     

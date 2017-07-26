@@ -8,6 +8,7 @@
 
 #import "MVContactsListCell.h"
 #import "MVContactModel.h"
+#import "MVJsonHelper.h"
 
 @interface MVContactsListCell()
 @property (strong, nonatomic) IBOutlet UIImageView *avatarImageView;
@@ -25,12 +26,13 @@
     }
     
     if (!avatar) {
-        //load gradient avatar (need to generate first)
-    } else {
-        self.avatarImageView.image = avatar;
+        NSData *imgData = [MVJsonHelper dataFromFileWithName:[@"contact" stringByAppendingString:contact.id] extenssion:@"png"];
+        avatar = [UIImage imageWithData:imgData];
     }
-
+    
+    self.avatarImageView.image = avatar;
 }
+
 - (void)awakeFromNib {
     [super awakeFromNib];
     self.avatarImageView.layer.cornerRadius = 24;

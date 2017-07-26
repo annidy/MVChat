@@ -102,7 +102,7 @@ static MVRandomGenerator *singleton;
 }
 
 - (MVContactModel *)randomContact {
-    return [[MVContactModel alloc] initWithId:nil name:[self randomUserName] iam:NO status:ContactStatusOffline andAvatarName:[self randomAvatarName]];
+    return [[MVContactModel alloc] initWithId:nil name:[self randomUserName] iam:NO status:ContactStatusOffline andAvatarName:nil];
 }
 
 - (MVContactModel *)randomContactFromArray:(NSArray *)contacts {

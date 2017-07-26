@@ -16,16 +16,12 @@
     return [[[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject] path];
 }
 
-+ (NSString *)pathToFile:(NSString *)name {
-    return [self pathToFile:name extenssion:@"json"];
-}
-
 + (NSString *)pathToFile:(NSString *)name extenssion:(NSString *)extenssion {
     return [[[[self documentsPath] stringByAppendingPathComponent:name] stringByAppendingString:@"."]stringByAppendingString:extenssion];
 }
 
 + (NSArray *)loadJsonFromFileWithName:(NSString *)name {
-    NSString *path = [self pathToFile:name];
+    NSString *path = [self pathToFile:name extenssion:@"json"];
     NSData *fileData = [[NSFileManager defaultManager] contentsAtPath:path];
     
     NSArray *arr = nil;
@@ -59,13 +55,6 @@
     }
     
     return [NSJSONSerialization dataWithJSONObject:dictArray options:NSJSONWritingPrettyPrinted error:&error];
-}
-
-+ (BOOL)writeData:(NSData *)data toFileWithName:(NSString *)name {
-    NSString *path = [self pathToFile:name];
-    NSError *error;
-    
-    return [data writeToFile:path options:NSDataWritingAtomic error:&error];
 }
 
 + (BOOL)writeData:(NSData *)data toFileWithName:(NSString *)name extenssion:(NSString *)extenssion {

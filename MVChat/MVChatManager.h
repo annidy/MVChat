@@ -11,6 +11,7 @@
 @class MVMessageModel;
 @class MVMessageUpdateModel;
 @class MVChatModel;
+@class MVContactModel;
 
 typedef enum : NSUInteger {
     MessageUpdatePositionStart,
@@ -49,4 +50,5 @@ static NSUInteger MVMessagesPageSize = 1000;
 - (void)loadAllChats;
 - (void)messagesPage:(NSUInteger)pageIndex forChatWithId:(NSString *)chatId withCallback:(void (^)(NSArray <MVMessageModel *> *))callback;
 - (NSUInteger)numberOfPagesInChatWithId:(NSString *)chatId;
+- (void)chatWithContact:(MVContactModel *)contact andCompeltion:(void (^)(MVChatModel *))callback;
 @end

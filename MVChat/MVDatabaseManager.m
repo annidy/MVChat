@@ -172,7 +172,7 @@ static MVDatabaseManager *instance;
             self.lastContactId = contact.id;
             [existingContacts addObject:contact];
         }
-        BOOL success = [MVJsonHelper writeData:[MVJsonHelper parseArrayToJson:existingContacts] toFileWithName:contactsFile];
+        BOOL success = [MVJsonHelper writeData:[MVJsonHelper parseArrayToJson:existingContacts] toFileWithName:contactsFile extenssion:@"json"];
         if (completion) {
             completion(success);
         }
@@ -190,7 +190,7 @@ static MVDatabaseManager *instance;
             [existingChats addObject:chat];
         }
         
-        BOOL success = [MVJsonHelper writeData:[MVJsonHelper parseArrayToJson:existingChats] toFileWithName:chatsFile];
+        BOOL success = [MVJsonHelper writeData:[MVJsonHelper parseArrayToJson:existingChats] toFileWithName:chatsFile extenssion:@"json"];
         if (completion) {
             completion(success);
         }
@@ -210,7 +210,7 @@ static MVDatabaseManager *instance;
         
         [existingChats replaceObjectAtIndex:index withObject:chatModel];
         
-        BOOL success = [MVJsonHelper writeData:[MVJsonHelper parseArrayToJson:existingChats] toFileWithName:chatsFile];
+        BOOL success = [MVJsonHelper writeData:[MVJsonHelper parseArrayToJson:existingChats] toFileWithName:chatsFile extenssion:@"json"];
         if (completion) {
             completion(success);
         }
@@ -228,7 +228,7 @@ static MVDatabaseManager *instance;
             self.lastMessageId = message.id;
         }
         
-        BOOL success = [MVJsonHelper writeData:[MVJsonHelper parseArrayToJson:existingMessages] toFileWithName:messagesFile];
+        BOOL success = [MVJsonHelper writeData:[MVJsonHelper parseArrayToJson:existingMessages] toFileWithName:messagesFile extenssion:@"json"];
         if (completion) {
             completion(success);
         }
@@ -251,12 +251,20 @@ static MVDatabaseManager *instance;
     NSMutableArray *mutableContacts = [NSMutableArray new];
     NSArray <MVContactModel *> *contacts = [[MVRandomGenerator sharedInstance] generateContacts];
     NSString *lastContactId = self.lastContactId;
+    NSUInteger contactIndex = 1;
     for (MVContactModel *contact in contacts) {
+        if (contactIndex < 6) {
+            contact.avatarName = [NSString stringWithFormat:@"avatar0%lu", (unsigned long)contactIndex];
+            contactIndex++;
+        }
+        
         lastContactId = [self incrementId:lastContactId];
         contact.id = lastContactId;
         [mutableContacts addObject:contact];
     }
-    [self insertContacts:[mutableContacts copy] withCompletion:nil];
+    [self insertContacts:[mutableContacts copy] withCompletion:^(BOOL success) {
+        [self generateImagesForContacts:mutableContacts];
+    }];
     
     //Chats
     NSMutableArray *mutableChats = [NSMutableArray new];
@@ -285,7 +293,7 @@ static MVDatabaseManager *instance;
     }
     
     [self insertChats:[mutableChats copy] withCompletion:^(BOOL success) {
-        [self generateImagesForChats:[self allChatsSync]];
+        [self generateImagesForChats:mutableChats];
     }];
     [self insertMessages:[allMessages copy] withCompletion:nil];
     
@@ -316,6 +324,18 @@ static MVDatabaseManager *instance;
         }
     });
 }
+
+- (void)generateImagesForContacts:(NSArray <MVContactModel *> *)contacts {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        for (MVContactModel *contact in contacts) {
+            NSString *letter = [[contact.name substringToIndex:1] uppercaseString];
+            UIImage *image = [self generateGradientImageForLetter:letter];
+            [MVJsonHelper writeData:UIImagePNGRepresentation(image) toFileWithName:[@"contact" stringByAppendingString:contact.id] extenssion:@"png"];
+        }
+    });
+}
+
+
 
 //TODO: release
 //TODO: move somewhere

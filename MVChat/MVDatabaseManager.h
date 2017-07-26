@@ -14,6 +14,10 @@
 @interface MVDatabaseManager : NSObject
 + (instancetype)sharedInstance;
 
+- (NSString *)lastChatId;
+- (NSString *)lastMessageId;
+- (NSString *)incrementId:(NSString *)oldId;
+
 - (void)allContacts:(void (^)(NSArray <MVContactModel *> *))completion;
 - (void)allChats:(void (^)(NSArray <MVChatModel *> *))completion;
 
@@ -30,4 +34,5 @@
 
 - (MVContactModel *)myContact;
 - (void)generateData;
+- (void)generateImagesForChats:(NSArray <MVChatModel *> *)chats;
 @end

@@ -161,14 +161,17 @@ static MVChatManager *sharedManager;
 }
 
 - (void)sendTextMessage:(NSString *)text toChatWithId:(NSString *)chatId{
+    MVDatabaseManager *db = [MVDatabaseManager sharedInstance];
+    
     MVMessageModel *message = [MVMessageModel new];
+    message.id = [db incrementId:db.lastMessageId];
     message.chatId = chatId;
     message.text = text;
     message.direction = MessageDirectionOutgoing;
     message.sendDate = [NSDate new];
-    message.contact = [[MVDatabaseManager sharedInstance] myContact];
+    message.contact = [db myContact];
     
-    [[MVDatabaseManager sharedInstance] insertMessages:@[message] withCompletion:nil];
+    [db insertMessages:@[message] withCompletion:nil];
     
     @synchronized (self.chatsMessages) {
         NSMutableArray *messages = [self.chatsMessages[chatId] mutableCopy];
@@ -188,13 +191,57 @@ static MVChatManager *sharedManager;
         chat.lastMessage = message;
     }
     
-    [[MVDatabaseManager sharedInstance] updateChat:chat withCompletion:nil];
+    [db updateChat:chat withCompletion:nil];
     [self sortChats];
     [self.chatsListener handleChatsUpdate];
 }
 
-- (void)sendMessage:(MVMessageModel *)message {
-    
+- (void)chatWithContact:(MVContactModel *)contact andCompeltion:(void (^)(MVChatModel *))callback {
+    dispatch_async(self.managerQueue, ^{
+        MVChatModel *existingChat;
+        
+        @synchronized (self.chats) {
+            for (MVChatModel *chat in self.chats) {
+                if (chat.participants.count == 2) {
+                    for (MVContactModel *participant in chat.participants) {
+                        if ([participant.id isEqualToString:contact.id]) {
+                            existingChat = chat;
+                            break;
+                        }
+                    }
+                }
+                if (existingChat) {
+                    break;
+                }
+            }
+        }
+        
+        if (!existingChat) {
+            MVDatabaseManager *db = [MVDatabaseManager sharedInstance];
+            existingChat = [[MVChatModel alloc] initWithId:[db incrementId:db.lastChatId] andTitle:contact.name];
+            existingChat.participants = @[db.myContact, contact];
+            existingChat.lastUpdateDate = [NSDate new];
+            
+            if (contact.avatarName) {
+                existingChat.avatarName = contact.avatarName;
+            } else {
+                [db generateImagesForChats:@[existingChat]];
+            }
+            
+            @synchronized (self.chats) {
+                [self.chats insertObject:existingChat atIndex:0];
+            }
+            
+            @synchronized (self.chatsMessages) {
+                [self.chatsMessages setObject:[NSMutableArray new] forKey:existingChat.id];
+            }
+            
+            [db insertChats:@[existingChat] withCompletion:nil];
+        }
+        
+        [self.chatsListener handleChatsUpdate];
+        callback(existingChat);
+    });
 }
 
 - (void)messagesPage:(NSUInteger)pageIndex forChatWithId:(NSString *)chatId withCallback:(void (^)(NSArray <MVMessageModel *> *))callback {
@@ -206,7 +253,7 @@ static MVChatManager *sharedManager;
     messages = [[[messages reverseObjectEnumerator] allObjects] mutableCopy];
     NSArray *pagedMessages;
     
-    if (!messages.count) {
+    if (!messages) {
         [self loadMessagesForChatWithId:chatId withCallback:^(BOOL success) {
             [self messagesPage:pageIndex forChatWithId:chatId withCallback:callback];
         }];
@@ -265,7 +312,7 @@ static MVChatManager *sharedManager;
     @synchronized (self.chats) {
         NSMutableArray *mutableChats = [self.chats mutableCopy];
         [self sortChats:mutableChats];
-        self.chats = [mutableChats copy];
+        self.chats = [mutableChats mutableCopy];
     }
 }
 - (void)sortChats:(NSMutableArray *)chats {

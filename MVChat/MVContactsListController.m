@@ -10,6 +10,8 @@
 #import "MVContactsListCell.h"
 #import "MVContactManager.h"
 #import "MVContactModel.h"
+#import "MVChatManager.h"
+#import "MVChatViewController.h"
 
 @interface MVContactsListController () <UITableViewDelegate, UITableViewDataSource, MVContactsUpdatesListener>
 @property (strong, nonatomic) IBOutlet UITableView *contactsList;
@@ -79,8 +81,26 @@
     return self.sections[section];
 }
 
--(NSArray<NSString *> *)sectionIndexTitlesForTableView:(UITableView *)tableView {
+- (NSArray<NSString *> *)sectionIndexTitlesForTableView:(UITableView *)tableView {
     return self.sections;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [self.contactsList deselectRowAtIndexPath:indexPath animated:YES];
+    
+    MVContactModel *contact = self.contacts[self.sections[indexPath.section]][indexPath.row];
+    [[MVChatManager sharedInstance] chatWithContact:contact andCompeltion:^(MVChatModel *chat) {
+       dispatch_async(dispatch_get_main_queue(), ^{
+           [self showChatViewWithChat:chat];
+       });
+    }];
+}
+
+- (void)showChatViewWithChat:(MVChatModel *)chat {
+    UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    MVChatViewController *chatVC = [sb instantiateViewControllerWithIdentifier:@"ChatViewController"];
+    chatVC.chat = chat;
+    [self.navigationController pushViewController:chatVC animated:YES];
 }
 
 

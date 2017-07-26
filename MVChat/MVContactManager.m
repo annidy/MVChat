@@ -40,9 +40,13 @@
 
 - (void)loadContacts {
     [[MVDatabaseManager sharedInstance] allContacts:^(NSArray<MVContactModel *> *allContacts) {
+        NSMutableArray *sortedContacts = [allContacts mutableCopy];
+        [self sortContacts:sortedContacts];
+        
         @synchronized (self.contacts) {
-            self.contacts = allContacts;
+            self.contacts = [sortedContacts copy];
         }
+        
         [self.updatesListener handleContactsUpdate];
     }];
 }
@@ -53,8 +57,16 @@
     }
 }
 
-//Legacy
+- (void)sortContacts:(NSMutableArray *)contacts {
+    [contacts sortUsingComparator:^NSComparisonResult(MVContactModel *contact1, MVContactModel *contact2) {
+        NSString *first = [[contact1.name substringToIndex:1] uppercaseString];
+        NSString *second = [[contact2.name substringToIndex:1] uppercaseString];
+        
+        return [first compare:second];
+    }];
+}
 
+//Legacy
 + (void)startSendingStatusUpdates {
     NSNotification *status = [[NSNotification alloc] initWithName:@"ContactStatusUpdate" object:nil userInfo:@{@"Id" : [self getRandomContactId], @"Status" : @([self getRandomStatus])}];
     [[NSNotificationCenter defaultCenter] postNotification:status];
