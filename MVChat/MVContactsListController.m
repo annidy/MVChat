@@ -30,6 +30,7 @@
     
     [self mapWithSections:[[MVContactManager sharedInstance] getAllContacts]];
     [MVContactManager sharedInstance].updatesListener = self;
+    self.tabBarController.view.backgroundColor = [UIColor whiteColor];
 }
 
 - (void)handleContactsUpdate {

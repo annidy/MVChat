@@ -14,7 +14,7 @@
         <scene sceneID="hMa-n5-X1J">
             <objects>
                 <navigationController id="oI9-uL-VZW" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Contacts" id="ylJ-Ho-tRP"/>
+                    <tabBarItem key="tabBarItem" title="Contacts" image="iconContacts" selectedImage="iconContactsSelect" id="ylJ-Ho-tRP"/>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="7uf-4Y-hNx">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -221,7 +221,7 @@
         <scene sceneID="fyC-sa-W9G">
             <objects>
                 <navigationController id="yHU-g6-bwg" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Chats" id="g5N-k6-n4F"/>
+                    <tabBarItem key="tabBarItem" title="Chats" image="iconChats" selectedImage="iconChatsSelect" id="g5N-k6-n4F"/>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="oUs-IK-DDy">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -375,4 +375,10 @@
             <point key="canvasLocation" x="58" y="75"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="iconChats" width="29" height="25"/>
+        <image name="iconChatsSelect" width="31" height="26"/>
+        <image name="iconContacts" width="24" height="23"/>
+        <image name="iconContactsSelect" width="24" height="23"/>
+    </resources>
 </document>
