@@ -83,10 +83,6 @@
     return self.sections[section];
 }
 
-- (NSArray<NSString *> *)sectionIndexTitlesForTableView:(UITableView *)tableView {
-    return self.sections;
-}
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [self.contactsList deselectRowAtIndexPath:indexPath animated:YES];
     
