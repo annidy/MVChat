@@ -29,6 +29,7 @@
     [self.contactsList setTableFooterView:[UIView new]];
     
     [self mapWithSections:[[MVContactManager sharedInstance] getAllContacts]];
+    [MVContactManager sharedInstance].updatesListener = self;
 }
 
 - (void)handleContactsUpdate {

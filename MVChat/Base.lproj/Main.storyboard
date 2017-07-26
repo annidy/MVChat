@@ -10,11 +10,11 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Item-->
+        <!--Contacts-->
         <scene sceneID="hMa-n5-X1J">
             <objects>
                 <navigationController id="oI9-uL-VZW" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Item" id="ylJ-Ho-tRP"/>
+                    <tabBarItem key="tabBarItem" title="Contacts" id="ylJ-Ho-tRP"/>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="7uf-4Y-hNx">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -111,8 +111,8 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </tabBar>
                     <connections>
-                        <segue destination="yHU-g6-bwg" kind="relationship" relationship="viewControllers" id="eCZ-6e-xhP"/>
                         <segue destination="oI9-uL-VZW" kind="relationship" relationship="viewControllers" id="B5Q-nr-19E"/>
+                        <segue destination="yHU-g6-bwg" kind="relationship" relationship="viewControllers" id="eCZ-6e-xhP"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uhh-Mi-xrb" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -217,11 +217,11 @@
             </objects>
             <point key="canvasLocation" x="-1766" y="107"/>
         </scene>
-        <!--Item-->
+        <!--Chats-->
         <scene sceneID="fyC-sa-W9G">
             <objects>
                 <navigationController id="yHU-g6-bwg" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Item" id="g5N-k6-n4F"/>
+                    <tabBarItem key="tabBarItem" title="Chats" id="g5N-k6-n4F"/>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="oUs-IK-DDy">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
