@@ -12,7 +12,8 @@
 #import "MVRandomGenerator.h"
 #import "MVJsonHelper.h"
 
-static NSDateFormatter *dateFormatter;
+static NSDateFormatter *defaultDateFormatter;
+static NSDateFormatter *todayDateFormatter;
 
 @interface MVChatsListCell ()
 @property (strong, nonatomic) IBOutlet UILabel *titleLabel;
@@ -24,18 +25,38 @@ static NSDateFormatter *dateFormatter;
 
 @implementation MVChatsListCell
 
-- (NSDateFormatter *)dateFormatter {
-    if (!dateFormatter) {
-        dateFormatter = [[NSDateFormatter alloc] init];
-        [dateFormatter setDateStyle:NSDateFormatterShortStyle];
+- (NSDateFormatter *)defaultDateFormatter {
+    if (!defaultDateFormatter) {
+        defaultDateFormatter = [NSDateFormatter new];
+        [defaultDateFormatter setDateStyle:NSDateFormatterShortStyle];
+        [defaultDateFormatter setDoesRelativeDateFormatting:YES];
     }
     
-    return dateFormatter;
+    return defaultDateFormatter;
 }
+
+- (NSDateFormatter *)todayDateFormatter {
+    if (!todayDateFormatter) {
+        todayDateFormatter = [NSDateFormatter new];
+        [todayDateFormatter setDateStyle:NSDateFormatterNoStyle];
+        [todayDateFormatter setTimeStyle:NSDateFormatterShortStyle];
+        [todayDateFormatter setDoesRelativeDateFormatting:YES];
+    }
+    
+    return todayDateFormatter;
+}
+
+
 - (void)fillWithChat:(MVChatModel *)chat {
     self.titleLabel.text = chat.title;
     self.messageLabel.text = chat.lastMessage.text;
-    self.dateLabel.text = [self.dateFormatter stringFromDate:chat.lastUpdateDate];
+    NSDateFormatter *formatter;
+    if ([[NSCalendar currentCalendar] isDateInToday:chat.lastUpdateDate]) {
+        formatter = self.todayDateFormatter;
+    } else {
+        formatter = self.defaultDateFormatter;
+    }
+    self.dateLabel.text = [formatter stringFromDate:chat.lastUpdateDate];
     
     UIImage *avatar;
     if (chat.avatarName && chat.avatarName.length) {
