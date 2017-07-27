@@ -27,10 +27,10 @@
     [self.contactsList setDelegate:self];
     [self.contactsList setDataSource:self];
     [self.contactsList setTableFooterView:[UIView new]];
+    self.contactsList.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
     
     [self mapWithSections:[[MVContactManager sharedInstance] getAllContacts]];
     [MVContactManager sharedInstance].updatesListener = self;
-    self.tabBarController.view.backgroundColor = [UIColor whiteColor];
 }
 
 #pragma mark - Data Handling

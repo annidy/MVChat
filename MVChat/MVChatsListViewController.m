@@ -33,7 +33,7 @@
     self.chatsList.delegate = self;
     self.chatsList.dataSource = self;
     self.chatsList.tableFooterView = [UIView new];
-    self.tabBarController.view.backgroundColor = [UIColor whiteColor];
+    self.chatsList.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
     
     self.searchResultsController = [MVChatsListSearchTableViewController loadFromStoryboard];
     self.searchResultsController.tableView.delegate = self;

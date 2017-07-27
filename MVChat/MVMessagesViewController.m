@@ -60,6 +60,7 @@
     self.messagesTableView.tableFooterView = [UIView new];
     self.messagesTableView.delegate = self;
     self.messagesTableView.dataSource = self;
+    self.messagesTableView.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
     
     //self.messageModels = [[MVChatManager sharedInstance] messagesForChatWithId:self.chatId];
     
@@ -135,8 +136,8 @@
     
     UIEdgeInsets tableViewInsets = self.messagesTableView.contentInset;
     CGFloat inset = self.messagesTableView.frame.size.height - self.messagesTableView.contentSize.height;
-    if (inset < 0) {
-        inset = 0;
+    if (inset < 64) {
+        inset = 64;
     }
     if (inset == tableViewInsets.top) {
         return;

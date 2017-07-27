@@ -18,6 +18,8 @@
 		CD0550971F0939E60076FB25 /* title.csv in Resources */ = {isa = PBXBuildFile; fileRef = CD0550941F0939E60076FB25 /* title.csv */; };
 		CD05509A1F0951B70076FB25 /* MVTextGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0550991F0951B70076FB25 /* MVTextGenerator.m */; };
 		CD05F6841F2A631500721421 /* MVChatsListSearchTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05F6831F2A631500721421 /* MVChatsListSearchTableViewController.m */; };
+		CD05F6871F2A8B9200721421 /* MVNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05F6861F2A8B9200721421 /* MVNavigationController.m */; };
+		CD05F68A1F2A8BC900721421 /* MVTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05F6891F2A8BC900721421 /* MVTabBarController.m */; };
 		CD2048A61EC4F17C00EDDFA8 /* MVChatModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD2048A51EC4F17C00EDDFA8 /* MVChatModel.m */; };
 		CD28B34A1EB6A5F800BFFCAA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD28B3491EB6A5F800BFFCAA /* AppDelegate.m */; };
 		CD28B34F1EB6A61000BFFCAA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CD28B34B1EB6A61000BFFCAA /* LaunchScreen.storyboard */; };
@@ -59,6 +61,10 @@
 		CD0550991F0951B70076FB25 /* MVTextGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVTextGenerator.m; sourceTree = "<group>"; };
 		CD05F6821F2A631500721421 /* MVChatsListSearchTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVChatsListSearchTableViewController.h; sourceTree = "<group>"; };
 		CD05F6831F2A631500721421 /* MVChatsListSearchTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVChatsListSearchTableViewController.m; sourceTree = "<group>"; };
+		CD05F6851F2A8B9200721421 /* MVNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVNavigationController.h; sourceTree = "<group>"; };
+		CD05F6861F2A8B9200721421 /* MVNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVNavigationController.m; sourceTree = "<group>"; };
+		CD05F6881F2A8BC900721421 /* MVTabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVTabBarController.h; sourceTree = "<group>"; };
+		CD05F6891F2A8BC900721421 /* MVTabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVTabBarController.m; sourceTree = "<group>"; };
 		CD2048A41EC4F17C00EDDFA8 /* MVChatModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVChatModel.h; sourceTree = "<group>"; };
 		CD2048A51EC4F17C00EDDFA8 /* MVChatModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVChatModel.m; sourceTree = "<group>"; };
 		CD28B3481EB6A5F800BFFCAA /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -286,6 +292,10 @@
 				CD0503631F27D20D00A1C4D2 /* Contacts List */,
 				CDEA5CC01EC746D0004C7433 /* Chats List */,
 				CDEA5CBF1EC746C6004C7433 /* Chat */,
+				CD05F6851F2A8B9200721421 /* MVNavigationController.h */,
+				CD05F6861F2A8B9200721421 /* MVNavigationController.m */,
+				CD05F6881F2A8BC900721421 /* MVTabBarController.h */,
+				CD05F6891F2A8BC900721421 /* MVTabBarController.m */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -386,6 +396,7 @@
 			files = (
 				CD28B3621EB6A63300BFFCAA /* MVMessageModel.m in Sources */,
 				CD0503621F27D20700A1C4D2 /* MVContactsListController.m in Sources */,
+				CD05F6871F2A8B9200721421 /* MVNavigationController.m in Sources */,
 				CD05508A1F06E8110076FB25 /* MVDatabaseManager.m in Sources */,
 				CDF479C51EB6993A003B3C8E /* MVMessageCell.m in Sources */,
 				CD28B34A1EB6A5F800BFFCAA /* AppDelegate.m in Sources */,
@@ -399,6 +410,7 @@
 				CDF479AF1EB66C00003B3C8E /* MVChatViewController.m in Sources */,
 				CD05509A1F0951B70076FB25 /* MVTextGenerator.m in Sources */,
 				CD2048A61EC4F17C00EDDFA8 /* MVChatModel.m in Sources */,
+				CD05F68A1F2A8BC900721421 /* MVTabBarController.m in Sources */,
 				CDB89D3A1F2242DB0024BFDB /* MVChatsListCell.m in Sources */,
 				CD05F6841F2A631500721421 /* MVChatsListSearchTableViewController.m in Sources */,
 				CD0550851F0573E50076FB25 /* MVJsonHelper.m in Sources */,
