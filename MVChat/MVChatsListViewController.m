@@ -30,8 +30,6 @@
     [MVChatManager sharedInstance].chatsListener = self;
     self.chats = [[MVChatManager sharedInstance] chatsList];
     
-    self.chatsList.delegate = self;
-    self.chatsList.dataSource = self;
     self.chatsList.tableFooterView = [UIView new];
     self.chatsList.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
     
@@ -39,8 +37,12 @@
     self.searchResultsController.tableView.delegate = self;
     self.searchController = [[UISearchController alloc] initWithSearchResultsController:self.searchResultsController];
     self.searchController.searchResultsUpdater = self;
+    self.searchController.searchBar.searchBarStyle = UISearchBarStyleMinimal;
     self.chatsList.tableHeaderView = self.searchController.searchBar;
     self.definesPresentationContext = YES;
+    
+    self.chatsList.delegate = self;
+    self.chatsList.dataSource = self;
 }
 
 #pragma mark - Data handling
@@ -74,9 +76,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
     MVChatModel *selectedChat = (tableView == self.chatsList)? self.chats[indexPath.row] : self.searchResultsController.filteredChats[indexPath.row];
-    
     [self showChatViewWithChat:selectedChat];
 }
 
