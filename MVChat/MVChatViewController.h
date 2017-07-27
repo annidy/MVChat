@@ -11,4 +11,6 @@
 
 @interface MVChatViewController : UIViewController
 @property (strong, nonatomic) MVChatModel *chat;
++ (instancetype)loadFromStoryboard;
++ (instancetype)loadFromStoryboardWithChat:(MVChatModel *)chat;
 @end

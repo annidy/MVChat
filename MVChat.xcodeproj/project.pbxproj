@@ -17,6 +17,7 @@
 		CD0550961F0939E60076FB25 /* syllable.csv in Resources */ = {isa = PBXBuildFile; fileRef = CD0550931F0939E60076FB25 /* syllable.csv */; };
 		CD0550971F0939E60076FB25 /* title.csv in Resources */ = {isa = PBXBuildFile; fileRef = CD0550941F0939E60076FB25 /* title.csv */; };
 		CD05509A1F0951B70076FB25 /* MVTextGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0550991F0951B70076FB25 /* MVTextGenerator.m */; };
+		CD05F6841F2A631500721421 /* MVChatsListSearchTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05F6831F2A631500721421 /* MVChatsListSearchTableViewController.m */; };
 		CD2048A61EC4F17C00EDDFA8 /* MVChatModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD2048A51EC4F17C00EDDFA8 /* MVChatModel.m */; };
 		CD28B34A1EB6A5F800BFFCAA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD28B3491EB6A5F800BFFCAA /* AppDelegate.m */; };
 		CD28B34F1EB6A61000BFFCAA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CD28B34B1EB6A61000BFFCAA /* LaunchScreen.storyboard */; };
@@ -56,6 +57,8 @@
 		CD0550941F0939E60076FB25 /* title.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = title.csv; path = "../../../../Downloads/NameGen-master/title.csv"; sourceTree = "<group>"; };
 		CD0550981F0951B70076FB25 /* MVTextGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVTextGenerator.h; sourceTree = "<group>"; };
 		CD0550991F0951B70076FB25 /* MVTextGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVTextGenerator.m; sourceTree = "<group>"; };
+		CD05F6821F2A631500721421 /* MVChatsListSearchTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVChatsListSearchTableViewController.h; sourceTree = "<group>"; };
+		CD05F6831F2A631500721421 /* MVChatsListSearchTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVChatsListSearchTableViewController.m; sourceTree = "<group>"; };
 		CD2048A41EC4F17C00EDDFA8 /* MVChatModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVChatModel.h; sourceTree = "<group>"; };
 		CD2048A51EC4F17C00EDDFA8 /* MVChatModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVChatModel.m; sourceTree = "<group>"; };
 		CD28B3481EB6A5F800BFFCAA /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -259,6 +262,8 @@
 			children = (
 				CD6C2A4C1EC61A640007BA05 /* MVChatsListViewController.h */,
 				CD6C2A4D1EC61A640007BA05 /* MVChatsListViewController.m */,
+				CD05F6821F2A631500721421 /* MVChatsListSearchTableViewController.h */,
+				CD05F6831F2A631500721421 /* MVChatsListSearchTableViewController.m */,
 			);
 			name = "Chats List";
 			sourceTree = "<group>";
@@ -395,6 +400,7 @@
 				CD05509A1F0951B70076FB25 /* MVTextGenerator.m in Sources */,
 				CD2048A61EC4F17C00EDDFA8 /* MVChatModel.m in Sources */,
 				CDB89D3A1F2242DB0024BFDB /* MVChatsListCell.m in Sources */,
+				CD05F6841F2A631500721421 /* MVChatsListSearchTableViewController.m in Sources */,
 				CD0550851F0573E50076FB25 /* MVJsonHelper.m in Sources */,
 				CD6C2A4E1EC61A640007BA05 /* MVChatsListViewController.m in Sources */,
 				CDF479B71EB68AAF003B3C8E /* MVFooterViewController.m in Sources */,

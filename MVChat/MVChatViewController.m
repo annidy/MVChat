@@ -19,12 +19,33 @@
 @end
 
 @implementation MVChatViewController
+#pragma mark - Initialization
++ (instancetype)loadFromStoryboard {
+    UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    return [sb instantiateViewControllerWithIdentifier:@"ChatViewController"];
+}
+
++ (instancetype)loadFromStoryboardWithChat:(MVChatModel *)chat {
+    MVChatViewController *instance = [self loadFromStoryboard];
+    instance.chat = chat;
+    
+    return instance;
+}
 
 #pragma mark - Lifecycle
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
     self.navigationItem.title = self.chat.title;
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
+    [super viewWillAppear:animated];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
+    [super viewWillDisappear:animated];
 }
 
 #pragma mark - Segues
@@ -37,6 +58,4 @@
         self.FooterController.chatId = self.chat.id;
     }
 }
-
-
 @end

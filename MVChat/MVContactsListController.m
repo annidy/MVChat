@@ -20,7 +20,7 @@
 @end
 
 @implementation MVContactsListController
-
+#pragma mark - View lifecycle
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -33,6 +33,7 @@
     self.tabBarController.view.backgroundColor = [UIColor whiteColor];
 }
 
+#pragma mark - Data Handling
 - (void)handleContactsUpdate {
     dispatch_async(dispatch_get_main_queue(), ^{
         [self mapWithSections:[[MVContactManager sharedInstance] getAllContacts]];
@@ -40,7 +41,6 @@
     });
 }
 
-#pragma mark - Data Handling
 - (void)mapWithSections:(NSArray *)contacts {
     NSMutableArray *sections = [NSMutableArray new];
     NSMutableDictionary *mappedContacts = [NSMutableDictionary new];
@@ -64,7 +64,6 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.contacts[self.sections[section]].count;
-    
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -94,14 +93,9 @@
     }];
 }
 
+#pragma mark - Helpers
 - (void)showChatViewWithChat:(MVChatModel *)chat {
-    UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    MVChatViewController *chatVC = [sb instantiateViewControllerWithIdentifier:@"ChatViewController"];
-    chatVC.chat = chat;
-    [self.navigationController pushViewController:chatVC animated:YES];
+    MVChatViewController *chatVC = [MVChatViewController loadFromStoryboardWithChat:chat];
+    [self.navigationController.navigationController pushViewController:chatVC animated:YES];
 }
-
-
-
-
 @end
