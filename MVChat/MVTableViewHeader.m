@@ -22,6 +22,8 @@
     self.contentView.backgroundColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:0.05];
     UILabel *titleLabel = [UILabel new];
     [titleLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+    titleLabel.textColor = [UIColor darkGrayColor];
+    titleLabel.font = [UIFont systemFontOfSize:12];
     
     [self.contentView addSubview:titleLabel];
     [[titleLabel.leftAnchor constraintEqualToAnchor:self.contentView.leftAnchor constant:10] setActive:YES];
@@ -29,8 +31,6 @@
     [[titleLabel.centerYAnchor constraintEqualToAnchor:self.contentView.centerYAnchor] setActive:YES];
     
     self.titleLabel = titleLabel;
-    self.titleLabel.textColor = [UIColor darkGrayColor];
-    self.titleLabel.font= [UIFont systemFontOfSize:12];
 }
 
 @end
