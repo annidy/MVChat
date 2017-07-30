@@ -13,12 +13,12 @@
 #import "MVChatViewController.h"
 #import "MVMessageModel.h"
 #import "MVChatsListCell.h"
-#import "MVChatsListSearchTableViewController.h"
+#import "MVChatsListSearchViewController.h"
 
-@interface MVChatsListViewController () <UITableViewDelegate, UITableViewDataSource, ChatsUpdatesListener, UISearchResultsUpdating>
+@interface MVChatsListViewController () <UITableViewDelegate, UITableViewDataSource, ChatsUpdatesListener, UISearchResultsUpdating, MVSearchProviderDelegate>
 @property (strong, nonatomic) IBOutlet UITableView *chatsList;
 @property (strong, nonatomic) NSArray <MVChatModel *> *chats;
-@property (strong, nonatomic) MVChatsListSearchTableViewController *searchResultsController;
+@property (strong, nonatomic) MVChatsListSearchViewController *searchResultsController;
 @property (strong, nonatomic) UISearchController *searchController;
 @end
 
@@ -33,10 +33,11 @@
     self.chatsList.tableFooterView = [UIView new];
     self.chatsList.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
     
-    self.searchResultsController = [MVChatsListSearchTableViewController loadFromStoryboard];
-    self.searchResultsController.tableView.delegate = self;
+    self.searchResultsController = [MVChatsListSearchViewController loadFromStoryboardWithTableViewDelegate:self];
+    
     self.searchController = [[UISearchController alloc] initWithSearchResultsController:self.searchResultsController];
     self.searchController.searchResultsUpdater = self;
+    self.searchController.dimsBackgroundDuringPresentation = NO;
     self.searchController.searchBar.searchBarStyle = UISearchBarStyleMinimal;
     self.chatsList.tableHeaderView = self.searchController.searchBar;
     self.definesPresentationContext = YES;
@@ -90,6 +91,15 @@
 - (void)updateSearchResultsForSearchController:(UISearchController *)searchController {
     NSArray *chats = [self filterChatsWithString:searchController.searchBar.text];
     self.searchResultsController.filteredChats = chats;
+    self.searchResultsController.popularChats = [self.chats subarrayWithRange:NSMakeRange(0, self.chats.count>5? 5:self.chats.count)];
+    if (searchController.isActive) {
+        self.searchController.searchResultsController.view.hidden = NO;
+    }
+}
+
+- (void)didSelectCellWithChat:(MVChatModel *)chat {
+    [self showChatViewWithChat:chat];
+    self.searchResultsController.resentSearchChat = chat;
 }
 
 - (NSArray *)filterChatsWithString:(NSString *)string {
