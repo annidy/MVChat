@@ -25,10 +25,12 @@ typedef enum : NSUInteger {
 @interface MVRandomGenerator : NSObject
 @property (weak, nonatomic) id <AppListener> updatesListener;
 +(instancetype)sharedInstance;
+
 - (NSArray <MVContactModel *> *)generateContacts;
 - (NSArray <MVChatModel *> *)generateChatsWithContacts:(NSArray<MVContactModel *> *)contacts;
 - (NSArray <MVMessageModel *> *)generateMessagesForChat:(MVChatModel *)chat;
-
+- (MVMessageModel *)randomIncomingMessageWithChat:(MVChatModel *)chat;
+- (MVMessageModel *)randomMessageWithChat:(MVChatModel *)chat;
 - (NSUInteger)randomUIntegerWithMin:(NSUInteger)min andMax:(NSUInteger)max;
 - (UIColor *)randomColor;
 - (NSArray <UIColor *> *)randomGradientColors;

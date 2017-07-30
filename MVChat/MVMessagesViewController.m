@@ -218,7 +218,9 @@
             [self.messagesTableView insertSections:startIndexSet withRowAnimation:UITableViewRowAnimationNone];
         }
         if (reloadIndexSet.count) {
-            [self.messagesTableView reloadSections:reloadIndexSet withRowAnimation:UITableViewRowAnimationNone];
+            [self.messagesTableView deleteSections:reloadIndexSet withRowAnimation:UITableViewRowAnimationNone];
+            [self.messagesTableView insertSections:reloadIndexSet withRowAnimation:UITableViewRowAnimationNone];
+            //[self.messagesTableView reloadSections:reloadIndexSet withRowAnimation:UITableViewRowAnimationNone];
         }
         [self.messagesTableView endUpdates];
     }];

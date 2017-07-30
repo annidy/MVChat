@@ -36,6 +36,13 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.navigationItem.title = self.chat.title;
+    
+    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"Spawn" style:UIBarButtonItemStylePlain target:self action:@selector(spawnNewMessage)];
+    self.navigationItem.rightBarButtonItem = item;
+}
+
+- (void)spawnNewMessage {
+    [[MVChatManager sharedInstance] generateMessageForChatWithId:self.chat.id];
 }
 
 - (void)viewWillAppear:(BOOL)animated {

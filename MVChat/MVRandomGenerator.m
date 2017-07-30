@@ -133,7 +133,6 @@ static MVRandomGenerator *singleton;
     return [UIColor colorWithRed:(CGFloat)[self randomUIntegerWithMin:0 andMax:255]/255 green:(CGFloat)[self randomUIntegerWithMin:0 andMax:255]/255 blue:(CGFloat)[self randomUIntegerWithMin:0 andMax:255]/255 alpha:1];
 }
 
-
 - (NSArray <UIColor *> *)randomGradientColors {
     NSArray *gradients = @[@"#ff9a9e → #fad0c4", @"#ffecd2 → #fcb69f", @"#ff9a9e → #fecfef", @"#a1c4fd → #c2e9fb", @"#cfd9df → #e2ebf0", @"#f5f7fa → #c3cfe2", @"#667eea → #764ba2", @"#fdfcfb → #e2d1c3", @"#89f7fe → #66a6ff", @"#48c6ef → #6f86d6", @"#feada6 → #f5efef", @"#a3bded → #6991c7", @"#13547a → #80d0c7", @"#ff758c → #ff7eb3", @"#c79081 → #dfa579", @"#96deda → #50c9c3", @"#ee9ca7 → #ffdde1", @"#ffc3a0 → #ffafbd", @"#B7F8DB → #50A7C2"];
     
@@ -154,6 +153,27 @@ static MVRandomGenerator *singleton;
     [scanner setScanLocation:1]; // bypass '#' character
     [scanner scanHexInt:&rgbValue];
     return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
+}
+
+- (MVMessageModel *)randomIncomingMessageWithChat:(MVChatModel *)chat {
+    NSMutableArray *otherParticipants = [chat.participants mutableCopy];
+    MVContactModel *myContact;
+    for (MVContactModel *contact in otherParticipants) {
+        if ([contact.id isEqualToString:[MVDatabaseManager sharedInstance].myContact.id]) {
+            myContact = contact;
+            break;
+        }
+    }
+    
+    if (myContact) {
+        [otherParticipants removeObject:myContact];
+    }
+    
+    return [self randomMessageWithChatId:chat.id sender:[self randomContactFromArray:otherParticipants] afterDate:nil];
+}
+
+- (MVMessageModel *)randomMessageWithChat:(MVChatModel *)chat {
+    return [self randomMessageWithChatId:chat.id sender:[self randomContactFromArray:chat.participants] afterDate:nil];
 }
 
 - (MVMessageModel *)randomMessageWithChatId:(NSString *)chatId sender:(MVContactModel *)sender afterDate:(NSDate *)date {
@@ -203,7 +223,7 @@ static MVRandomGenerator *singleton;
     
     NSDate *lastMessageDate = [[NSDate new] dateByAddingTimeInterval:-10000000];
     for (int i = 0; i < [self randomUIntegerWithMin:minMessagesCount andMax:maxMessagesCount]; i++) {
-        MVMessageModel *message = [self randomMessageWithChatId:chat.id sender:[self randomContactFromArray:chat.participants] afterDate:nil];
+        MVMessageModel *message = [self randomMessageWithChat:chat];
         lastMessageDate = message.sendDate;
         [messages addObject:message];
     }

@@ -45,7 +45,7 @@ static NSUInteger MVMessagesPageSize = 1000;
 - (NSArray <MVChatModel *> *)chatsList;
 - (MVChatModel *)chatWithId:(NSString *)chatId;
 - (NSArray <MVMessageModel *> *)messagesForChatWithId:(NSString *)chatId;
-- (void)sendMessage:(MVMessageModel *)message;
+- (void)generateMessageForChatWithId:(NSString *)chatId;
 - (void)sendTextMessage:(NSString *)text toChatWithId:(NSString *)chatId;
 - (void)loadAllChats;
 - (void)messagesPage:(NSUInteger)pageIndex forChatWithId:(NSString *)chatId withCallback:(void (^)(NSArray <MVMessageModel *> *))callback;

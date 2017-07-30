@@ -10,6 +10,7 @@
 #import "MVMessageModel.h"
 #import "MVChatModel.h"
 #import "MVDatabaseManager.h"
+#import "MVRandomGenerator.h"
 
 @implementation MVMessageUpdateModel
 + (instancetype)updateModelWithMessage:(MVMessageModel *)message andPosition:(MessageUpdatePosition)position {
@@ -160,6 +161,20 @@ static MVChatManager *sharedManager;
     }
 }
 
+- (void)generateMessageForChatWithId:(NSString *)chatId {
+    MVRandomGenerator *random = [MVRandomGenerator sharedInstance];
+    
+    MVChatModel *chat = [self chatWithId:chatId];
+    MVMessageModel *message = [random randomIncomingMessageWithChat:chat];
+    message.sendDate = [NSDate new];
+    
+    MVDatabaseManager *db = [MVDatabaseManager sharedInstance];
+    message.id = [db incrementId:db.lastMessageId];
+    [db insertMessages:@[message] withCompletion:nil];
+    
+    [self handleNewMessages:@[message]];
+}
+
 - (void)sendTextMessage:(NSString *)text toChatWithId:(NSString *)chatId{
     MVDatabaseManager *db = [MVDatabaseManager sharedInstance];
     
@@ -179,7 +194,7 @@ static MVChatManager *sharedManager;
             messages = [NSMutableArray new];
         }
         [messages insertObject:message atIndex:0];
-        [self.chatsMessages setObject:[messages copy] forKey:chatId];
+        [self.chatsMessages setObject:[messages mutableCopy] forKey:chatId];
     }
     
     [self.messagesListener handleNewMessage:[MVMessageUpdateModel updateModelWithMessage:message andPosition:MessageUpdatePositionEnd]];
@@ -315,6 +330,7 @@ static MVChatManager *sharedManager;
         self.chats = [mutableChats mutableCopy];
     }
 }
+
 - (void)sortChats:(NSMutableArray *)chats {
     [chats sortUsingComparator:^NSComparisonResult(MVChatModel *chat1, MVChatModel *chat2) {
         NSTimeInterval first = chat1.lastUpdateDate.timeIntervalSinceReferenceDate;
