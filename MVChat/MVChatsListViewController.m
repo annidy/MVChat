@@ -33,7 +33,7 @@
     self.chatsList.tableFooterView = [UIView new];
     self.chatsList.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
     
-    self.searchResultsController = [MVChatsListSearchViewController loadFromStoryboardWithTableViewDelegate:self];
+    self.searchResultsController = [MVChatsListSearchViewController loadFromStoryboardWithDelegate:self];
     
     self.searchController = [[UISearchController alloc] initWithSearchResultsController:self.searchResultsController];
     self.searchController.searchResultsUpdater = self;
@@ -97,7 +97,8 @@
     }
 }
 
-- (void)didSelectCellWithChat:(MVChatModel *)chat {
+- (void)didSelectCellWithModel:(id)model {
+    MVChatModel *chat = (MVChatModel *)model;
     [self showChatViewWithChat:chat];
     self.searchResultsController.resentSearchChat = chat;
 }

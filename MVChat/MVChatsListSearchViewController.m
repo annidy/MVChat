@@ -30,7 +30,7 @@
     return [sb instantiateViewControllerWithIdentifier:@"MVChatsListSearchViewController"];
 }
 
-+ (instancetype)loadFromStoryboardWithTableViewDelegate:(id <MVSearchProviderDelegate>)delegate {
++ (instancetype)loadFromStoryboardWithDelegate:(id <MVSearchProviderDelegate>)delegate {
     MVChatsListSearchViewController *instance = [self loadFromStoryboard];
     instance.delegate = delegate;
     return instance;
@@ -41,7 +41,6 @@
     [super viewDidLoad];
 
     self.tableView.tableFooterView = [UIView new];
-    self.tableView.delegate = self;
     [self.tableView registerClass:[MVTableViewHeader class] forHeaderFooterViewReuseIdentifier:@"MVTableViewHeader"];
     [self addObserver:self forKeyPath:@"filteredChats" options:NSKeyValueObservingOptionNew context:nil];
     [self addObserver:self forKeyPath:@"resentSearchChat" options:NSKeyValueObservingOptionNew context:nil];
@@ -113,7 +112,7 @@
     if (self.filteredChats.count) {
         header.titleLabel.text = @"CHATS";
     } else {
-        header.titleLabel.text = @"RECENT CHATS";
+        header.titleLabel.text = @"RECENT SEARCH";
     }
     
     return header;
@@ -126,9 +125,9 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if (self.filteredChats.count) {
-        [self.delegate didSelectCellWithChat:self.filteredChats[indexPath.row]];
+        [self.delegate didSelectCellWithModel:self.filteredChats[indexPath.row]];
     } else {
-        [self.delegate didSelectCellWithChat:self.resentSearchChat];
+        [self.delegate didSelectCellWithModel:self.resentSearchChat];
     }
 }
 
@@ -152,7 +151,7 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    [self.delegate didSelectCellWithChat:self.popularChats[indexPath.row]];
+    [self.delegate didSelectCellWithModel:self.popularChats[indexPath.row]];
 }
 
 #pragma mark - Helpers

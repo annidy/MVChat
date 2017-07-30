@@ -7,15 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "MVSearchProviderDelegate.h"
 @class MVChatModel;
 
-@protocol MVSearchProviderDelegate
-- (void)didSelectCellWithChat:(MVChatModel *)chat;
-@end
 @interface MVChatsListSearchViewController : UIViewController
 @property (strong, nonatomic) MVChatModel *resentSearchChat;
 @property (strong, nonatomic) NSArray *popularChats;
 @property (strong, nonatomic) NSArray *filteredChats;
 + (instancetype)loadFromStoryboard;
-+ (instancetype)loadFromStoryboardWithTableViewDelegate:(id <MVSearchProviderDelegate>)delegate;
++ (instancetype)loadFromStoryboardWithDelegate:(id <MVSearchProviderDelegate>)delegate;
 @end

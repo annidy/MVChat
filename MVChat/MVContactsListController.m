@@ -12,11 +12,15 @@
 #import "MVContactModel.h"
 #import "MVChatManager.h"
 #import "MVChatViewController.h"
+#import "MVContactsListSearchViewController.h"
+#import "MVTableViewHeader.h"
 
-@interface MVContactsListController () <UITableViewDelegate, UITableViewDataSource, MVContactsUpdatesListener>
+@interface MVContactsListController () <UITableViewDelegate, UITableViewDataSource, MVContactsUpdatesListener, MVSearchProviderDelegate, UISearchResultsUpdating>
 @property (strong, nonatomic) IBOutlet UITableView *contactsList;
 @property (strong, nonatomic) NSArray <NSString *> *sections;
 @property (strong, nonatomic) NSDictionary <NSString *, NSArray *> *contacts;
+@property (weak, nonatomic) MVContactsListSearchViewController *searchResultsController;
+@property (strong, nonatomic) UISearchController *searchController;
 @end
 
 @implementation MVContactsListController
@@ -28,6 +32,17 @@
     [self.contactsList setDataSource:self];
     [self.contactsList setTableFooterView:[UIView new]];
     self.contactsList.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
+    [self.contactsList registerClass:[MVTableViewHeader class] forHeaderFooterViewReuseIdentifier:@"MVTableViewHeader"];
+    
+    self.searchResultsController = [MVContactsListSearchViewController loadFromStoryboardWithDelegate:self];
+    
+    self.searchController = [[UISearchController alloc] initWithSearchResultsController:self.searchResultsController];
+    self.searchController.searchResultsUpdater = self;
+    self.searchController.dimsBackgroundDuringPresentation = NO;
+    self.searchController.searchBar.searchBarStyle = UISearchBarStyleMinimal;
+    self.contactsList.tableHeaderView = self.searchController.searchBar;
+    self.definesPresentationContext = YES;
+
     
     [self mapWithSections:[[MVContactManager sharedInstance] getAllContacts]];
     [MVContactManager sharedInstance].updatesListener = self;
@@ -78,22 +93,57 @@
     return cell;
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    return self.sections[section];
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    MVTableViewHeader *header = [tableView dequeueReusableHeaderFooterViewWithIdentifier:@"MVTableViewHeader"];
+    header.titleLabel.text = self.sections[section];
+    return header;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    return 20;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [self.contactsList deselectRowAtIndexPath:indexPath animated:YES];
     
     MVContactModel *contact = self.contacts[self.sections[indexPath.section]][indexPath.row];
-    [[MVChatManager sharedInstance] chatWithContact:contact andCompeltion:^(MVChatModel *chat) {
-       dispatch_async(dispatch_get_main_queue(), ^{
-           [self showChatViewWithChat:chat];
-       });
-    }];
+    [self showChatViewWithContact:contact];
+}
+
+#pragma mark - Search bar
+- (void)updateSearchResultsForSearchController:(UISearchController *)searchController {
+    NSArray *contacts = [self filterContactsWithString:searchController.searchBar.text];
+    self.searchResultsController.filteredContacts = contacts;
+    
+    if (searchController.isActive) {
+        self.searchController.searchResultsController.view.hidden = NO;
+    }
+}
+
+- (NSArray *)filterContactsWithString:(NSString *)string {
+    if (!string.length) {
+        return [NSArray new];
+    } else {
+        return [[[MVContactManager sharedInstance] getAllContacts] filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(MVContactModel *evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
+            return [[evaluatedObject.name uppercaseString] containsString:[string uppercaseString]];
+        }]];
+    }
+}
+
+- (void)didSelectCellWithModel:(id)model {
+    MVContactModel *contact = (MVContactModel *)model;
+    [self showChatViewWithContact:contact];
 }
 
 #pragma mark - Helpers
+- (void)showChatViewWithContact:(MVContactModel *)contact {
+    [[MVChatManager sharedInstance] chatWithContact:contact andCompeltion:^(MVChatModel *chat) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self showChatViewWithChat:chat];
+        });
+    }];
+}
+
 - (void)showChatViewWithChat:(MVChatModel *)chat {
     MVChatViewController *chatVC = [MVChatViewController loadFromStoryboardWithChat:chat];
     [self.navigationController.navigationController pushViewController:chatVC animated:YES];
