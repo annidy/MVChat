@@ -13,6 +13,7 @@
 #import "MVMessageHeader.h"
 #import "MVContactManager.h"
 #import "MVDataAggregator.h"
+#import "MVJsonHelper.h"
 
 @implementation NSMutableIndexSet (Increment)
 - (void)increment {
@@ -72,7 +73,7 @@
     [self.messagesTableView addObserver:self forKeyPath:@"contentSize" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:nil];
     self.autoscrollEnabled = YES;
     
-    self.messageCallbackHandler = [[MVDataAggregator alloc] initWithThrottle:3 allowingFirst:YES maxObjectsCount:50 andBlock:^(NSArray *models) {
+    self.messageCallbackHandler = [[MVDataAggregator alloc] initWithThrottle:0.5 allowingFirst:YES maxObjectsCount:50 andBlock:^(NSArray *models) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self handleNewMessages:models];
         });
@@ -339,7 +340,14 @@
     MVMessageCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
     cell.messageLabel.text = model.text;
     cell.timeLabel.text = [self timeFromDate:model.sendDate];
-    cell.avatarImage.image = [UIImage imageNamed:model.contact.avatarName];
+    
+    UIImage *avatar = [UIImage imageNamed:model.contact.avatarName];
+    if (!avatar) {
+        NSData *imgData = [MVJsonHelper dataFromFileWithName:[@"contact" stringByAppendingString:model.contact.id] extenssion:@"png"];
+        avatar = [UIImage imageWithData:imgData];
+    }
+    
+    cell.avatarImage.image = avatar;
     
     __weak MVMessageCell *weakCell = cell;
     [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {

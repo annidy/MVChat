@@ -38,7 +38,7 @@
     
     self.searchController = [[UISearchController alloc] initWithSearchResultsController:self.searchResultsController];
     self.searchController.searchResultsUpdater = self;
-    self.searchController.dimsBackgroundDuringPresentation = NO;
+    //self.searchController.dimsBackgroundDuringPresentation = NO;
     self.searchController.searchBar.searchBarStyle = UISearchBarStyleMinimal;
     self.contactsList.tableHeaderView = self.searchController.searchBar;
     self.definesPresentationContext = YES;
@@ -115,9 +115,9 @@
     NSArray *contacts = [self filterContactsWithString:searchController.searchBar.text];
     self.searchResultsController.filteredContacts = contacts;
     
-    if (searchController.isActive) {
-        self.searchController.searchResultsController.view.hidden = NO;
-    }
+//    if (searchController.isActive) {
+//        self.searchController.searchResultsController.view.hidden = NO;
+//    }
 }
 
 - (NSArray *)filterContactsWithString:(NSString *)string {
