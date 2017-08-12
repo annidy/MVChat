@@ -7,6 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+
 @class MVContactModel;
 
 @protocol MVContactsUpdatesListener <NSObject>
@@ -21,5 +23,7 @@
 
 + (void)startSendingStatusUpdates;
 + (void)startSendingAvatarUpdates;
+
++ (UIImage *)avatarForContact:(MVContactModel *)contact;
 
 @end

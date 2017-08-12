@@ -219,31 +219,34 @@ static MVChatManager *sharedManager;
             }
         }
         
-        if (!existingChat) {
-            MVDatabaseManager *db = [MVDatabaseManager sharedInstance];
-            existingChat = [[MVChatModel alloc] initWithId:[db incrementId:db.lastChatId] andTitle:contact.name];
-            existingChat.participants = @[db.myContact, contact];
-            existingChat.lastUpdateDate = [NSDate new];
-            
-            if (contact.avatarName) {
-                existingChat.avatarName = contact.avatarName;
-            } else {
-                [db generateImagesForChats:@[existingChat]];
-            }
-            
-            @synchronized (self.chats) {
-                [self.chats insertObject:existingChat atIndex:0];
-            }
-            
-            @synchronized (self.chatsMessages) {
-                [self.chatsMessages setObject:[NSMutableArray new] forKey:existingChat.id];
-            }
-            
-            [db insertChats:@[existingChat] withCompletion:nil];
+        if (existingChat) {
+            [self.chatsListener handleChatsUpdate];
+            callback(existingChat);
+        } else {
+            [self createChatWithContacts:@[contact] title:contact.name andCompeltion:callback];
+        }
+    });
+}
+
+- (void)createChatWithContacts:(NSArray <MVContactModel *> *)contacts title:(NSString *)title andCompeltion:(void (^)(MVChatModel *))callback {
+    dispatch_async(self.managerQueue, ^{
+        MVDatabaseManager *db = [MVDatabaseManager sharedInstance];
+        MVChatModel *chat = [[MVChatModel alloc] initWithId:[db incrementId:db.lastChatId] andTitle:title];
+        chat.participants = [contacts arrayByAddingObject:db.myContact];
+        chat.lastUpdateDate = [NSDate new];
+        [db generateImagesForChats:@[chat]];
+        
+        @synchronized (self.chats) {
+            [self.chats insertObject:chat atIndex:0];
         }
         
+        @synchronized (self.chatsMessages) {
+            [self.chatsMessages setObject:[NSMutableArray new] forKey:chat.id];
+        }
+        
+        [db insertChats:@[chat] withCompletion:nil];
         [self.chatsListener handleChatsUpdate];
-        callback(existingChat);
+        callback(chat);
     });
 }
 

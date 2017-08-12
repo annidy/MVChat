@@ -66,6 +66,16 @@
     }];
 }
 
++ (UIImage *)avatarForContact:(MVContactModel *)contact {
+    UIImage *avatar = [UIImage imageNamed:contact.avatarName];;
+    if (!avatar) {
+        NSData *imgData = [MVJsonHelper dataFromFileWithName:[@"contact" stringByAppendingString:contact.id] extenssion:@"png"];
+        avatar = [UIImage imageWithData:imgData];
+    }
+    
+    return avatar;
+}
+
 //Legacy
 + (void)startSendingStatusUpdates {
     NSNotification *status = [[NSNotification alloc] initWithName:@"ContactStatusUpdate" object:nil userInfo:@{@"Id" : [self getRandomContactId], @"Status" : @([self getRandomStatus])}];

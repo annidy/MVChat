@@ -14,6 +14,8 @@
 #import "MVMessageModel.h"
 #import "MVChatsListCell.h"
 #import "MVChatsListSearchViewController.h"
+#import "MVContactsListController.h"
+#import "MVChatSettingsViewController.h"
 
 @interface MVChatsListViewController () <UITableViewDelegate, UITableViewDataSource, ChatsUpdatesListener, UISearchResultsUpdating, MVSearchProviderDelegate>
 @property (strong, nonatomic) IBOutlet UITableView *chatsList;
@@ -44,6 +46,28 @@
     
     self.chatsList.delegate = self;
     self.chatsList.dataSource = self;
+    
+    
+    //test
+    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"Create new" style:UIBarButtonItemStylePlain target:self action:@selector(createNewChat)];
+    self.navigationItem.rightBarButtonItem = item;
+}
+
+- (void)createNewChat {
+    UINavigationController *rootNav = self.navigationController.navigationController;
+    MVContactsListController *contactsList = [MVContactsListController loadFromStoryboardWithMode:MVContactsListControllerModeSelectable andDoneAction:^(NSArray<MVContactModel *> *selectedContacts) {
+        MVChatSettingsViewController *settings = [MVChatSettingsViewController loadFromStoryboardWithContacts:selectedContacts andDoneAction:^(NSArray<MVContactModel *> *chatContacts, NSString *chatTitle) {
+            
+            [[MVChatManager sharedInstance] createChatWithContacts:chatContacts title:chatTitle andCompeltion:^(MVChatModel *chat) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [rootNav popToRootViewControllerAnimated:YES];
+                    [self showChatViewWithChat:chat];
+                });
+            }];
+        }];
+        [rootNav pushViewController:settings animated:YES];
+    }];
+    [rootNav pushViewController:contactsList animated:YES];
 }
 
 #pragma mark - Data handling
