@@ -11,7 +11,7 @@
 @class MVContactModel;
 
 @interface MVChatSettingsViewController : UIViewController
-@property (strong, nonatomic) MVChatModel *chat;
 + (instancetype)loadFromStoryboard;
 + (instancetype)loadFromStoryboardWithContacts:(NSArray <MVContactModel *> *)contacts andDoneAction:(void (^)(NSArray <MVContactModel *> *, NSString *))doneAction;
++ (instancetype)loadFromStoryboardWithChat:(MVChatModel *)chat andDoneAction:(void (^)(NSArray <MVContactModel *> *, NSString *))doneAction;
 @end

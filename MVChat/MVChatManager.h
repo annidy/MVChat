@@ -52,4 +52,6 @@ static NSUInteger MVMessagesPageSize = 1000;
 - (NSUInteger)numberOfPagesInChatWithId:(NSString *)chatId;
 - (void)chatWithContact:(MVContactModel *)contact andCompeltion:(void (^)(MVChatModel *))callback;
 - (void)createChatWithContacts:(NSArray <MVContactModel *> *)contacts title:(NSString *)title andCompeltion:(void (^)(MVChatModel *))callback;
+- (void)updateChat:(MVChatModel *)chat;
+- (void)exitAndDeleteChat:(MVChatModel *)chat;
 @end

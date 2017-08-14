@@ -31,6 +31,7 @@
 - (void)insertMessages:(NSArray <MVMessageModel *> *)messages withCompletion:(void (^)(BOOL success))completion;
 
 - (void)updateChat:(MVChatModel *)chatModel withCompletion:(void (^)(BOOL success))completion;
+- (void)deleteChat:(MVChatModel *)chatModel withCompletion:(void (^)(BOOL success))completion;
 
 - (MVContactModel *)myContact;
 - (void)generateData;

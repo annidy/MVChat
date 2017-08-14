@@ -235,6 +235,26 @@ static MVDatabaseManager *instance;
     });
 }
 
+- (void)deleteChat:(MVChatModel *)chatModel withCompletion:(void (^)(BOOL success))completion {
+    dispatch_async(self.managerQueue, ^{
+        NSMutableArray *existingChats = [[self allChatsSync] mutableCopy];
+        NSUInteger index = 0;
+        for (MVChatModel *chat in existingChats) {
+            if ([chat.id isEqualToString:chatModel.id]) {
+                break;
+            }
+            index ++;
+        }
+        
+        [existingChats removeObjectAtIndex:index];
+        
+        BOOL success = [MVJsonHelper writeData:[MVJsonHelper parseArrayToJson:existingChats] toFileWithName:chatsFile extenssion:@"json"];
+        if (completion) {
+            completion(success);
+        }
+    });
+}
+
 #pragma mark - Helpers
 -(MVContactModel *)myContact {
     MVContactModel *me = [MVContactModel new];

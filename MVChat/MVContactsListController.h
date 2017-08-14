@@ -19,4 +19,5 @@ typedef enum : NSUInteger {
 @property (nonatomic, copy) void (^doneAction)(NSArray <MVContactModel *> *);
 + (instancetype)loadFromStoryboard;
 + (instancetype)loadFromStoryboardWithMode:(MVContactsListControllerMode)mode andDoneAction:(void (^)(NSArray <MVContactModel *> *))doneAction;
++ (instancetype)loadFromStoryboardWithMode:(MVContactsListControllerMode)mode andDoneAction:(void (^)(NSArray <MVContactModel *> *))doneAction excludingContacts:(NSArray <MVContactModel *> *)excludingContacts;
 @end

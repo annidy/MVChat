@@ -9,20 +9,43 @@
 #import "MVChatSettingsViewController.h"
 #import "MVContactModel.h"
 #import "MVContactManager.h"
+#import "MVChatModel.h"
+#import "MVContactsListController.h"
+#import "MVChatManager.h"
+
+typedef enum : NSUInteger {
+    MVChatSettingsModeNew,
+    MVChatSettingsModeSettings
+} MVChatSettingsMode;
 
 @interface MVChatSettingsViewController () <UITableViewDataSource, UITableViewDelegate>
+@property (strong, nonatomic) IBOutlet UITableView *tableView;
+@property (assign, nonatomic) MVChatSettingsMode mode;
+@property (strong, nonatomic) MVChatModel *chat;
 @property (strong, nonatomic) NSMutableArray <MVContactModel *> *contacts;
 @property (weak, nonatomic) UITextField *titleTextField;
 @property (strong, nonatomic) NSString *chatTitle;
 @property (nonatomic, copy) void (^doneAction)(NSArray <MVContactModel *> *, NSString *);
+@property (strong, nonatomic) UIBarButtonItem *doneButton;
+
 @end
 
 static NSString *AvatarTitleCellId = @"MVChatSettingsAvatarTitleCell";
 static NSString *AvatarCellId = @"MVChatSettingsAvatarCell";
 static NSString *ContactCellId = @"MVChatSettingsContactCell";
+static NSString *NewContactCellId = @"MVChatSettingsNewContactCell";
+static NSString *DeleteContactCellId = @"MVChatSettingsDeleteCell";
 
 @implementation MVChatSettingsViewController
 #pragma mark - Initialization
+- (instancetype)initWithCoder:(NSCoder *)aDecoder {
+    if (self = [super initWithCoder:aDecoder]) {
+        _contacts = [NSMutableArray new];
+    }
+    
+    return self;
+}
+
 + (instancetype)loadFromStoryboard {
     UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     return [sb instantiateViewControllerWithIdentifier:@"MVChatSettingsViewController"];
@@ -32,31 +55,50 @@ static NSString *ContactCellId = @"MVChatSettingsContactCell";
     MVChatSettingsViewController *instance = [self loadFromStoryboard];
     instance.contacts = [contacts mutableCopy];
     instance.doneAction = doneAction;
+    instance.mode = MVChatSettingsModeNew;
     
     return instance;
 }
-- (void)viewWillAppear:(BOOL)animated {
-    [self.navigationController setNavigationBarHidden:NO animated:YES];
-    [super viewWillAppear:animated];
+
++ (instancetype)loadFromStoryboardWithChat:(MVChatModel *)chat andDoneAction:(void (^)(NSArray <MVContactModel *> *, NSString *))doneAction {
+    MVChatSettingsViewController *instance = [self loadFromStoryboard];
+    instance.chat = chat;
+    instance.doneAction = doneAction;
+    instance.mode = MVChatSettingsModeSettings;
+    
+    for (MVContactModel *contact in chat.participants) {
+        if (!contact.iam) {
+            [instance.contacts addObject:contact];
+        }
+    }
+    
+    return instance;
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-    [self.navigationController setNavigationBarHidden:YES animated:YES];
-    [super viewWillDisappear:animated];
-}
-
+#pragma mark - View lifecycle
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self addObserver:self forKeyPath:@"titleTextField" options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:nil];
-    
-    //test
-    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"Create" style:UIBarButtonItemStylePlain target:self action:@selector(createNewChat)];
-    self.navigationItem.rightBarButtonItem = item;
-    
+    [self setupNavigationBar];
+    if (self.mode == MVChatSettingsModeSettings) {
+        self.chatTitle = self.chat.title;
+    }
 }
 
-- (void)createNewChat {
-    self.doneAction(self.contacts, self.chatTitle);
+- (void)setupNavigationBar {
+    NSString *doneButtonTitle;
+    NSString *navigationBarTitle;
+    if (self.mode == MVChatSettingsModeNew) {
+        doneButtonTitle = @"Create";
+        navigationBarTitle = @"New chat";
+    } else if (self.mode == MVChatSettingsModeSettings) {
+        doneButtonTitle = @"Done";
+        navigationBarTitle = @"Settings";
+    }
+    self.doneButton = [[UIBarButtonItem alloc] initWithTitle:doneButtonTitle style:UIBarButtonItemStyleDone target:self action:@selector(doneButtonAction)];
+    self.navigationItem.rightBarButtonItem = self.doneButton;
+    self.navigationItem.title = navigationBarTitle;
+    self.doneButton.enabled = NO;
 }
 
 - (void)dealloc {
@@ -64,6 +106,7 @@ static NSString *ContactCellId = @"MVChatSettingsContactCell";
     [self.titleTextField removeTarget:self action:@selector(titleTextDidChange:) forControlEvents:UIControlEventEditingChanged];
 }
 
+#pragma mark - KVO
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
     if (object == self && [keyPath isEqualToString:@"titleTextField"]) {
         UITextField *oldTextField = change[NSKeyValueChangeOldKey];
@@ -77,19 +120,32 @@ static NSString *ContactCellId = @"MVChatSettingsContactCell";
     }
 }
 
+#pragma mark - Button and control actions
 - (void)titleTextDidChange:(UITextField *)textField {
     self.chatTitle = textField.text;
+    self.doneButton.enabled = [self canProceed];
 }
 
+- (void)doneButtonAction {
+    self.doneAction(self.contacts, self.chatTitle);
+}
+
+#pragma mark - Table view
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 2;
+    if (self.mode == MVChatSettingsModeNew) {
+        return 2;
+    } else {
+        return 3;
+    }
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if (section == 0) {
         return 2;
+    } else if (section == 1) {
+        return self.contacts.count + 1;
     } else {
-        return self.contacts.count;
+        return 1;
     }
 }
 
@@ -102,7 +158,6 @@ static NSString *ContactCellId = @"MVChatSettingsContactCell";
     
     return 44;
 }
-
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     if (section == 0) {
@@ -128,26 +183,114 @@ static NSString *ContactCellId = @"MVChatSettingsContactCell";
             UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:AvatarCellId];
             return cell;
         }
+    } else if (indexPath.section == 1) {
+        if (indexPath.row == 0) {
+            return [tableView dequeueReusableCellWithIdentifier:NewContactCellId];
+        }
+        
+        MVContactModel *contact = self.contacts[indexPath.row - 1];
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ContactCellId];
+        UIImageView *contactAvatarImageView = [cell viewWithTag:1];
+        UILabel *contactNameLabel = [cell viewWithTag:2];
+        contactNameLabel.text = contact.name;
+        contactAvatarImageView.image = [MVContactManager avatarForContact:contact];
+        contactAvatarImageView.layer.masksToBounds = YES;
+        contactAvatarImageView.layer.cornerRadius = 10;
+        
+        return cell;
+    } else {
+        return [tableView dequeueReusableCellWithIdentifier:DeleteContactCellId];
     }
-    
-    MVContactModel *contact = self.contacts[indexPath.row];
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ContactCellId];
-    UIImageView *contactAvatarImageView = [cell viewWithTag:1];
-    UILabel *contactNameLabel = [cell viewWithTag:2];
-    
-    contactNameLabel.text = contact.name;
-    contactAvatarImageView.image = [MVContactManager avatarForContact:contact];
-    
-    contactAvatarImageView.layer.masksToBounds = YES;
-    contactAvatarImageView.layer.cornerRadius = 10;
-    
-    return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    if (indexPath.section == 0) {
+        if (indexPath.row == 1) {
+            [self showChatPhotoSelectController];
+        }
+    } else if (indexPath.section == 1 && indexPath.row == 0) {
+            [self showContactsSelectController];
+    } else if (indexPath.section == 2 && indexPath.row == 0) {
+        [self showDeleteAlert];
+    }
 }
 
+- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.section == 1 && indexPath.row > 0) {
+        return UITableViewCellEditingStyleDelete;
+    }
+    
+    return UITableViewCellEditingStyleNone;
+}
 
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    [self.contacts removeObjectAtIndex:indexPath.row - 1];
+    [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+    self.doneButton.enabled = [self canProceed];
+}
+
+- (void)showContactsSelectController {
+    MVContactsListController *contactsListController = [MVContactsListController loadFromStoryboardWithMode:MVContactsListControllerModeSelectable andDoneAction:^(NSArray<MVContactModel *> *selectedContacts) {
+        [self.contacts addObjectsFromArray:selectedContacts];
+        [self.tableView reloadData];
+        [self dismissViewControllerAnimated:YES completion:nil];
+        self.doneButton.enabled = [self canProceed];
+    } excludingContacts:[self.contacts copy]];
+    
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:contactsListController];
+    contactsListController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStyleDone target:self action:@selector(dismissContactsSelectController)];
+    [self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)dismissContactsSelectController {
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)showDeleteAlert {
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Delete and Exit" message:@"Are you sure you want to delete and exit this chat?" preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *yesAction = [UIAlertAction actionWithTitle:@"YES" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
+        [[MVChatManager sharedInstance] exitAndDeleteChat:self.chat];
+        [self.navigationController popToRootViewControllerAnimated:YES];
+    }];
+    
+    UIAlertAction *noAction = [UIAlertAction actionWithTitle:@"NO" style:UIAlertActionStyleCancel handler:nil];
+    [alertController addAction:yesAction];
+    [alertController addAction:noAction];
+    [self presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void)showChatPhotoSelectController {
+    
+}
+
+#pragma mark - Helpers
+- (BOOL)canProceed {
+    if (self.mode == MVChatSettingsModeSettings) {
+        return [self dataChanged];
+    } else {
+        return (self.contacts.count > 0 && self.chatTitle.length > 0);
+    }
+}
+
+- (BOOL)dataChanged {
+    NSMutableSet *chatParticipants = [NSMutableSet new];
+    NSMutableSet *selectedContacts = [NSMutableSet new];
+    for (MVContactModel *contact in self.chat.participants) {
+        if (!contact.iam) {
+            [chatParticipants addObject:contact.id];
+        }
+    }
+    for (MVContactModel *contact in self.contacts) {
+        [selectedContacts addObject:contact.id];
+    }
+    
+    if ([chatParticipants isEqualToSet:selectedContacts] && [self.chat.title isEqualToString:self.chatTitle]) {
+        return NO;
+    } else {
+        return YES;
+    }
+}
 
 @end

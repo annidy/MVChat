@@ -26,6 +26,11 @@
 
 @implementation MVChatsListViewController
 #pragma mark - View lifecycle
+- (void)viewWillAppear:(BOOL)animated {
+    [self.navigationController.navigationController setNavigationBarHidden:YES animated:YES];
+    [super viewWillAppear:animated];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -47,27 +52,13 @@
     self.chatsList.delegate = self;
     self.chatsList.dataSource = self;
     
-    
-    //test
-    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"Create new" style:UIBarButtonItemStylePlain target:self action:@selector(createNewChat)];
-    self.navigationItem.rightBarButtonItem = item;
+    [self setupNavigationBar];
 }
 
-- (void)createNewChat {
-    UINavigationController *rootNav = self.navigationController.navigationController;
-    MVContactsListController *contactsList = [MVContactsListController loadFromStoryboardWithMode:MVContactsListControllerModeSelectable andDoneAction:^(NSArray<MVContactModel *> *selectedContacts) {
-        MVChatSettingsViewController *settings = [MVChatSettingsViewController loadFromStoryboardWithContacts:selectedContacts andDoneAction:^(NSArray<MVContactModel *> *chatContacts, NSString *chatTitle) {
-            
-            [[MVChatManager sharedInstance] createChatWithContacts:chatContacts title:chatTitle andCompeltion:^(MVChatModel *chat) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [rootNav popToRootViewControllerAnimated:YES];
-                    [self showChatViewWithChat:chat];
-                });
-            }];
-        }];
-        [rootNav pushViewController:settings animated:YES];
-    }];
-    [rootNav pushViewController:contactsList animated:YES];
+- (void)setupNavigationBar {
+    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"New" style:UIBarButtonItemStylePlain target:self action:@selector(createNewChat)];
+    self.navigationItem.rightBarButtonItem = item;
+    self.navigationItem.title = @"Chats";
 }
 
 #pragma mark - Data handling
@@ -105,12 +96,6 @@
     [self showChatViewWithChat:selectedChat];
 }
 
-#pragma mark - Helpers
-- (void)showChatViewWithChat:(MVChatModel *)chat {
-    MVChatViewController *chatVC = [MVChatViewController loadFromStoryboardWithChat:chat];
-    [self.navigationController.navigationController pushViewController:chatVC animated:YES];
-}
-
 #pragma mark - Search filter
 - (void)updateSearchResultsForSearchController:(UISearchController *)searchController {
     NSArray *chats = [self filterChatsWithString:searchController.searchBar.text];
@@ -135,6 +120,29 @@
             return [[evaluatedObject.title uppercaseString] containsString:[string uppercaseString]];
         }]];
     }
+}
+
+#pragma mark - Create chat
+- (void)createNewChat {
+    UINavigationController *rootNavigationController = self.navigationController.navigationController;
+    MVContactsListController *contactsList = [MVContactsListController loadFromStoryboardWithMode:MVContactsListControllerModeSelectable andDoneAction:^(NSArray<MVContactModel *> *selectedContacts) {
+        MVChatSettingsViewController *settings = [MVChatSettingsViewController loadFromStoryboardWithContacts:selectedContacts andDoneAction:^(NSArray<MVContactModel *> *chatContacts, NSString *chatTitle) {
+            [[MVChatManager sharedInstance] createChatWithContacts:chatContacts title:chatTitle andCompeltion:^(MVChatModel *chat) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [rootNavigationController popToRootViewControllerAnimated:YES];
+                    [self showChatViewWithChat:chat];
+                });
+            }];
+        }];
+        [rootNavigationController pushViewController:settings animated:YES];
+    }];
+    [rootNavigationController pushViewController:contactsList animated:YES];
+}
+
+#pragma mark - Helpers
+- (void)showChatViewWithChat:(MVChatModel *)chat {
+    MVChatViewController *chatVC = [MVChatViewController loadFromStoryboardWithChat:chat];
+    [self.navigationController.navigationController pushViewController:chatVC animated:YES];
 }
 
 @end

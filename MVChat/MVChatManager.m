@@ -250,6 +250,16 @@ static MVChatManager *sharedManager;
     });
 }
 
+- (void)updateChat:(MVChatModel *)chat {
+    [self handleUpdatedChats:@[chat] removedChats:nil];
+    [[MVDatabaseManager sharedInstance] updateChat:chat withCompletion:nil];
+}
+
+- (void)exitAndDeleteChat:(MVChatModel *)chat {
+    [self handleUpdatedChats:nil removedChats:@[chat]];
+    [[MVDatabaseManager sharedInstance] deleteChat:chat withCompletion:nil];
+}
+
 - (void)messagesPage:(NSUInteger)pageIndex forChatWithId:(NSString *)chatId withCallback:(void (^)(NSArray <MVMessageModel *> *))callback {
     NSMutableArray *messages;
     @synchronized (self.chatsMessages) {

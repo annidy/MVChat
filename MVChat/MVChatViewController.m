@@ -11,11 +11,13 @@
 #import "MVFooterViewController.h"
 #import "MVChatModel.h"
 #import "MVChatManager.h"
+#import "MVChatSettingsViewController.h"
+#import "MVDatabaseManager.h"
 
 @interface MVChatViewController () <UIGestureRecognizerDelegate>
 @property (weak, nonatomic) MVMessagesViewController *MessagesController;
 @property (weak, nonatomic) MVFooterViewController *FooterController;
-
+@property (strong, nonatomic) UILabel *navigationItemTitleLabel;
 @end
 
 @implementation MVChatViewController
@@ -35,10 +37,38 @@
 #pragma mark - Lifecycle
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.navigationItem.title = self.chat.title;
+    [self setupNavigationBar];
+}
+
+- (void)setupNavigationBar {
+    //title label
+    UILabel *titleLabel = [UILabel new];
+    titleLabel.font = [UIFont fontWithName:@"HelveticaNeue-Medium" size:17];
+    titleLabel.text = self.chat.title;
+    CGFloat labelWidth = [titleLabel sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)].width;
+    titleLabel.frame = CGRectMake(0,0, labelWidth, 500);
+    titleLabel.userInteractionEnabled = YES;
+    self.navigationItemTitleLabel = titleLabel;
+    self.navigationItem.titleView = titleLabel;
     
+    UITapGestureRecognizer *titleLabelTapRecogniser = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(navigationItemTitleTappedAction)];
+    [self.navigationItem.titleView addGestureRecognizer:titleLabelTapRecogniser];
+    
+    //buttons
     UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"Spawn" style:UIBarButtonItemStylePlain target:self action:@selector(spawnNewMessage)];
     self.navigationItem.rightBarButtonItem = item;
+}
+
+- (void)navigationItemTitleTappedAction {
+    MVChatSettingsViewController *settings = [MVChatSettingsViewController loadFromStoryboardWithChat:self.chat andDoneAction:^(NSArray<MVContactModel *> *contacts, NSString *title) {
+        self.chat.participants = [contacts arrayByAddingObject:[MVDatabaseManager sharedInstance].myContact];
+        self.chat.title = title;
+        [[MVChatManager sharedInstance] updateChat:self.chat];
+        self.navigationItemTitleLabel.text = title;
+        [self.navigationController popViewControllerAnimated:YES];
+    }];
+    
+    [self.navigationController pushViewController:settings animated:YES];
 }
 
 - (void)spawnNewMessage {
@@ -48,11 +78,6 @@
 - (void)viewWillAppear:(BOOL)animated {
     [self.navigationController setNavigationBarHidden:NO animated:YES];
     [super viewWillAppear:animated];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-    [self.navigationController setNavigationBarHidden:YES animated:YES];
-    [super viewWillDisappear:animated];
 }
 
 #pragma mark - Segues
