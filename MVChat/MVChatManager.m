@@ -11,6 +11,7 @@
 #import "MVChatModel.h"
 #import "MVDatabaseManager.h"
 #import "MVRandomGenerator.h"
+#import "MVFileManager.h"
 
 @implementation MVMessageUpdateModel
 + (instancetype)updateModelWithMessage:(MVMessageModel *)message andPosition:(MessageUpdatePosition)position {
@@ -234,7 +235,7 @@ static MVChatManager *sharedManager;
         MVChatModel *chat = [[MVChatModel alloc] initWithId:[db incrementId:db.lastChatId] andTitle:title];
         chat.participants = [contacts arrayByAddingObject:db.myContact];
         chat.lastUpdateDate = [NSDate new];
-        [db generateImagesForChats:@[chat]];
+        [[MVFileManager sharedInstance] generateImagesForChats:@[chat]];
         
         @synchronized (self.chats) {
             [self.chats insertObject:chat atIndex:0];

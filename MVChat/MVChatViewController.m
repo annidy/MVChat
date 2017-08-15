@@ -13,6 +13,7 @@
 #import "MVChatManager.h"
 #import "MVChatSettingsViewController.h"
 #import "MVDatabaseManager.h"
+#import "MVFileManager.h"
 
 @interface MVChatViewController () <UIGestureRecognizerDelegate>
 @property (weak, nonatomic) MVMessagesViewController *MessagesController;
@@ -60,12 +61,13 @@
 }
 
 - (void)navigationItemTitleTappedAction {
-    MVChatSettingsViewController *settings = [MVChatSettingsViewController loadFromStoryboardWithChat:self.chat andDoneAction:^(NSArray<MVContactModel *> *contacts, NSString *title) {
+    MVChatSettingsViewController *settings = [MVChatSettingsViewController loadFromStoryboardWithChat:self.chat andDoneAction:^(NSArray<MVContactModel *> *contacts, NSString *title, DBAttachment *attachment) {
         self.chat.participants = [contacts arrayByAddingObject:[MVDatabaseManager sharedInstance].myContact];
         self.chat.title = title;
         [[MVChatManager sharedInstance] updateChat:self.chat];
         self.navigationItemTitleLabel.text = title;
         [self.navigationController popViewControllerAnimated:YES];
+        [[MVFileManager sharedInstance] saveAttachment:attachment asChatAvatar:self.chat];
     }];
     
     [self.navigationController pushViewController:settings animated:YES];

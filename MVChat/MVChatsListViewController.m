@@ -16,6 +16,7 @@
 #import "MVChatsListSearchViewController.h"
 #import "MVContactsListController.h"
 #import "MVChatSettingsViewController.h"
+#import "MVFileManager.h"
 
 @interface MVChatsListViewController () <UITableViewDelegate, UITableViewDataSource, ChatsUpdatesListener, UISearchResultsUpdating, MVSearchProviderDelegate>
 @property (strong, nonatomic) IBOutlet UITableView *chatsList;
@@ -126,8 +127,10 @@
 - (void)createNewChat {
     UINavigationController *rootNavigationController = self.navigationController.navigationController;
     MVContactsListController *contactsList = [MVContactsListController loadFromStoryboardWithMode:MVContactsListControllerModeSelectable andDoneAction:^(NSArray<MVContactModel *> *selectedContacts) {
-        MVChatSettingsViewController *settings = [MVChatSettingsViewController loadFromStoryboardWithContacts:selectedContacts andDoneAction:^(NSArray<MVContactModel *> *chatContacts, NSString *chatTitle) {
+        MVChatSettingsViewController *settings = [MVChatSettingsViewController loadFromStoryboardWithContacts:selectedContacts andDoneAction:^(NSArray<MVContactModel *> *chatContacts, NSString *chatTitle, DBAttachment *avatarImage) {
+            
             [[MVChatManager sharedInstance] createChatWithContacts:chatContacts title:chatTitle andCompeltion:^(MVChatModel *chat) {
+                [[MVFileManager sharedInstance] saveAttachment:avatarImage asChatAvatar:chat];
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [rootNavigationController popToRootViewControllerAnimated:YES];
                     [self showChatViewWithChat:chat];

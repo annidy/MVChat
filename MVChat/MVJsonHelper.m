@@ -68,4 +68,8 @@
     NSString *path = [self pathToFile:name extenssion:extenssion];
     return [[NSFileManager defaultManager] contentsAtPath:path];
 }
+
++ (NSURL *)urlToFileWithName:(NSString *)filename extenssion:(NSString *)extenssion {
+    return [NSURL URLWithString:[self pathToFile:filename extenssion:extenssion]];
+}
 @end

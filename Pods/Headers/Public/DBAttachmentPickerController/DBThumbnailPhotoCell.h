@@ -1,0 +1,1 @@
+../../../DBAttachmentPickerController/Source/Cells/DBThumbnailPhotoCell.h

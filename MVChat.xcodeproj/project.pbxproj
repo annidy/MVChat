@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2BBFB902938026834DD2D326 /* libPods-MVChat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AEC3AB225764E67979931D23 /* libPods-MVChat.a */; };
 		CD0503621F27D20700A1C4D2 /* MVContactsListController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0503611F27D20700A1C4D2 /* MVContactsListController.m */; };
 		CD0503661F27D2F300A1C4D2 /* MVContactsListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0503651F27D2F300A1C4D2 /* MVContactsListCell.m */; };
 		CD0550851F0573E50076FB25 /* MVJsonHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0550841F0573E50076FB25 /* MVJsonHelper.m */; };
@@ -38,6 +39,7 @@
 		CDAB09871E7DE2D800A142DC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAB09861E7DE2D800A142DC /* main.m */; };
 		CDAB09921E7DE2D800A142DC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CDAB09911E7DE2D800A142DC /* Assets.xcassets */; };
 		CDB89D3A1F2242DB0024BFDB /* MVChatsListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB89D391F2242DB0024BFDB /* MVChatsListCell.m */; };
+		CDB97CE01F43522800950F6A /* MVFileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB97CDF1F43522800950F6A /* MVFileManager.m */; };
 		CDE957951F1A7B64007AE7EA /* MVDataAggregator.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE957941F1A7B64007AE7EA /* MVDataAggregator.m */; };
 		CDF479AF1EB66C00003B3C8E /* MVChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF479AE1EB66C00003B3C8E /* MVChatViewController.m */; };
 		CDF479B41EB68980003B3C8E /* MVMessagesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF479B31EB68980003B3C8E /* MVMessagesViewController.m */; };
@@ -46,6 +48,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		65B8EC006E287C9438A32E98 /* Pods-MVChat.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MVChat.release.xcconfig"; path = "Pods/Target Support Files/Pods-MVChat/Pods-MVChat.release.xcconfig"; sourceTree = "<group>"; };
+		8C95387DB1A2847D8AC2786A /* Pods-MVChat.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MVChat.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MVChat/Pods-MVChat.debug.xcconfig"; sourceTree = "<group>"; };
+		AEC3AB225764E67979931D23 /* libPods-MVChat.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MVChat.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD0503601F27D20700A1C4D2 /* MVContactsListController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVContactsListController.h; sourceTree = "<group>"; };
 		CD0503611F27D20700A1C4D2 /* MVContactsListController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVContactsListController.m; sourceTree = "<group>"; };
 		CD0503641F27D2F300A1C4D2 /* MVContactsListCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVContactsListCell.h; sourceTree = "<group>"; };
@@ -106,6 +111,8 @@
 		CDAB09961E7DE2D800A142DC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CDB89D381F2242DB0024BFDB /* MVChatsListCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVChatsListCell.h; sourceTree = "<group>"; };
 		CDB89D391F2242DB0024BFDB /* MVChatsListCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVChatsListCell.m; sourceTree = "<group>"; };
+		CDB97CDE1F43522800950F6A /* MVFileManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVFileManager.h; sourceTree = "<group>"; };
+		CDB97CDF1F43522800950F6A /* MVFileManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVFileManager.m; sourceTree = "<group>"; };
 		CDE957931F1A7B64007AE7EA /* MVDataAggregator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVDataAggregator.h; sourceTree = "<group>"; };
 		CDE957941F1A7B64007AE7EA /* MVDataAggregator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVDataAggregator.m; sourceTree = "<group>"; };
 		CDF479AD1EB66C00003B3C8E /* MVChatViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVChatViewController.h; sourceTree = "<group>"; };
@@ -123,6 +130,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2BBFB902938026834DD2D326 /* libPods-MVChat.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -180,6 +188,7 @@
 			isa = PBXGroup;
 			children = (
 				CD6C2A451EC60BA60007BA05 /* libsqlite3.tbd */,
+				AEC3AB225764E67979931D23 /* libPods-MVChat.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -190,6 +199,7 @@
 				CDAB09841E7DE2D800A142DC /* MVChat */,
 				CDAB09831E7DE2D800A142DC /* Products */,
 				CD6C2A441EC60BA60007BA05 /* Frameworks */,
+				E3E3FBD0C3B75998100C9D3B /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -250,6 +260,8 @@
 				CD28B35B1EB6A63300BFFCAA /* MVChatManager.m */,
 				CD0550881F06E8110076FB25 /* MVDatabaseManager.h */,
 				CD0550891F06E8110076FB25 /* MVDatabaseManager.m */,
+				CDB97CDE1F43522800950F6A /* MVFileManager.h */,
+				CDB97CDF1F43522800950F6A /* MVFileManager.m */,
 			);
 			name = Managers;
 			sourceTree = "<group>";
@@ -341,6 +353,15 @@
 			name = View;
 			sourceTree = "<group>";
 		};
+		E3E3FBD0C3B75998100C9D3B /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				65B8EC006E287C9438A32E98 /* Pods-MVChat.release.xcconfig */,
+				8C95387DB1A2847D8AC2786A /* Pods-MVChat.debug.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -348,9 +369,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = CDAB09991E7DE2D800A142DC /* Build configuration list for PBXNativeTarget "MVChat" */;
 			buildPhases = (
+				997021F8A8AF811076243271 /* [CP] Check Pods Manifest.lock */,
 				CDAB097E1E7DE2D800A142DC /* Sources */,
 				CDAB097F1E7DE2D800A142DC /* Frameworks */,
 				CDAB09801E7DE2D800A142DC /* Resources */,
+				92E162212883BEF752CA799B /* [CP] Embed Pods Frameworks */,
+				0F08165C853506275C5AEA59 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -411,6 +435,64 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		0F08165C853506275C5AEA59 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-MVChat/Pods-MVChat-resources.sh",
+				"${PODS_ROOT}/DBAttachmentPickerController/Source/Cells/DBAssetGroupCell.xib",
+				"${PODS_ROOT}/DBAttachmentPickerController/Source/Cells/DBThumbnailPhotoCell.xib",
+				"${PODS_ROOT}/DBAttachmentPickerController/Source/DBAssetPickerController/DBAssetGroupsViewController.xib",
+				"${PODS_ROOT}/DBAttachmentPickerController/Source/DBAssetPickerController/DBAssetItemsViewController.xib",
+				$PODS_CONFIGURATION_BUILD_DIR/DBAttachmentPickerController/DBAttachmentPickerController.bundle,
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MVChat/Pods-MVChat-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		92E162212883BEF752CA799B /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MVChat/Pods-MVChat-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		997021F8A8AF811076243271 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-MVChat-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		CDAB097E1E7DE2D800A142DC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -425,6 +507,7 @@
 				CDAB09871E7DE2D800A142DC /* main.m in Sources */,
 				CD28B3961EBCA72E00BFFCAA /* MVContactManager.m in Sources */,
 				CD0503661F27D2F300A1C4D2 /* MVContactsListCell.m in Sources */,
+				CDB97CE01F43522800950F6A /* MVFileManager.m in Sources */,
 				CD28B3611EB6A63300BFFCAA /* MVContactModel.m in Sources */,
 				CD28B3601EB6A63300BFFCAA /* MVChatManager.m in Sources */,
 				CD0550901F0938D90076FB25 /* MVNameGenerator.m in Sources */,
@@ -514,13 +597,17 @@
 		};
 		CD28B3661EB6AF7800BFFCAA /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8C95387DB1A2847D8AC2786A /* Pods-MVChat.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = FS86HTCRQ5;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INFOPLIST_FILE = MVChat/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = markvasiv.MVChat;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -569,13 +656,17 @@
 		};
 		CDAB099B1E7DE2D800A142DC /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 65B8EC006E287C9438A32E98 /* Pods-MVChat.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = FS86HTCRQ5;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_OPTIMIZATION_LEVEL = s;
 				INFOPLIST_FILE = MVChat/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = markvasiv.MVChat;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

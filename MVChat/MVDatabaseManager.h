@@ -35,5 +35,4 @@
 
 - (MVContactModel *)myContact;
 - (void)generateData;
-- (void)generateImagesForChats:(NSArray <MVChatModel *> *)chats;
 @end

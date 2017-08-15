@@ -1,0 +1,41 @@
+/* No comment provided by engineer. */
+"Albums" = "Альбомы";
+
+/* Button on main menu */
+"All albums" = "Все альбомы";
+
+/* No comment provided by engineer. */
+"Attach" = "Прикрепить";
+
+/* Button on main menu */
+"Attach %zd file(s)" = "Прикрепить %zd файл(ов)";
+
+/* Title */
+"Attach files" = "Прикрепить файлы";
+
+/* Error text */
+"Can't load Document Picker" = "Невозможно загрузить Document Picker";
+
+/* Common */
+"Cancel" = "Отменить";
+
+/* Error text */
+"Device has no camera" = "Устройство не имеет камеры";
+
+/* Common */
+"Error" = "Ошибка";
+
+/* Common */
+"OK" = "Ок";
+
+/* Button on main menu */
+"Other apps" = "Другие приложения";
+
+/* Button on main menu */
+"Take a picture" = "Сделать фото";
+
+/* Button on main menu */
+"Take a picture or a video" = "Сделать фото или видео";
+
+/* Button on main menu */
+"Take a video" = "Сделать видео";

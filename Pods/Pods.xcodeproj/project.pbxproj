@@ -1,0 +1,728 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		06B5069A5F19FE4AD66D07EEF5312B32 /* DBAttachmentPickerController-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 09BFA611248D9CFFF542C06A96DBD532 /* DBAttachmentPickerController-dummy.m */; };
+		0DD2BBACFED9CBCAA9D7244BA6D32329 /* UIImage+DBAssetIcons.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BFFBAB4ACD8A87AE395FAFA39AC35DC /* UIImage+DBAssetIcons.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		0EA7825901F479034B4D2750CEC978F7 /* DBAttachmentPickerController.h in Headers */ = {isa = PBXBuildFile; fileRef = CFC54EBF03CEBBB9D6BBC7F743E56E24 /* DBAttachmentPickerController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		0F5B696F279C18CC799FA22C67A02AA4 /* DBAttachmentAlertController.m in Sources */ = {isa = PBXBuildFile; fileRef = C3919292BB9DF87BD971911C9CFB11D8 /* DBAttachmentAlertController.m */; };
+		1166DA6ACEE279E8E316765BD325CE9D /* fr.lproj in Resources */ = {isa = PBXBuildFile; fileRef = CA0B88ECA52835B87EC36C41F5AEBA68 /* fr.lproj */; };
+		187A1495424D70FD11AA7E1A98D2F030 /* DBAssetPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = B83607548829A81B880DDBC92C5B9ABA /* DBAssetPickerController.m */; };
+		21A2A8B8E433E7FB17899E6BCF220781 /* DBAssetPickerController.h in Headers */ = {isa = PBXBuildFile; fileRef = 66F6D85E1BBE9865A45A2BFE060D6645 /* DBAssetPickerController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		29135F9A3934E40EA499B19D685B60B3 /* DBAssetItemsViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = CF278D4762027361168BA66C8264F5B9 /* DBAssetItemsViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2E5F9D4373EFC48CBFB7673D177B3B90 /* Pods-MVChat-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 27A24C30A06889667064AE4117543154 /* Pods-MVChat-dummy.m */; };
+		35BDF50775735C022D06A27A45D35BE2 /* UIImage+DBAssetIcons.m in Sources */ = {isa = PBXBuildFile; fileRef = C3F31ECF9094206B486052663DB1601D /* UIImage+DBAssetIcons.m */; };
+		35ED13AC016CB5BF96068B250A436101 /* DBAssetItemsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2698D59E7787586027E62C0404AA38F5 /* DBAssetItemsViewController.m */; };
+		37B54144DB7E69E8C89C623F532251E0 /* zh-Hans.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 436CBBE491003AA091A910AACFB9C78B /* zh-Hans.lproj */; };
+		3C17AC5F89C0C111362E4142CEF159E3 /* DBThumbnailPhotoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA9C65E824F65BFD9A8EB70F7AE43A22 /* DBThumbnailPhotoCell.m */; };
+		3E1B394F21BABDBEFEA043BFB495F10E /* pt-BR.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 299A141A144BA9A03879ECAA62AECFDD /* pt-BR.lproj */; };
+		3FEC663283625872FC23CB486CD3C9C0 /* es.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 82149EA279DA19A7F8ED92262E8CA569 /* es.lproj */; };
+		4AB2306BEE73DD9401D8EBC3E766E478 /* ru.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 45489554DB73533768A53BDFA363AB50 /* ru.lproj */; };
+		4C60E7F64DE1183D5E0A3EB2CE9FFF6D /* DBAttachmentAlertController.h in Headers */ = {isa = PBXBuildFile; fileRef = 8093CB64E1644C78B2CF2726D60B1C48 /* DBAttachmentAlertController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5A290177FCD74EF219DA8159E4EB3793 /* DBAssetGroupCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EF435AFD001C29AB8A90B6BEE4DAE7C /* DBAssetGroupCell.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5A564B459D48F8F232C17460D3920022 /* DBAttachment.h in Headers */ = {isa = PBXBuildFile; fileRef = A5D9F4AC7674EE870F7B4676AD019F23 /* DBAttachment.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		615F027AC1A3A09037259720AAF5C250 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
+		69F2756705F98B6D7A740F2203F9FE14 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
+		7129C84DB8530F0B6527116E6C5E6489 /* DBThumbnailPhotoCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C1B0C565908500DAE1C35EB28A897B5 /* DBThumbnailPhotoCell.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7559C32DE4DCA6B1191B89F8B564AB93 /* NSIndexSet+DBLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = 839B7EAFD38AA209E5D06FEAD767C6F7 /* NSIndexSet+DBLibrary.m */; };
+		7BE9EFE11C256B39F17A33864825178B /* DBAssetGroupCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1274ED0E4AB8F5AB3E8EFECA6B9DCAA7 /* DBAssetGroupCell.m */; };
+		8D5F0C19FE6A0ADCEE4B60C65A95F84A /* DBAssetGroupsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CB2E4ADA79611B3B08448BC6850E9D5 /* DBAssetGroupsViewController.m */; };
+		93AA70744EF858780131E7A0C24589B2 /* DBAssetImageView.h in Headers */ = {isa = PBXBuildFile; fileRef = 81588609BEBAB8EF7DE6CE20C8851171 /* DBAssetImageView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		981759504657873523BC967FC6C16139 /* NSBundle+DBLibrary.h in Headers */ = {isa = PBXBuildFile; fileRef = D0C55BBFECE5EC7423D80A8693AD2D98 /* NSBundle+DBLibrary.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		98D42EC431F3D30086923FB1AE295A36 /* DBAttachmentPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60367FC91B6C21601A4DC1FE683BA26B /* DBAttachmentPickerController.m */; };
+		99FF744E11FC704949C4664EE2EB2FF0 /* uk.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 8510E6F4CCBE1F08C3E9A69B8E6C066E /* uk.lproj */; };
+		B091D3ECC2E2BBBD9550929AEEEAF502 /* NSBundle+DBLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = F8ACD20E16EAA61EF711287644168656 /* NSBundle+DBLibrary.m */; };
+		B38AD27EE3C953E5CA9CF236292462AB /* de.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 7698508C0FA3B4CDE7E403956533A44E /* de.lproj */; };
+		C3FF916E79361E0F619A46DE04935585 /* DBAttachment.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F600FA540549EAE33E963EB6C249CA /* DBAttachment.m */; };
+		CFCA5117B28FBA5851A670BABECEFDE5 /* en.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 5716B98B5507D9547FBAFE4943D40667 /* en.lproj */; };
+		D0379B994461F6C8EF7374A9E6A94E2A /* DBAssetGroupsViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = C907D05F8419AA138EE6735150F4BB46 /* DBAssetGroupsViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		E14A169C9DB91F84D13B006CB46D0213 /* ja.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 2FC0059B7E865A134D66301583223E8E /* ja.lproj */; };
+		E15DCE0BB4FE24CA121AF30ABACC0431 /* zh-Hant.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 738AF31C2B9E6FA7898FD31E51FCA8D8 /* zh-Hant.lproj */; };
+		F7646624530B9B4F8BC5A8ED26C8C910 /* NSIndexSet+DBLibrary.h in Headers */ = {isa = PBXBuildFile; fileRef = EEDDBDA492E956F57CA1F89A361783D0 /* NSIndexSet+DBLibrary.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F99E47001E9428CD152ECEF47A7AEA03 /* DBAssetImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = EC04405841B46E0A291F6763DD993646 /* DBAssetImageView.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		77B3BA4A6144988ADED2CB855919A6C2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 60768CE8764DADBEF89A8F19911BB3DE;
+			remoteInfo = "DBAttachmentPickerController-DBAttachmentPickerController";
+		};
+		EC372CC5EA53AC2EBE64C7CE49E76232 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9E3BB0A2A87C3F351E722F86F39C67DD;
+			remoteInfo = DBAttachmentPickerController;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		09BFA611248D9CFFF542C06A96DBD532 /* DBAttachmentPickerController-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "DBAttachmentPickerController-dummy.m"; sourceTree = "<group>"; };
+		0A51BC6FFE5474F27496AA382A4663CD /* Pods-MVChat-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-MVChat-acknowledgements.markdown"; sourceTree = "<group>"; };
+		0C1B0C565908500DAE1C35EB28A897B5 /* DBThumbnailPhotoCell.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DBThumbnailPhotoCell.h; path = Source/Cells/DBThumbnailPhotoCell.h; sourceTree = "<group>"; };
+		1274ED0E4AB8F5AB3E8EFECA6B9DCAA7 /* DBAssetGroupCell.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DBAssetGroupCell.m; path = Source/Cells/DBAssetGroupCell.m; sourceTree = "<group>"; };
+		2698D59E7787586027E62C0404AA38F5 /* DBAssetItemsViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DBAssetItemsViewController.m; path = Source/DBAssetPickerController/DBAssetItemsViewController.m; sourceTree = "<group>"; };
+		27A24C30A06889667064AE4117543154 /* Pods-MVChat-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-MVChat-dummy.m"; sourceTree = "<group>"; };
+		286758BFB9EBC3D6479422CCD5E0E737 /* DBThumbnailPhotoCell.xib */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.xib; name = DBThumbnailPhotoCell.xib; path = Source/Cells/DBThumbnailPhotoCell.xib; sourceTree = "<group>"; };
+		299A141A144BA9A03879ECAA62AECFDD /* pt-BR.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = "pt-BR.lproj"; path = "Source/Localization/pt-BR.lproj"; sourceTree = "<group>"; };
+		2C50E5836583A6D5E5FB0B8E6F6DBE32 /* libPods-MVChat.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libPods-MVChat.a"; path = "libPods-MVChat.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2EF435AFD001C29AB8A90B6BEE4DAE7C /* DBAssetGroupCell.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DBAssetGroupCell.h; path = Source/Cells/DBAssetGroupCell.h; sourceTree = "<group>"; };
+		2FC0059B7E865A134D66301583223E8E /* ja.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = ja.lproj; path = Source/Localization/ja.lproj; sourceTree = "<group>"; };
+		436CBBE491003AA091A910AACFB9C78B /* zh-Hans.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = "zh-Hans.lproj"; path = "Source/Localization/zh-Hans.lproj"; sourceTree = "<group>"; };
+		45489554DB73533768A53BDFA363AB50 /* ru.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = ru.lproj; path = Source/Localization/ru.lproj; sourceTree = "<group>"; };
+		4BFFBAB4ACD8A87AE395FAFA39AC35DC /* UIImage+DBAssetIcons.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIImage+DBAssetIcons.h"; path = "Source/Categories/UIImage+DBAssetIcons.h"; sourceTree = "<group>"; };
+		55ECF13EB8B0668A7AAE4DB12613A7D1 /* Pods-MVChat.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MVChat.release.xcconfig"; sourceTree = "<group>"; };
+		5716B98B5507D9547FBAFE4943D40667 /* en.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = en.lproj; path = Source/Localization/en.lproj; sourceTree = "<group>"; };
+		60367FC91B6C21601A4DC1FE683BA26B /* DBAttachmentPickerController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DBAttachmentPickerController.m; path = Source/DBAttachmentPickerController.m; sourceTree = "<group>"; };
+		65FF4A39ABA9923F9DFB9FA5B0454C81 /* Pods-MVChat-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-MVChat-resources.sh"; sourceTree = "<group>"; };
+		6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.3.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		66F6D85E1BBE9865A45A2BFE060D6645 /* DBAssetPickerController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DBAssetPickerController.h; path = Source/DBAssetPickerController/DBAssetPickerController.h; sourceTree = "<group>"; };
+		6AAD85906718542FDA3AC0847C964C77 /* ResourceBundle-DBAttachmentPickerController-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "ResourceBundle-DBAttachmentPickerController-Info.plist"; sourceTree = "<group>"; };
+		6CB2E4ADA79611B3B08448BC6850E9D5 /* DBAssetGroupsViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DBAssetGroupsViewController.m; path = Source/DBAssetPickerController/DBAssetGroupsViewController.m; sourceTree = "<group>"; };
+		738AF31C2B9E6FA7898FD31E51FCA8D8 /* zh-Hant.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = "zh-Hant.lproj"; path = "Source/Localization/zh-Hant.lproj"; sourceTree = "<group>"; };
+		746D2C4F320EFCAA0BBB899E6DB691C7 /* DBAssetGroupsViewController.xib */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.xib; name = DBAssetGroupsViewController.xib; path = Source/DBAssetPickerController/DBAssetGroupsViewController.xib; sourceTree = "<group>"; };
+		7698508C0FA3B4CDE7E403956533A44E /* de.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = de.lproj; path = Source/Localization/de.lproj; sourceTree = "<group>"; };
+		8093CB64E1644C78B2CF2726D60B1C48 /* DBAttachmentAlertController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DBAttachmentAlertController.h; path = Source/DBAttachmentAlertController/DBAttachmentAlertController.h; sourceTree = "<group>"; };
+		81588609BEBAB8EF7DE6CE20C8851171 /* DBAssetImageView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DBAssetImageView.h; path = Source/Common/DBAssetImageView.h; sourceTree = "<group>"; };
+		82149EA279DA19A7F8ED92262E8CA569 /* es.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = es.lproj; path = Source/Localization/es.lproj; sourceTree = "<group>"; };
+		839B7EAFD38AA209E5D06FEAD767C6F7 /* NSIndexSet+DBLibrary.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSIndexSet+DBLibrary.m"; path = "Source/Categories/NSIndexSet+DBLibrary.m"; sourceTree = "<group>"; };
+		8510E6F4CCBE1F08C3E9A69B8E6C066E /* uk.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = uk.lproj; path = Source/Localization/uk.lproj; sourceTree = "<group>"; };
+		8820F6DAF1E371284D8557FF207DC6D9 /* DBAssetItemsViewController.xib */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.xib; name = DBAssetItemsViewController.xib; path = Source/DBAssetPickerController/DBAssetItemsViewController.xib; sourceTree = "<group>"; };
+		89F89C058DC16DBC58CB3D8BCE9619B5 /* DBAttachmentPickerController.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = DBAttachmentPickerController.bundle; path = DBAttachmentPickerController.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		A5D9F4AC7674EE870F7B4676AD019F23 /* DBAttachment.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DBAttachment.h; path = Source/Models/DBAttachment.h; sourceTree = "<group>"; };
+		AA9C65E824F65BFD9A8EB70F7AE43A22 /* DBThumbnailPhotoCell.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DBThumbnailPhotoCell.m; path = Source/Cells/DBThumbnailPhotoCell.m; sourceTree = "<group>"; };
+		AC54ADEA252CDFD587C637D2DA0BA101 /* libDBAttachmentPickerController.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libDBAttachmentPickerController.a; path = libDBAttachmentPickerController.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		B2EA1D6734F8EC3E1CC554E1984D54AF /* DBAssetGroupCell.xib */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.xib; name = DBAssetGroupCell.xib; path = Source/Cells/DBAssetGroupCell.xib; sourceTree = "<group>"; };
+		B78E5AD868505797C5708AAC0C8B5A7B /* DBAttachmentPickerController.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = DBAttachmentPickerController.xcconfig; sourceTree = "<group>"; };
+		B83607548829A81B880DDBC92C5B9ABA /* DBAssetPickerController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DBAssetPickerController.m; path = Source/DBAssetPickerController/DBAssetPickerController.m; sourceTree = "<group>"; };
+		C3919292BB9DF87BD971911C9CFB11D8 /* DBAttachmentAlertController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DBAttachmentAlertController.m; path = Source/DBAttachmentAlertController/DBAttachmentAlertController.m; sourceTree = "<group>"; };
+		C39F4571A6A0E568E53CF29AC0A24EC1 /* Pods-MVChat-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-MVChat-acknowledgements.plist"; sourceTree = "<group>"; };
+		C3F31ECF9094206B486052663DB1601D /* UIImage+DBAssetIcons.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIImage+DBAssetIcons.m"; path = "Source/Categories/UIImage+DBAssetIcons.m"; sourceTree = "<group>"; };
+		C907D05F8419AA138EE6735150F4BB46 /* DBAssetGroupsViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DBAssetGroupsViewController.h; path = Source/DBAssetPickerController/DBAssetGroupsViewController.h; sourceTree = "<group>"; };
+		CA0B88ECA52835B87EC36C41F5AEBA68 /* fr.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = fr.lproj; path = Source/Localization/fr.lproj; sourceTree = "<group>"; };
+		CF278D4762027361168BA66C8264F5B9 /* DBAssetItemsViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DBAssetItemsViewController.h; path = Source/DBAssetPickerController/DBAssetItemsViewController.h; sourceTree = "<group>"; };
+		CFC54EBF03CEBBB9D6BBC7F743E56E24 /* DBAttachmentPickerController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DBAttachmentPickerController.h; path = Source/DBAttachmentPickerController.h; sourceTree = "<group>"; };
+		D0C55BBFECE5EC7423D80A8693AD2D98 /* NSBundle+DBLibrary.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSBundle+DBLibrary.h"; path = "Source/Categories/NSBundle+DBLibrary.h"; sourceTree = "<group>"; };
+		D6F600FA540549EAE33E963EB6C249CA /* DBAttachment.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DBAttachment.m; path = Source/Models/DBAttachment.m; sourceTree = "<group>"; };
+		DD28989B63319F34547342729CFA0A74 /* DBAttachmentPickerController-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "DBAttachmentPickerController-prefix.pch"; sourceTree = "<group>"; };
+		E4D3E070615252F41375124C9295890E /* Pods-MVChat.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MVChat.debug.xcconfig"; sourceTree = "<group>"; };
+		E5881D168A904B933371E7D9E704118F /* Pods-MVChat-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-MVChat-frameworks.sh"; sourceTree = "<group>"; };
+		EC04405841B46E0A291F6763DD993646 /* DBAssetImageView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DBAssetImageView.m; path = Source/Common/DBAssetImageView.m; sourceTree = "<group>"; };
+		EEDDBDA492E956F57CA1F89A361783D0 /* NSIndexSet+DBLibrary.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSIndexSet+DBLibrary.h"; path = "Source/Categories/NSIndexSet+DBLibrary.h"; sourceTree = "<group>"; };
+		F8ACD20E16EAA61EF711287644168656 /* NSBundle+DBLibrary.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSBundle+DBLibrary.m"; path = "Source/Categories/NSBundle+DBLibrary.m"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		63E535CB86F2402A556FD1D06F273191 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				69F2756705F98B6D7A740F2203F9FE14 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C4B2A62DAB19ADDC92583C39E01F9239 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E2C220B73EC73077AD42699140AE79B2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				615F027AC1A3A09037259720AAF5C250 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0027D61102F9E5934B911F3670F7709A /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				9B5760B070E15E5994888A09D0D2233E /* DBAttachmentPickerController */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		2F5B061DCDA00DF8D9EB7F0A50D90992 /* Pods-MVChat */ = {
+			isa = PBXGroup;
+			children = (
+				0A51BC6FFE5474F27496AA382A4663CD /* Pods-MVChat-acknowledgements.markdown */,
+				C39F4571A6A0E568E53CF29AC0A24EC1 /* Pods-MVChat-acknowledgements.plist */,
+				27A24C30A06889667064AE4117543154 /* Pods-MVChat-dummy.m */,
+				E5881D168A904B933371E7D9E704118F /* Pods-MVChat-frameworks.sh */,
+				65FF4A39ABA9923F9DFB9FA5B0454C81 /* Pods-MVChat-resources.sh */,
+				E4D3E070615252F41375124C9295890E /* Pods-MVChat.debug.xcconfig */,
+				55ECF13EB8B0668A7AAE4DB12613A7D1 /* Pods-MVChat.release.xcconfig */,
+			);
+			name = "Pods-MVChat";
+			path = "Target Support Files/Pods-MVChat";
+			sourceTree = "<group>";
+		};
+		76E3834FD4058240C30996749F898C47 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				B78E5AD868505797C5708AAC0C8B5A7B /* DBAttachmentPickerController.xcconfig */,
+				09BFA611248D9CFFF542C06A96DBD532 /* DBAttachmentPickerController-dummy.m */,
+				DD28989B63319F34547342729CFA0A74 /* DBAttachmentPickerController-prefix.pch */,
+				6AAD85906718542FDA3AC0847C964C77 /* ResourceBundle-DBAttachmentPickerController-Info.plist */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/DBAttachmentPickerController";
+			sourceTree = "<group>";
+		};
+		7DB346D0F39D3F0E887471402A8071AB = {
+			isa = PBXGroup;
+			children = (
+				93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */,
+				BC3CA7F9E30CC8F7E2DD044DD34432FC /* Frameworks */,
+				0027D61102F9E5934B911F3670F7709A /* Pods */,
+				C189396A4E2E9B390E86195153E54AB5 /* Products */,
+				B50C76136F89CB81580AE6476FD3BE26 /* Targets Support Files */,
+			);
+			sourceTree = "<group>";
+		};
+		9B5760B070E15E5994888A09D0D2233E /* DBAttachmentPickerController */ = {
+			isa = PBXGroup;
+			children = (
+				2EF435AFD001C29AB8A90B6BEE4DAE7C /* DBAssetGroupCell.h */,
+				1274ED0E4AB8F5AB3E8EFECA6B9DCAA7 /* DBAssetGroupCell.m */,
+				C907D05F8419AA138EE6735150F4BB46 /* DBAssetGroupsViewController.h */,
+				6CB2E4ADA79611B3B08448BC6850E9D5 /* DBAssetGroupsViewController.m */,
+				81588609BEBAB8EF7DE6CE20C8851171 /* DBAssetImageView.h */,
+				EC04405841B46E0A291F6763DD993646 /* DBAssetImageView.m */,
+				CF278D4762027361168BA66C8264F5B9 /* DBAssetItemsViewController.h */,
+				2698D59E7787586027E62C0404AA38F5 /* DBAssetItemsViewController.m */,
+				66F6D85E1BBE9865A45A2BFE060D6645 /* DBAssetPickerController.h */,
+				B83607548829A81B880DDBC92C5B9ABA /* DBAssetPickerController.m */,
+				A5D9F4AC7674EE870F7B4676AD019F23 /* DBAttachment.h */,
+				D6F600FA540549EAE33E963EB6C249CA /* DBAttachment.m */,
+				8093CB64E1644C78B2CF2726D60B1C48 /* DBAttachmentAlertController.h */,
+				C3919292BB9DF87BD971911C9CFB11D8 /* DBAttachmentAlertController.m */,
+				CFC54EBF03CEBBB9D6BBC7F743E56E24 /* DBAttachmentPickerController.h */,
+				60367FC91B6C21601A4DC1FE683BA26B /* DBAttachmentPickerController.m */,
+				0C1B0C565908500DAE1C35EB28A897B5 /* DBThumbnailPhotoCell.h */,
+				AA9C65E824F65BFD9A8EB70F7AE43A22 /* DBThumbnailPhotoCell.m */,
+				D0C55BBFECE5EC7423D80A8693AD2D98 /* NSBundle+DBLibrary.h */,
+				F8ACD20E16EAA61EF711287644168656 /* NSBundle+DBLibrary.m */,
+				EEDDBDA492E956F57CA1F89A361783D0 /* NSIndexSet+DBLibrary.h */,
+				839B7EAFD38AA209E5D06FEAD767C6F7 /* NSIndexSet+DBLibrary.m */,
+				4BFFBAB4ACD8A87AE395FAFA39AC35DC /* UIImage+DBAssetIcons.h */,
+				C3F31ECF9094206B486052663DB1601D /* UIImage+DBAssetIcons.m */,
+				FA970A502C4D1F86A126CC6C3BC8F0FE /* Resources */,
+				76E3834FD4058240C30996749F898C47 /* Support Files */,
+			);
+			name = DBAttachmentPickerController;
+			path = DBAttachmentPickerController;
+			sourceTree = "<group>";
+		};
+		B50C76136F89CB81580AE6476FD3BE26 /* Targets Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				2F5B061DCDA00DF8D9EB7F0A50D90992 /* Pods-MVChat */,
+			);
+			name = "Targets Support Files";
+			sourceTree = "<group>";
+		};
+		BC3CA7F9E30CC8F7E2DD044DD34432FC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				D35AF013A5F0BAD4F32504907A52519E /* iOS */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		C189396A4E2E9B390E86195153E54AB5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				89F89C058DC16DBC58CB3D8BCE9619B5 /* DBAttachmentPickerController.bundle */,
+				AC54ADEA252CDFD587C637D2DA0BA101 /* libDBAttachmentPickerController.a */,
+				2C50E5836583A6D5E5FB0B8E6F6DBE32 /* libPods-MVChat.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D35AF013A5F0BAD4F32504907A52519E /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		FA970A502C4D1F86A126CC6C3BC8F0FE /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				B2EA1D6734F8EC3E1CC554E1984D54AF /* DBAssetGroupCell.xib */,
+				746D2C4F320EFCAA0BBB899E6DB691C7 /* DBAssetGroupsViewController.xib */,
+				8820F6DAF1E371284D8557FF207DC6D9 /* DBAssetItemsViewController.xib */,
+				286758BFB9EBC3D6479422CCD5E0E737 /* DBThumbnailPhotoCell.xib */,
+				7698508C0FA3B4CDE7E403956533A44E /* de.lproj */,
+				5716B98B5507D9547FBAFE4943D40667 /* en.lproj */,
+				82149EA279DA19A7F8ED92262E8CA569 /* es.lproj */,
+				CA0B88ECA52835B87EC36C41F5AEBA68 /* fr.lproj */,
+				2FC0059B7E865A134D66301583223E8E /* ja.lproj */,
+				299A141A144BA9A03879ECAA62AECFDD /* pt-BR.lproj */,
+				45489554DB73533768A53BDFA363AB50 /* ru.lproj */,
+				8510E6F4CCBE1F08C3E9A69B8E6C066E /* uk.lproj */,
+				436CBBE491003AA091A910AACFB9C78B /* zh-Hans.lproj */,
+				738AF31C2B9E6FA7898FD31E51FCA8D8 /* zh-Hant.lproj */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		302CF6AD2EBCC37F2A3BF46893879B4D /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5A290177FCD74EF219DA8159E4EB3793 /* DBAssetGroupCell.h in Headers */,
+				D0379B994461F6C8EF7374A9E6A94E2A /* DBAssetGroupsViewController.h in Headers */,
+				93AA70744EF858780131E7A0C24589B2 /* DBAssetImageView.h in Headers */,
+				29135F9A3934E40EA499B19D685B60B3 /* DBAssetItemsViewController.h in Headers */,
+				21A2A8B8E433E7FB17899E6BCF220781 /* DBAssetPickerController.h in Headers */,
+				5A564B459D48F8F232C17460D3920022 /* DBAttachment.h in Headers */,
+				4C60E7F64DE1183D5E0A3EB2CE9FFF6D /* DBAttachmentAlertController.h in Headers */,
+				0EA7825901F479034B4D2750CEC978F7 /* DBAttachmentPickerController.h in Headers */,
+				7129C84DB8530F0B6527116E6C5E6489 /* DBThumbnailPhotoCell.h in Headers */,
+				981759504657873523BC967FC6C16139 /* NSBundle+DBLibrary.h in Headers */,
+				F7646624530B9B4F8BC5A8ED26C8C910 /* NSIndexSet+DBLibrary.h in Headers */,
+				0DD2BBACFED9CBCAA9D7244BA6D32329 /* UIImage+DBAssetIcons.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		199F19139FF4A727868744FE8A820745 /* Pods-MVChat */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3691140EBCF12500AD8AC3DFB6D8A05A /* Build configuration list for PBXNativeTarget "Pods-MVChat" */;
+			buildPhases = (
+				1446656BF3DD16FF96A6F7016411D92B /* Sources */,
+				E2C220B73EC73077AD42699140AE79B2 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				65195E5B3CC0034769953E20C1CCA585 /* PBXTargetDependency */,
+			);
+			name = "Pods-MVChat";
+			productName = "Pods-MVChat";
+			productReference = 2C50E5836583A6D5E5FB0B8E6F6DBE32 /* libPods-MVChat.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		60768CE8764DADBEF89A8F19911BB3DE /* DBAttachmentPickerController-DBAttachmentPickerController */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7BF206DD80FBB3359B34BFACB618C495 /* Build configuration list for PBXNativeTarget "DBAttachmentPickerController-DBAttachmentPickerController" */;
+			buildPhases = (
+				A286D6DF487B0578C3B1412CD0D3E70B /* Sources */,
+				C4B2A62DAB19ADDC92583C39E01F9239 /* Frameworks */,
+				B3C3D54D601275A33E9426E9697B885B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "DBAttachmentPickerController-DBAttachmentPickerController";
+			productName = "DBAttachmentPickerController-DBAttachmentPickerController";
+			productReference = 89F89C058DC16DBC58CB3D8BCE9619B5 /* DBAttachmentPickerController.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
+		9E3BB0A2A87C3F351E722F86F39C67DD /* DBAttachmentPickerController */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 83AAE57D80C2FC9F3288042A83A08E43 /* Build configuration list for PBXNativeTarget "DBAttachmentPickerController" */;
+			buildPhases = (
+				C9D6A630FFD8075BCECA5335AAFE56C7 /* Sources */,
+				63E535CB86F2402A556FD1D06F273191 /* Frameworks */,
+				302CF6AD2EBCC37F2A3BF46893879B4D /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7C23E69245AFD25E30258C12FAD0A5D1 /* PBXTargetDependency */,
+			);
+			name = DBAttachmentPickerController;
+			productName = DBAttachmentPickerController;
+			productReference = AC54ADEA252CDFD587C637D2DA0BA101 /* libDBAttachmentPickerController.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D41D8CD98F00B204E9800998ECF8427E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0830;
+				LastUpgradeCheck = 0700;
+			};
+			buildConfigurationList = 2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 7DB346D0F39D3F0E887471402A8071AB;
+			productRefGroup = C189396A4E2E9B390E86195153E54AB5 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				9E3BB0A2A87C3F351E722F86F39C67DD /* DBAttachmentPickerController */,
+				60768CE8764DADBEF89A8F19911BB3DE /* DBAttachmentPickerController-DBAttachmentPickerController */,
+				199F19139FF4A727868744FE8A820745 /* Pods-MVChat */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		B3C3D54D601275A33E9426E9697B885B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B38AD27EE3C953E5CA9CF236292462AB /* de.lproj in Resources */,
+				CFCA5117B28FBA5851A670BABECEFDE5 /* en.lproj in Resources */,
+				3FEC663283625872FC23CB486CD3C9C0 /* es.lproj in Resources */,
+				1166DA6ACEE279E8E316765BD325CE9D /* fr.lproj in Resources */,
+				E14A169C9DB91F84D13B006CB46D0213 /* ja.lproj in Resources */,
+				3E1B394F21BABDBEFEA043BFB495F10E /* pt-BR.lproj in Resources */,
+				4AB2306BEE73DD9401D8EBC3E766E478 /* ru.lproj in Resources */,
+				99FF744E11FC704949C4664EE2EB2FF0 /* uk.lproj in Resources */,
+				37B54144DB7E69E8C89C623F532251E0 /* zh-Hans.lproj in Resources */,
+				E15DCE0BB4FE24CA121AF30ABACC0431 /* zh-Hant.lproj in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1446656BF3DD16FF96A6F7016411D92B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2E5F9D4373EFC48CBFB7673D177B3B90 /* Pods-MVChat-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A286D6DF487B0578C3B1412CD0D3E70B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C9D6A630FFD8075BCECA5335AAFE56C7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7BE9EFE11C256B39F17A33864825178B /* DBAssetGroupCell.m in Sources */,
+				8D5F0C19FE6A0ADCEE4B60C65A95F84A /* DBAssetGroupsViewController.m in Sources */,
+				F99E47001E9428CD152ECEF47A7AEA03 /* DBAssetImageView.m in Sources */,
+				35ED13AC016CB5BF96068B250A436101 /* DBAssetItemsViewController.m in Sources */,
+				187A1495424D70FD11AA7E1A98D2F030 /* DBAssetPickerController.m in Sources */,
+				C3FF916E79361E0F619A46DE04935585 /* DBAttachment.m in Sources */,
+				0F5B696F279C18CC799FA22C67A02AA4 /* DBAttachmentAlertController.m in Sources */,
+				06B5069A5F19FE4AD66D07EEF5312B32 /* DBAttachmentPickerController-dummy.m in Sources */,
+				98D42EC431F3D30086923FB1AE295A36 /* DBAttachmentPickerController.m in Sources */,
+				3C17AC5F89C0C111362E4142CEF159E3 /* DBThumbnailPhotoCell.m in Sources */,
+				B091D3ECC2E2BBBD9550929AEEEAF502 /* NSBundle+DBLibrary.m in Sources */,
+				7559C32DE4DCA6B1191B89F8B564AB93 /* NSIndexSet+DBLibrary.m in Sources */,
+				35BDF50775735C022D06A27A45D35BE2 /* UIImage+DBAssetIcons.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		65195E5B3CC0034769953E20C1CCA585 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = DBAttachmentPickerController;
+			target = 9E3BB0A2A87C3F351E722F86F39C67DD /* DBAttachmentPickerController */;
+			targetProxy = EC372CC5EA53AC2EBE64C7CE49E76232 /* PBXContainerItemProxy */;
+		};
+		7C23E69245AFD25E30258C12FAD0A5D1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "DBAttachmentPickerController-DBAttachmentPickerController";
+			target = 60768CE8764DADBEF89A8F19911BB3DE /* DBAttachmentPickerController-DBAttachmentPickerController */;
+			targetProxy = 77B3BA4A6144988ADED2CB855919A6C2 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0FD93EF507ED3951A1ECE60D80C1A011 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 55ECF13EB8B0668A7AAE4DB12613A7D1 /* Pods-MVChat.release.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MACH_O_TYPE = staticlib;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		2CEE265EBF1E6F92B23690A9D1D82652 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B78E5AD868505797C5708AAC0C8B5A7B /* DBAttachmentPickerController.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/DBAttachmentPickerController/DBAttachmentPickerController-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+			};
+			name = Release;
+		};
+		408B2A3AD8239B8944A388B38E9BA7D0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B78E5AD868505797C5708AAC0C8B5A7B /* DBAttachmentPickerController.xcconfig */;
+			buildSettings = {
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/DBAttachmentPickerController";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "Target Support Files/DBAttachmentPickerController/ResourceBundle-DBAttachmentPickerController-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				PRODUCT_NAME = DBAttachmentPickerController;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Release;
+		};
+		46BFE30A420634ADEF90F9E146A02090 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E4D3E070615252F41375124C9295890E /* Pods-MVChat.debug.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MACH_O_TYPE = staticlib;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		6A7AD47002EA79F0B2881BFA6EE4ECC2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B78E5AD868505797C5708AAC0C8B5A7B /* DBAttachmentPickerController.xcconfig */;
+			buildSettings = {
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/DBAttachmentPickerController";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "Target Support Files/DBAttachmentPickerController/ResourceBundle-DBAttachmentPickerController-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				PRODUCT_NAME = DBAttachmentPickerController;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
+		97803B46811A9BDB5E70FA1303AFBFFE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_REQUIRED = NO;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				ONLY_ACTIVE_ARCH = YES;
+				PROVISIONING_PROFILE_SPECIFIER = NO_SIGNING/;
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		BDD0139D6EB93FA375F887ABD62DAB2E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_REQUIRED = NO;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				PROVISIONING_PROFILE_SPECIFIER = NO_SIGNING/;
+				STRIP_INSTALLED_PRODUCT = NO;
+				SYMROOT = "${SRCROOT}/../build";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F69994C79D85C6F971EE6D0A1C23B402 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B78E5AD868505797C5708AAC0C8B5A7B /* DBAttachmentPickerController.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/DBAttachmentPickerController/DBAttachmentPickerController-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				97803B46811A9BDB5E70FA1303AFBFFE /* Debug */,
+				BDD0139D6EB93FA375F887ABD62DAB2E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3691140EBCF12500AD8AC3DFB6D8A05A /* Build configuration list for PBXNativeTarget "Pods-MVChat" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				46BFE30A420634ADEF90F9E146A02090 /* Debug */,
+				0FD93EF507ED3951A1ECE60D80C1A011 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7BF206DD80FBB3359B34BFACB618C495 /* Build configuration list for PBXNativeTarget "DBAttachmentPickerController-DBAttachmentPickerController" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6A7AD47002EA79F0B2881BFA6EE4ECC2 /* Debug */,
+				408B2A3AD8239B8944A388B38E9BA7D0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		83AAE57D80C2FC9F3288042A83A08E43 /* Build configuration list for PBXNativeTarget "DBAttachmentPickerController" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F69994C79D85C6F971EE6D0A1C23B402 /* Debug */,
+				2CEE265EBF1E6F92B23690A9D1D82652 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+}

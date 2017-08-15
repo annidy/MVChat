@@ -14,10 +14,9 @@
 @interface MVContactManager()
 @property (strong, nonatomic) dispatch_queue_t managerQueue;
 @property (strong, nonatomic) NSArray <MVContactModel *> *contacts;
-
 @end
-@implementation MVContactManager
 
+@implementation MVContactManager
 
 + (instancetype)sharedInstance {
     static dispatch_once_t onceToken;

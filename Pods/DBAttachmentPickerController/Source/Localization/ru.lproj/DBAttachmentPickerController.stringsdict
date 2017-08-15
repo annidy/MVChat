@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<dict>
+    <key>Attach %zd file(s)</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@files@</string>
+        <key>files</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>zd</string>
+            <key>one</key>
+            <string>Прикрепить %zd файл</string>
+            <key>many</key>
+            <string>Прикрепить %zd файлов</string>
+            <key>other</key>
+            <string>Прикрепить %zd файла</string>
+        </dict>
+    </dict>
+    
+</dict>
