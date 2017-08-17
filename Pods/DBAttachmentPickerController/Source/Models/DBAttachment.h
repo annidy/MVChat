@@ -115,6 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
  @return Can be return PHAsset, UIImage or local file path (NSString)
  */
 - (id)originalFileResource;
+- (UIImage *)loadOriginalImageSync;
 
 NS_ASSUME_NONNULL_END
 

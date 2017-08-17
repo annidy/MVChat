@@ -87,20 +87,22 @@
     model.sourceType = DBAttachmentSourceTypeDocumentURL;
     
     NSString *fileTmpPath = [url path];
+    model.originalFilePath = fileTmpPath;
+    
     if ( [[NSFileManager defaultManager] fileExistsAtPath:fileTmpPath] ) {
         model.fileName = [fileTmpPath lastPathComponent];
-        NSString *cacheFolderPath = [[model cacheFolderPath] stringByAppendingPathComponent:model.restorationIdentifier];
-        NSError *error;
-        if ( ![[NSFileManager defaultManager] fileExistsAtPath:cacheFolderPath] ) {
-            [[NSFileManager defaultManager] createDirectoryAtPath:cacheFolderPath withIntermediateDirectories:YES attributes:nil error:&error];
-        }
+  //      NSString *cacheFolderPath = [[model cacheFolderPath] stringByAppendingPathComponent:model.restorationIdentifier];
+//        NSError *error;
+//        if ( ![[NSFileManager defaultManager] fileExistsAtPath:cacheFolderPath] ) {
+//            [[NSFileManager defaultManager] createDirectoryAtPath:cacheFolderPath withIntermediateDirectories:YES attributes:nil error:&error];
+//        }
         
         NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:fileTmpPath error:nil];
         model.creationDate = attributes[NSFileCreationDate];
         model.fileSize = [attributes[NSFileSize] integerValue];
         
-        model.originalFilePath = [cacheFolderPath stringByAppendingPathComponent:model.fileName];
-        [[NSFileManager defaultManager] copyItemAtPath:fileTmpPath toPath:model.originalFilePath error:&error];
+        //model.originalFilePath = [cacheFolderPath stringByAppendingPathComponent:model.fileName];
+        //[[NSFileManager defaultManager] copyItemAtPath:fileTmpPath toPath:model.originalFilePath error:&error];
     }
     
     NSString *fileExt = [[[url absoluteString] pathExtension] lowercaseString];
@@ -214,6 +216,41 @@
             }
             break;
     }
+}
+
+- (UIImage *)loadOriginalImageSync {
+    __block UIImage *resultImg;
+    PHImageRequestOptions *options = [PHImageRequestOptions new];
+    options.synchronous = YES;
+    
+    switch (self.sourceType) {
+        case DBAttachmentSourceTypePHAsset:
+            
+            [[PHImageManager defaultManager] requestImageForAsset:self.photoAsset
+                                                       targetSize:PHImageManagerMaximumSize
+                                                      contentMode:PHImageContentModeDefault
+                                                          options:options
+                                                    resultHandler:^(UIImage *result, NSDictionary *info) {
+                                                        resultImg = result;
+                                                    }];
+            
+            break;
+        case DBAttachmentSourceTypeImage: {
+            resultImg = self.image;
+            break;
+        }
+        case DBAttachmentSourceTypeDocumentURL: {
+            if (!self.image) {
+                self.image = [UIImage imageWithContentsOfFile:self.originalFilePath];
+            }
+            resultImg = self.image;
+            break;
+        }
+        default:
+            break;
+    }
+    
+    return resultImg;
 }
 
 - (id)originalFileResource {
