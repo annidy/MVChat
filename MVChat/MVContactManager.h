@@ -26,4 +26,6 @@
 
 - (void)loadAvatarThumbnailForContact:(MVContactModel *)contact completion:(void (^)(UIImage *))callback;
 
+- (NSString *)lastSeenTimeStringForDate:(NSDate *)lastSeenDate;
+
 @end

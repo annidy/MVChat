@@ -64,6 +64,10 @@ static MVRandomGenerator *singleton;
 }
 
 #pragma mark - Randoms
+- (BOOL)randomBool {
+    return (BOOL)[self randomUIntegerWithMin:0 andMax:1];
+}
+
 - (NSUInteger)randomUIntegerWithMin:(NSUInteger)min andMax:(NSUInteger)max {
     NSAssert(max > min, @"max must be > than min");
     return min + (NSUInteger) arc4random_uniform((uint32_t)(max - min + 1));
@@ -89,6 +93,15 @@ static MVRandomGenerator *singleton;
     return date;
 }
 
+- (NSDate *)randomDateDuringLast:(NSTimeInterval)timeInterval {
+    NSDate *date = [NSDate new];
+    
+    double time = arc4random_uniform(timeInterval);
+    date = [date dateByAddingTimeInterval:-time];
+    
+    return date;
+}
+
 - (NSString *)randomUserName {
     return [[self nameGenerator] getName];
 }
@@ -99,6 +112,14 @@ static MVRandomGenerator *singleton;
 
 - (NSString *)randomAvatarName {
     return [NSString stringWithFormat:@"avatar0%lu", (unsigned long)[self randomUIntegerWithMin:1 andMax:5]];
+}
+
+- (NSDate *)randomLastSeenDate {
+    if ([self randomBool]) {
+        return [self randomDateDuringLast:10000];
+    } else {
+        return [NSDate new];
+    }
 }
 
 - (NSString *)randomPhoneNumber {
@@ -120,6 +141,7 @@ static MVRandomGenerator *singleton;
         [phoneNumbers addObject:[self randomPhoneNumber]];
     }
     contact.phoneNumbers = [phoneNumbers copy];
+    contact.lastSeenDate = [self randomLastSeenDate];
     
     return contact;
 }

@@ -35,7 +35,8 @@
             (self.avatarName == contact.avatarName || [self.avatarName isEqualToString:contact.avatarName]) &&
             self.status == contact.status &&
             self.iam == contact.iam &&
-            (self.phoneNumbers == contact.phoneNumbers || [self.phoneNumbers isEqualToArray:contact.phoneNumbers]);
+            (self.phoneNumbers == contact.phoneNumbers || [self.phoneNumbers isEqualToArray:contact.phoneNumbers]) &&
+            (self.lastSeenDate == contact.lastSeenDate || [self.lastSeenDate isEqualToDate:contact.lastSeenDate]);
 }
 
 -(NSUInteger)hash {
@@ -50,6 +51,7 @@
     copy.status = self.status;
     copy.avatarName = [self.avatarName copy];
     copy.phoneNumbers = [self.phoneNumbers copy];
+    copy.lastSeenDate = [self.lastSeenDate copy];
     
     return copy;
 }

@@ -12,6 +12,7 @@
 #import "MVDatabaseManager.h"
 #import "MVFileManager.h"
 #import <DBAttachment.h>
+#import "MVRandomGenerator.h"
 
 @interface MVContactManager()
 @property (strong, nonatomic) dispatch_queue_t managerQueue;
@@ -34,6 +35,9 @@
     if (self = [super init]) {
         _managerQueue = dispatch_queue_create("com.markvasiv.contactsManager", DISPATCH_QUEUE_SERIAL);
         _contacts = [NSArray new];
+        dispatch_async(self.managerQueue, ^{
+            [self generateUserActivity];
+        });
     }
     
     return self;
@@ -77,6 +81,73 @@
     }];
 }
 
+- (NSString *)lastSeenTimeStringForDate:(NSDate *)lastSeenDate {
+    NSString *durationString;
+    
+    NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitDay|NSCalendarUnitHour|NSCalendarUnitMinute
+                                                 fromDate:lastSeenDate
+                                                   toDate:[NSDate new]
+                                                  options: 0];
+    NSInteger days = [components day];
+    NSInteger hour = [components hour];
+    NSInteger minutes = [components minute];
+    
+    if (days > 0) {
+        if (days > 1) {
+            durationString = [NSString stringWithFormat:@"%ld days", (long)days];
+        }
+        else {
+            durationString = [NSString stringWithFormat:@"%ld day", (long)days];
+        }
+    } else if (hour > 0) {
+        if (hour > 1) {
+            durationString = [NSString stringWithFormat:@"%ld hours", (long)hour];
+        }
+        else {
+            durationString = [NSString stringWithFormat:@"%ld hour", (long)hour];
+        }
+    } else if (minutes > 0) {
+        if (minutes > 1) {
+            durationString = [NSString stringWithFormat:@"%ld minutes", (long)minutes];
+        }
+    }
+    
+    if (durationString) {
+        return [[@"last seen " stringByAppendingString:durationString] stringByAppendingString:@" ago"];
+    } else {
+        return @"online";
+    }
+    
+}
+
+//Event generators
+- (void)generateUserActivity {
+    NSArray *contacts;
+    @synchronized (self.contacts) {
+        contacts = [self.contacts copy];
+    }
+    
+    for (MVContactModel *contact in contacts) {
+        NSDate *lastSeenDate = [[MVRandomGenerator sharedInstance] randomLastSeenDate];
+        NSNotification *update = [[NSNotification alloc] initWithName:@"ContactLastSeenTimeUpdate" object:nil userInfo:@{@"Id" : contact.id, @"LastSeenTime" : lastSeenDate}];
+        [[NSNotificationCenter defaultCenter] postNotification:update];
+        contact.lastSeenDate = lastSeenDate;
+    }
+    
+    @synchronized (self.contacts) {
+        for (MVContactModel *existingContact in self.contacts) {
+            for (MVContactModel *updatedContact in contacts) {
+                if ([existingContact.id isEqualToString:updatedContact.id]) {
+                    existingContact.lastSeenDate = updatedContact.lastSeenDate;
+                }
+            }
+        }
+    }
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)([self getRandomDelay] * NSEC_PER_SEC)), self.managerQueue, ^{
+        [self generateUserActivity];
+    });
+}
+
 //Legacy
 + (void)startSendingStatusUpdates {
     NSNotification *status = [[NSNotification alloc] initWithName:@"ContactStatusUpdate" object:nil userInfo:@{@"Id" : [self getRandomContactId], @"Status" : @([self getRandomStatus])}];
@@ -108,6 +179,10 @@
 
 + (int)getRandomDelay {
     return arc4random_uniform(10);
+}
+
+- (int)getRandomDelay {
+    return arc4random_uniform(100);
 }
 
 + (NSString *)getRandomAvatarName {
