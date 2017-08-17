@@ -36,6 +36,7 @@
 		CD61CFA21F2E3A0000A5884D /* MVContactsListSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD61CFA11F2E3A0000A5884D /* MVContactsListSearchViewController.m */; };
 		CD6C2A3F1EC609F00007BA05 /* MVRandomGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = CD6C2A3E1EC609F00007BA05 /* MVRandomGenerator.m */; };
 		CD6C2A4E1EC61A640007BA05 /* MVChatsListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD6C2A4D1EC61A640007BA05 /* MVChatsListViewController.m */; };
+		CD6FAF691F45EE70001E110C /* MVContactProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD6FAF681F45EE70001E110C /* MVContactProfileViewController.m */; };
 		CDAB09871E7DE2D800A142DC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAB09861E7DE2D800A142DC /* main.m */; };
 		CDAB09921E7DE2D800A142DC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CDAB09911E7DE2D800A142DC /* Assets.xcassets */; };
 		CDB89D3A1F2242DB0024BFDB /* MVChatsListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB89D391F2242DB0024BFDB /* MVChatsListCell.m */; };
@@ -105,6 +106,8 @@
 		CD6C2A451EC60BA60007BA05 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		CD6C2A4C1EC61A640007BA05 /* MVChatsListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVChatsListViewController.h; sourceTree = "<group>"; };
 		CD6C2A4D1EC61A640007BA05 /* MVChatsListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVChatsListViewController.m; sourceTree = "<group>"; };
+		CD6FAF671F45EE70001E110C /* MVContactProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVContactProfileViewController.h; sourceTree = "<group>"; };
+		CD6FAF681F45EE70001E110C /* MVContactProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVContactProfileViewController.m; sourceTree = "<group>"; };
 		CDAB09821E7DE2D800A142DC /* MVChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MVChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CDAB09861E7DE2D800A142DC /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		CDAB09911E7DE2D800A142DC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -328,6 +331,8 @@
 				CD61CFA31F2E3A6A00A5884D /* MVSearchProviderDelegate.h */,
 				CD2C9F821F3F421600BB38DA /* MVChatSettingsViewController.h */,
 				CD2C9F831F3F421600BB38DA /* MVChatSettingsViewController.m */,
+				CD6FAF671F45EE70001E110C /* MVContactProfileViewController.h */,
+				CD6FAF681F45EE70001E110C /* MVContactProfileViewController.m */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -518,6 +523,7 @@
 				CD2C9F841F3F421600BB38DA /* MVChatSettingsViewController.m in Sources */,
 				CD2048A61EC4F17C00EDDFA8 /* MVChatModel.m in Sources */,
 				CD61CF9F1F2E2C9D00A5884D /* MVTableViewHeader.m in Sources */,
+				CD6FAF691F45EE70001E110C /* MVContactProfileViewController.m in Sources */,
 				CD05F68A1F2A8BC900721421 /* MVTabBarController.m in Sources */,
 				CDB89D3A1F2242DB0024BFDB /* MVChatsListCell.m in Sources */,
 				CD05F6841F2A631500721421 /* MVChatsListSearchViewController.m in Sources */,

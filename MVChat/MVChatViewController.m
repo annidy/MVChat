@@ -14,6 +14,8 @@
 #import "MVChatSettingsViewController.h"
 #import "MVDatabaseManager.h"
 #import "MVFileManager.h"
+#import "MVContactProfileViewController.h"
+#import "MVContactModel.h"
 
 @interface MVChatViewController () <UIGestureRecognizerDelegate>
 @property (weak, nonatomic) MVMessagesViewController *MessagesController;
@@ -61,6 +63,14 @@
 }
 
 - (void)navigationItemTitleTappedAction {
+    if (self.chat.isPeerToPeer) {
+        [self showContactProfile];
+    } else {
+        [self showChatSettings];
+    }
+}
+
+- (void)showChatSettings {
     MVChatSettingsViewController *settings = [MVChatSettingsViewController loadFromStoryboardWithChat:self.chat andDoneAction:^(NSArray<MVContactModel *> *contacts, NSString *title, DBAttachment *attachment) {
         self.chat.participants = [contacts arrayByAddingObject:[MVDatabaseManager sharedInstance].myContact];
         self.chat.title = title;
@@ -71,6 +81,17 @@
     }];
     
     [self.navigationController pushViewController:settings animated:YES];
+}
+
+- (void)showContactProfile {
+    MVContactModel *peer;
+    for (MVContactModel *contact in self.chat.participants) {
+        if (!contact.iam) {
+            peer = contact;
+        }
+    }
+    MVContactProfileViewController *contactProfile = [MVContactProfileViewController loadFromStoryboardWithContact:peer];
+    [self.navigationController pushViewController:contactProfile animated:YES];
 }
 
 - (void)spawnNewMessage {
