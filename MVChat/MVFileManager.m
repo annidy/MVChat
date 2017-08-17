@@ -19,6 +19,7 @@
 
 @interface MVFileManager()
 @property (strong, nonatomic) dispatch_queue_t managerQueue;
+@property (strong, nonatomic) NSCache *imagesCache;
 @end
 
 @implementation MVFileManager
@@ -36,6 +37,7 @@ static MVFileManager *instance;
 - (instancetype)init {
     if (self = [super init]) {
         _managerQueue = dispatch_queue_create("com.markvasiv.fileManager", DISPATCH_QUEUE_SERIAL);
+        _imagesCache = [NSCache new];
     }
     
     return self;
@@ -47,23 +49,33 @@ static MVFileManager *instance;
         [attachment loadOriginalImageWithCompletion:^(UIImage *resultImage) {
             [MVJsonHelper writeData:UIImagePNGRepresentation(resultImage) toFileWithName:fileName extenssion:@"png"];
         }];
+        [self.imagesCache setObject:attachment forKey:fileName];
     });
 }
 
 - (void)saveAttachment:(DBAttachment *)attachment asChatAvatar:(MVChatModel *)chat {
     [self saveAttachment:attachment withFileName:[@"chat" stringByAppendingString:chat.id]];
+    NSNotification *notification = [[NSNotification alloc] initWithName:@"ChatAvatarUpdate" object:nil userInfo:@{@"Id" : chat.id, @"Image" : [attachment loadOriginalImageSync]}];
+    [[NSNotificationCenter defaultCenter] postNotification:notification];
 }
 
 - (void)saveAttachment:(DBAttachment *)attachment asContactAvatar:(MVContactModel *)contact {
     [self saveAttachment:attachment withFileName:[@"contact" stringByAppendingString:contact.id]];
+    NSNotification *notification = [[NSNotification alloc] initWithName:@"ContactAvatarUpdate" object:nil userInfo:@{@"Id" : contact.id, @"Image" : [attachment loadOriginalImageSync]}];
+    [[NSNotificationCenter defaultCenter] postNotification:notification];
 }
 
 #pragma mark - Loading images
 - (void)loadAttachmentForFileNamed:(NSString *)fileName completion:(void (^)(DBAttachment *attachment))completion {
     dispatch_async(self.managerQueue, ^{
-        NSURL *fileUrl = [MVJsonHelper urlToFileWithName:fileName extenssion:@"png"];
-        DBAttachment *attachment = [DBAttachment attachmentFromDocumentURL:fileUrl];
-        completion(attachment);
+        if ([self.imagesCache objectForKey:fileName]) {
+            completion([self.imagesCache objectForKey:fileName]);
+        } else {
+            NSURL *fileUrl = [MVJsonHelper urlToFileWithName:fileName extenssion:@"png"];
+            DBAttachment *attachment = [DBAttachment attachmentFromDocumentURL:fileUrl];
+            completion(attachment);
+            [self.imagesCache setObject:attachment forKey:fileName];
+        }
     });
 }
 

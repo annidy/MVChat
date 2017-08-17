@@ -19,6 +19,7 @@ static NSDateFormatter *todayDateFormatter;
 @property (strong, nonatomic) IBOutlet UILabel *messageLabel;
 @property (strong, nonatomic) IBOutlet UILabel *dateLabel;
 @property (strong, nonatomic) IBOutlet UIImageView *avatarImageView;
+@property (strong, nonatomic) MVChatModel *chatModel;
 
 @end
 
@@ -60,6 +61,13 @@ static NSDateFormatter *todayDateFormatter;
     [[MVChatManager sharedInstance] loadAvatarThumbnailForChat:chat completion:^(UIImage *image) {
         self.avatarImageView.image = image;
     }];
+    
+    self.chatModel = chat;
+
+}
+
+-(void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)awakeFromNib {
@@ -67,6 +75,14 @@ static NSDateFormatter *todayDateFormatter;
     
     self.avatarImageView.layer.cornerRadius = 24;
     self.avatarImageView.layer.masksToBounds = YES;
+    
+    [[NSNotificationCenter defaultCenter] addObserverForName:@"ChatAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        NSString *chatId = note.userInfo[@"Id"];
+        UIImage *image = note.userInfo[@"Image"];
+        if ([self.chatModel.id isEqualToString:chatId]) {
+            self.avatarImageView.image = image;
+        }
+    }];
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
