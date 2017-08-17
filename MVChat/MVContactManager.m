@@ -10,6 +10,8 @@
 #import "MVContactModel.h"
 #import "MVJsonHelper.h"
 #import "MVDatabaseManager.h"
+#import "MVFileManager.h"
+#import <DBAttachment.h>
 
 @interface MVContactManager()
 @property (strong, nonatomic) dispatch_queue_t managerQueue;
@@ -65,14 +67,14 @@
     }];
 }
 
-+ (UIImage *)avatarForContact:(MVContactModel *)contact {
-    UIImage *avatar = [UIImage imageNamed:contact.avatarName];;
-    if (!avatar) {
-        NSData *imgData = [MVJsonHelper dataFromFileWithName:[@"contact" stringByAppendingString:contact.id] extenssion:@"png"];
-        avatar = [UIImage imageWithData:imgData];
-    }
-    
-    return avatar;
+- (void)loadAvatarThumbnailForContact:(MVContactModel *)contact completion:(void (^)(UIImage *))callback {
+    [[MVFileManager sharedInstance] loadAvatarAttachmentForContact:contact completion:^(DBAttachment *attachment) {
+        [attachment loadOriginalImageWithCompletion:^(UIImage *resultImage) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                callback(resultImage);
+            });
+        }];
+    }];
 }
 
 //Legacy

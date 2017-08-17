@@ -23,9 +23,9 @@
 
 @implementation MVFileManager
 #pragma mark - Lifecycle
+static MVFileManager *instance;
 + (instancetype)sharedInstance {
     static dispatch_once_t onceToken;
-    static MVFileManager *instance;
     dispatch_once(&onceToken, ^{
         instance = [MVFileManager new];
     });
@@ -42,7 +42,7 @@
 }
 
 #pragma mark - Saving images
-- (void)saveAttachmen:(DBAttachment *)attachment withFileName:(NSString *)fileName {
+- (void)saveAttachment:(DBAttachment *)attachment withFileName:(NSString *)fileName {
     dispatch_async(self.managerQueue, ^{
         [attachment loadOriginalImageWithCompletion:^(UIImage *resultImage) {
             [MVJsonHelper writeData:UIImagePNGRepresentation(resultImage) toFileWithName:fileName extenssion:@"png"];
@@ -51,18 +51,16 @@
 }
 
 - (void)saveAttachment:(DBAttachment *)attachment asChatAvatar:(MVChatModel *)chat {
-    [self saveAttachmen:attachment withFileName:[@"chat" stringByAppendingString:chat.id]];
+    [self saveAttachment:attachment withFileName:[@"chat" stringByAppendingString:chat.id]];
 }
 
 - (void)saveAttachment:(DBAttachment *)attachment asContactAvatar:(MVContactModel *)contact {
-    [self saveAttachmen:attachment withFileName:[@"contact" stringByAppendingString:contact.id]];
+    [self saveAttachment:attachment withFileName:[@"contact" stringByAppendingString:contact.id]];
 }
 
 #pragma mark - Loading images
 - (void)loadAttachmentForFileNamed:(NSString *)fileName completion:(void (^)(DBAttachment *attachment))completion {
     dispatch_async(self.managerQueue, ^{
-        //NSData *data = [MVJsonHelper dataFromFileWithName:fileName extenssion:@"png"];
-        //DBAttachment *attachment = [DBAttachment attachmentFromCameraImage:[UIImage imageWithData:data]];
         NSURL *fileUrl = [MVJsonHelper urlToFileWithName:fileName extenssion:@"png"];
         DBAttachment *attachment = [DBAttachment attachmentFromDocumentURL:fileUrl];
         completion(attachment);

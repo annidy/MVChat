@@ -13,7 +13,7 @@
 #import "MVMessageHeader.h"
 #import "MVContactManager.h"
 #import "MVDataAggregator.h"
-#import "MVJsonHelper.h"
+
 
 @implementation NSMutableIndexSet (Increment)
 - (void)increment {
@@ -341,13 +341,10 @@
     cell.messageLabel.text = model.text;
     cell.timeLabel.text = [self timeFromDate:model.sendDate];
     
-    UIImage *avatar = [UIImage imageNamed:model.contact.avatarName];
-    if (!avatar) {
-        NSData *imgData = [MVJsonHelper dataFromFileWithName:[@"contact" stringByAppendingString:model.contact.id] extenssion:@"png"];
-        avatar = [UIImage imageWithData:imgData];
-    }
-    
-    cell.avatarImage.image = avatar;
+    cell.avatarImage.image = nil;
+    [[MVContactManager sharedInstance] loadAvatarThumbnailForContact:model.contact completion:^(UIImage *image) {
+        cell.avatarImage.image = image;
+    }];
     
     __weak MVMessageCell *weakCell = cell;
     [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {

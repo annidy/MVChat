@@ -99,12 +99,13 @@
 
 #pragma mark - Search filter
 - (void)updateSearchResultsForSearchController:(UISearchController *)searchController {
-    NSArray *chats = [self filterChatsWithString:searchController.searchBar.text];
-    self.searchResultsController.filteredChats = chats;
-    self.searchResultsController.popularChats = [self.chats subarrayWithRange:NSMakeRange(0, self.chats.count>5? 5:self.chats.count)];
     if (searchController.isActive) {
+        NSArray *chats = [self filterChatsWithString:searchController.searchBar.text];
+        self.searchResultsController.filteredChats = chats;
+        self.searchResultsController.popularChats = [self.chats subarrayWithRange:NSMakeRange(0, self.chats.count>5? 5:self.chats.count)];
         self.searchController.searchResultsController.view.hidden = NO;
     }
+    
 }
 
 - (void)didSelectCellWithModel:(id)model {

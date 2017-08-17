@@ -12,6 +12,7 @@
 @class MVMessageUpdateModel;
 @class MVChatModel;
 @class MVContactModel;
+@class UIImage;
 
 typedef enum : NSUInteger {
     MessageUpdatePositionStart,
@@ -54,4 +55,5 @@ static NSUInteger MVMessagesPageSize = 1000;
 - (void)createChatWithContacts:(NSArray <MVContactModel *> *)contacts title:(NSString *)title andCompeltion:(void (^)(MVChatModel *))callback;
 - (void)updateChat:(MVChatModel *)chat;
 - (void)exitAndDeleteChat:(MVChatModel *)chat;
+- (void)loadAvatarThumbnailForChat:(MVChatModel *)chat completion:(void (^)(UIImage *))callback;
 @end

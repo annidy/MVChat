@@ -12,6 +12,7 @@
 #import "MVDatabaseManager.h"
 #import "MVRandomGenerator.h"
 #import "MVFileManager.h"
+#import <DBAttachment.h>
 
 @implementation MVMessageUpdateModel
 + (instancetype)updateModelWithMessage:(MVMessageModel *)message andPosition:(MessageUpdatePosition)position {
@@ -296,6 +297,16 @@ static MVChatManager *sharedManager;
     }
     
     return number;
+}
+
+- (void)loadAvatarThumbnailForChat:(MVChatModel *)chat completion:(void (^)(UIImage *))callback {
+    [[MVFileManager sharedInstance] loadAvatarAttachmentForChat:chat completion:^(DBAttachment *attachment) {
+        [attachment loadOriginalImageWithCompletion:^(UIImage *resultImage) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                callback(resultImage);
+            });
+        }];
+    }];
 }
 
 #pragma mark - Helpers

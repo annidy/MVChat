@@ -24,6 +24,6 @@
 + (void)startSendingStatusUpdates;
 + (void)startSendingAvatarUpdates;
 
-+ (UIImage *)avatarForContact:(MVContactModel *)contact;
+- (void)loadAvatarThumbnailForContact:(MVContactModel *)contact completion:(void (^)(UIImage *))callback;
 
 @end

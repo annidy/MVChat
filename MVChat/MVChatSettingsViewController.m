@@ -90,13 +90,8 @@ static NSString *DeleteContactCellId = @"MVChatSettingsDeleteCell";
     
     if (self.mode == MVChatSettingsModeSettings) {
         self.chatTitle = self.chat.title;
-        [[MVFileManager sharedInstance] loadAvatarAttachmentForChat:self.chat completion:^(DBAttachment *attachment) {
-            self.avatarAttachment = attachment;
-            [attachment loadThumbnailImageWithTargetSize:CGSizeMake(100, 100) completion:^(UIImage *resultImage) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                   self.avatarImage = resultImage;
-                });
-            }];
+        [[MVChatManager sharedInstance] loadAvatarThumbnailForChat:self.chat completion:^(UIImage *image) {
+            self.avatarImage = image;
         }];
     }
 }
@@ -226,7 +221,10 @@ static NSString *DeleteContactCellId = @"MVChatSettingsDeleteCell";
         UIImageView *contactAvatarImageView = [cell viewWithTag:1];
         UILabel *contactNameLabel = [cell viewWithTag:2];
         contactNameLabel.text = contact.name;
-        contactAvatarImageView.image = [MVContactManager avatarForContact:contact];
+        [[MVContactManager sharedInstance] loadAvatarThumbnailForContact:contact completion:^(UIImage *image) {
+            contactAvatarImageView.image = image;
+        }];
+        
         contactAvatarImageView.layer.masksToBounds = YES;
         contactAvatarImageView.layer.cornerRadius = 10;
         

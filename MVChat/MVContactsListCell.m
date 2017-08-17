@@ -8,7 +8,7 @@
 
 #import "MVContactsListCell.h"
 #import "MVContactModel.h"
-#import "MVJsonHelper.h"
+#import "MVContactManager.h"
 
 @interface MVContactsListCell()
 @property (strong, nonatomic) IBOutlet UIImageView *avatarImageView;
@@ -19,25 +19,16 @@
 
 - (void)fillWithContact:(MVContactModel *)contact {
     self.nameLabel.text = contact.name;
-    
-    UIImage *avatar;
-    if (contact.avatarName) {
-        avatar = [UIImage imageNamed:contact.avatarName];
-    }
-    
-    if (!avatar) {
-        NSData *imgData = [MVJsonHelper dataFromFileWithName:[@"contact" stringByAppendingString:contact.id] extenssion:@"png"];
-        avatar = [UIImage imageWithData:imgData];
-    }
-    
-    self.avatarImageView.image = avatar;
+    self.avatarImageView.image = nil;
+    [[MVContactManager sharedInstance] loadAvatarThumbnailForContact:contact completion:^(UIImage *image) {
+        self.avatarImageView.image = image;
+    }];
 }
 
 - (void)awakeFromNib {
     [super awakeFromNib];
     self.avatarImageView.layer.cornerRadius = 24;
     self.avatarImageView.layer.masksToBounds = YES;
-    // Initialization code
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {

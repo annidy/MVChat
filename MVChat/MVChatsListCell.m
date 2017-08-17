@@ -9,8 +9,7 @@
 #import "MVChatsListCell.h"
 #import "MVChatModel.h"
 #import "MVMessageModel.h"
-#import "MVRandomGenerator.h"
-#import "MVJsonHelper.h"
+#import "MVChatManager.h"
 
 static NSDateFormatter *defaultDateFormatter;
 static NSDateFormatter *todayDateFormatter;
@@ -46,7 +45,6 @@ static NSDateFormatter *todayDateFormatter;
     return todayDateFormatter;
 }
 
-
 - (void)fillWithChat:(MVChatModel *)chat {
     self.titleLabel.text = chat.title;
     self.messageLabel.text = chat.lastMessage.text;
@@ -57,20 +55,12 @@ static NSDateFormatter *todayDateFormatter;
         formatter = self.defaultDateFormatter;
     }
     self.dateLabel.text = [formatter stringFromDate:chat.lastUpdateDate];
-    
-    UIImage *avatar;
-    if (chat.avatarName && chat.avatarName.length) {
-        avatar = [UIImage imageNamed:chat.avatarName];
-    }
-    
-    if (!avatar) {
-        NSData *imgData = [MVJsonHelper dataFromFileWithName:[@"chat" stringByAppendingString:chat.id] extenssion:@"png"];
-        avatar = [UIImage imageWithData:imgData];
-    }
 
-    self.avatarImageView.image = avatar;
+    self.avatarImageView.image = nil;
+    [[MVChatManager sharedInstance] loadAvatarThumbnailForChat:chat completion:^(UIImage *image) {
+        self.avatarImageView.image = image;
+    }];
 }
-
 
 - (void)awakeFromNib {
     [super awakeFromNib];

@@ -10,6 +10,5 @@
 @class MVChatModel;
 
 @interface MVChatsListSearchCollectionViewCell : UICollectionViewCell
-- (void)build;
 - (void)fillWithChat:(MVChatModel *)chat;
 @end
