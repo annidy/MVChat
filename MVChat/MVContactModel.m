@@ -34,7 +34,8 @@
             (self.name == contact.name || [self.name isEqualToString:contact.name]) &&
             (self.avatarName == contact.avatarName || [self.avatarName isEqualToString:contact.avatarName]) &&
             self.status == contact.status &&
-            self.iam == contact.iam;
+            self.iam == contact.iam &&
+            (self.phoneNumbers == contact.phoneNumbers || [self.phoneNumbers isEqualToArray:contact.phoneNumbers]);
 }
 
 -(NSUInteger)hash {
@@ -48,6 +49,7 @@
     copy.iam = self.iam;
     copy.status = self.status;
     copy.avatarName = [self.avatarName copy];
+    copy.phoneNumbers = [self.phoneNumbers copy];
     
     return copy;
 }

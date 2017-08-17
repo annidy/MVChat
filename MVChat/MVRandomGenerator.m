@@ -101,8 +101,27 @@ static MVRandomGenerator *singleton;
     return [NSString stringWithFormat:@"avatar0%lu", (unsigned long)[self randomUIntegerWithMin:1 andMax:5]];
 }
 
+- (NSString *)randomPhoneNumber {
+    NSMutableString *number = [NSMutableString new];
+    NSUInteger firstDigit = [self randomUIntegerWithMin:1 andMax:9];
+    [number appendString:[NSString stringWithFormat:@"%lu", (unsigned long)firstDigit]];
+    for (int i = 0; i < [self randomUIntegerWithMin:10 andMax:12]; i++) {
+        NSUInteger digit = [self randomUIntegerWithMin:0 andMax:9];
+        [number appendString:[NSString stringWithFormat:@"%lu", (unsigned long)digit]];
+    }
+    
+    return [@"+" stringByAppendingString:number];
+}
+
 - (MVContactModel *)randomContact {
-    return [[MVContactModel alloc] initWithId:nil name:[self randomUserName] iam:NO status:ContactStatusOffline andAvatarName:nil];
+    MVContactModel *contact = [[MVContactModel alloc] initWithId:nil name:[self randomUserName] iam:NO status:ContactStatusOffline andAvatarName:nil];
+    NSMutableArray *phoneNumbers = [NSMutableArray new];
+    for (int i = 0; i < [self randomUIntegerWithMin:1 andMax:3]; i++) {
+        [phoneNumbers addObject:[self randomPhoneNumber]];
+    }
+    contact.phoneNumbers = [phoneNumbers copy];
+    
+    return contact;
 }
 
 - (MVContactModel *)randomContactFromArray:(NSArray *)contacts {

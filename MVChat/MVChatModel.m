@@ -17,4 +17,12 @@
     
     return self;
 }
+
+- (BOOL)isPeerToPeer {
+    if (self.participants.count == 2) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
 @end
