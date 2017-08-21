@@ -214,6 +214,28 @@ static MVDatabaseManager *instance;
     });
 }
 
+- (void)updateContacts:(NSArray <MVContactModel *> *)contacts withCompletion:(void (^)(BOOL success))completion {
+    dispatch_async(self.managerQueue, ^{
+        NSMutableArray *existingContacts = [[self allContactsSync] mutableCopy];
+        for (MVContactModel *contact in contacts) {
+            NSUInteger index = 0;
+            for (MVContactModel *oldContact in existingContacts) {
+                if ([oldContact.id isEqualToString:contact.id]) {
+                    break;
+                }
+                index ++;
+            }
+            
+            [existingContacts replaceObjectAtIndex:index withObject:contact];
+        }
+        
+        BOOL success = [MVJsonHelper writeData:[MVJsonHelper parseArrayToJson:existingContacts] toFileWithName:contactsFile extenssion:@"json"];
+        if (completion) {
+            completion(success);
+        }
+    });
+}
+
 - (void)insertMessages:(NSArray <MVMessageModel *> *)messages withCompletion:(void (^)(BOOL success))completion {
     dispatch_async(self.managerQueue, ^{
         NSMutableArray *existingMessages = [[self allMessagesSync] mutableCopy];

@@ -77,7 +77,9 @@
         [[MVChatManager sharedInstance] updateChat:self.chat];
         self.navigationItemTitleLabel.text = title;
         [self.navigationController popViewControllerAnimated:YES];
-        [[MVFileManager sharedInstance] saveAttachment:attachment asChatAvatar:self.chat];
+        if (attachment) {
+            [[MVFileManager sharedInstance] saveAttachment:attachment asChatAvatar:self.chat];
+        }
     }];
     
     [self.navigationController pushViewController:settings animated:YES];

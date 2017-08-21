@@ -97,6 +97,8 @@ static MVChatManager *sharedManager;
         for (MVChatModel *chat in removedChats) {
             [self removeChat:chat];
         }
+        
+        [self sortChats];
         [self.chatsListener handleChatsUpdate];
     });
 }
@@ -141,17 +143,10 @@ static MVChatManager *sharedManager;
         }
         
         MVChatModel *chat = [self chatWithId:chatId];
-        @synchronized (self.chats) {
-            NSMutableArray *mutableChats = [self.chats mutableCopy];
-            [mutableChats removeObject:chat];
-            chat.lastUpdateDate = [messages lastObject].sendDate;
-            chat.lastMessage = [messages lastObject];
-            [mutableChats insertObject:chat atIndex:0];
-            self.chats = [mutableChats mutableCopy];
-        }
-        
+        chat.lastUpdateDate = [messages lastObject].sendDate;
+        chat.lastMessage = [messages lastObject];
+        [self handleUpdatedChats:@[chat] removedChats:nil];
         [[MVDatabaseManager sharedInstance] updateChat:chat withCompletion:nil];
-        [self.chatsListener handleChatsUpdate];
     });
 }
 
@@ -186,18 +181,30 @@ static MVChatManager *sharedManager;
 }
 
 - (void)sendTextMessage:(NSString *)text toChatWithId:(NSString *)chatId{
-    MVDatabaseManager *db = [MVDatabaseManager sharedInstance];
-    
     MVMessageModel *message = [MVMessageModel new];
-    message.id = [db incrementId:db.lastMessageId];
+    message.type = MVMessageTypeText;
     message.chatId = chatId;
     message.text = text;
     message.direction = MessageDirectionOutgoing;
     message.sendDate = [NSDate new];
+    [self sendMessage:message toChatWithId:chatId];
+}
+
+- (void)sendSystemMessageWithText:(NSString *)text toChatWithId:(NSString *)chatId {
+    MVMessageModel *message = [MVMessageModel new];
+    message.type = MVMessageTypeSystem;
+    message.chatId = chatId;
+    message.text = text;
+    message.direction = MessageDirectionOutgoing;
+    message.sendDate = [NSDate new];
+    [self sendMessage:message toChatWithId:chatId];
+}
+
+- (void)sendMessage:(MVMessageModel *)message toChatWithId:(NSString *)chatId {
+    MVDatabaseManager *db = [MVDatabaseManager sharedInstance];
+    message.id = [db incrementId:db.lastMessageId];
     message.contact = [db myContact];
-    
     [db insertMessages:@[message] withCompletion:nil];
-    
     [self handleNewMessages:@[message]];
 }
 
@@ -249,12 +256,83 @@ static MVChatManager *sharedManager;
         [db insertChats:@[chat] withCompletion:nil];
         [self.chatsListener handleChatsUpdate];
         callback(chat);
+        
+        [self sendSystemMessageWithText:[NSString stringWithFormat:@"%@ has created chat", db.myContact.name] toChatWithId:chat.id];
     });
 }
 
 - (void)updateChat:(MVChatModel *)chat {
+    MVChatModel *oldChat = [self chatWithId:chat.id];
     [self handleUpdatedChats:@[chat] removedChats:nil];
     [[MVDatabaseManager sharedInstance] updateChat:chat withCompletion:nil];
+    
+    if (![chat.title isEqualToString:oldChat.title]) {
+        NSString *messageText = [NSString stringWithFormat:@"%@ changed title to %@", [MVDatabaseManager sharedInstance].myContact.name, chat.title];
+        [self sendSystemMessageWithText:messageText toChatWithId:chat.id];
+    }
+    
+    NSMutableArray *addContacts = [NSMutableArray new];
+    for (MVContactModel *contact in chat.participants) {
+        BOOL found = NO;
+        for (MVContactModel *oldContact in oldChat.participants) {
+            if ([contact.id isEqualToString:oldContact.id]) {
+                found = YES;
+                break;
+            }
+        }
+        if (!found) {
+            [addContacts addObject:contact];
+        }
+    }
+    NSMutableArray *removedContacts = [NSMutableArray new];
+    for (MVContactModel *oldContact in oldChat.participants) {
+        BOOL found = NO;
+        for (MVContactModel *contact in chat.participants) {
+            if ([contact.id isEqualToString:oldContact.id]) {
+                found = YES;
+                break;
+            }
+        }
+        if (!found) {
+            [removedContacts addObject:oldContact];
+        }
+    }
+    
+    if (removedContacts.count) {
+        NSMutableString *messageText = [NSMutableString new];
+        [messageText appendString:[MVDatabaseManager sharedInstance].myContact.name];
+        [messageText appendString:@" "];
+        if (removedContacts.count == 1) {
+            [messageText appendString:@"removed contact: "];
+        } else {
+            [messageText appendString:@"removed contacts: "];
+        }
+        for (MVContactModel *removedContact in removedContacts) {
+            [messageText appendString:removedContact.name];
+            if (removedContacts.lastObject != removedContact) {
+                [messageText appendString:@", "];
+            }
+        }
+        [self sendSystemMessageWithText:[messageText copy] toChatWithId:chat.id];
+    }
+    
+    if (addContacts.count) {
+        NSMutableString *messageText = [NSMutableString new];
+        [messageText appendString:[MVDatabaseManager sharedInstance].myContact.name];
+        [messageText appendString:@" "];
+        if (addContacts.count == 1) {
+            [messageText appendString:@"add contact: "];
+        } else {
+            [messageText appendString:@"add contacts: "];
+        }
+        for (MVContactModel *addContact in addContacts) {
+            [messageText appendString:addContact.name];
+            if (addContacts.lastObject != addContact) {
+                [messageText appendString:@", "];
+            }
+        }
+        [self sendSystemMessageWithText:[messageText copy] toChatWithId:chat.id];
+    }
 }
 
 - (void)exitAndDeleteChat:(MVChatModel *)chat {
@@ -315,7 +393,7 @@ static MVChatManager *sharedManager;
         for (MVChatModel *chat in self.chats) {
             if ([chat.id isEqualToString:chatId]) {
                 
-                return chat;
+                return [chat copy];
             }
         }
     }

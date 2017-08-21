@@ -10,14 +10,13 @@
 @class MVContactModel;
 @class MVMessageModel;
 
-@interface MVChatModel : NSObject
+@interface MVChatModel : NSObject <NSCopying>
 @property (strong, nonatomic) NSString *id;
 @property (strong, nonatomic) NSString *title;
-@property (strong, nonatomic) NSString *avatarName;
 @property (strong, nonatomic) NSArray <MVContactModel *> *participants;
 @property (strong, nonatomic) NSDate *lastUpdateDate;
 @property (strong, nonatomic) MVMessageModel *lastMessage;
-//@property (assign, nonatomic, readonly) BOOL isPeerToPeer;
 - (instancetype)initWithId:(NSString *)id andTitle:(NSString *)title;
 - (BOOL)isPeerToPeer;
+- (MVContactModel *)getPeer;
 @end

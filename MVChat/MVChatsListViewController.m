@@ -131,11 +131,20 @@
         MVChatSettingsViewController *settings = [MVChatSettingsViewController loadFromStoryboardWithContacts:selectedContacts andDoneAction:^(NSArray<MVContactModel *> *chatContacts, NSString *chatTitle, DBAttachment *avatarImage) {
             
             [[MVChatManager sharedInstance] createChatWithContacts:chatContacts title:chatTitle andCompeltion:^(MVChatModel *chat) {
-                [[MVFileManager sharedInstance] saveAttachment:avatarImage asChatAvatar:chat];
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [rootNavigationController popToRootViewControllerAnimated:YES];
-                    [self showChatViewWithChat:chat];
-                });
+                if (avatarImage) {
+                    [[MVFileManager sharedInstance] saveAttachment:avatarImage asChatAvatar:chat];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [rootNavigationController popToRootViewControllerAnimated:YES];
+                        [self showChatViewWithChat:chat];
+                    });
+                }
+                else {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [rootNavigationController popToRootViewControllerAnimated:YES];
+                        [self showChatViewWithChat:chat];
+                    });
+                }
+                
             }];
         }];
         [rootNavigationController pushViewController:settings animated:YES];
@@ -145,7 +154,7 @@
 
 #pragma mark - Helpers
 - (void)showChatViewWithChat:(MVChatModel *)chat {
-    MVChatViewController *chatVC = [MVChatViewController loadFromStoryboardWithChat:chat];
+    MVChatViewController *chatVC = [MVChatViewController loadFromStoryboardWithChat:[chat copy]];
     [self.navigationController.navigationController pushViewController:chatVC animated:YES];
 }
 

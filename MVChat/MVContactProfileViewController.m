@@ -17,6 +17,8 @@
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
 @property (strong, nonatomic) MVContactModel *contact;
 @property (weak, nonatomic) UILabel *statusLabel;
+@property (weak, nonatomic) UIImageView *avatarImageView;
+@property (strong, nonatomic) UIImage *avatarImage;
 @end
 
 static NSString *AvatarTitleCellId = @"MVContactProfileAvatarTitleCell";
@@ -24,7 +26,6 @@ static NSString *PhoneCellId = @"MVContactProfilePhoneCell";
 static NSString *MediaCellId = @"MVContactProfileMediaCell";
 static NSString *ChatCellId = @"MVContactProfileChatCell";
 
-//TODO: register for avatar update
 @implementation MVContactProfileViewController
 #pragma mark - Initialization
 + (instancetype)loadFromStoryboard {
@@ -51,6 +52,19 @@ static NSString *ChatCellId = @"MVContactProfileChatCell";
             NSDate *lastSeenDate = note.userInfo[@"LastSeenTime"];
             self.contact.lastSeenDate = lastSeenDate;
             self.statusLabel.text = [[MVContactManager sharedInstance] lastSeenTimeStringForDate:lastSeenDate];
+        }
+    }];
+    
+    [[MVContactManager sharedInstance] loadAvatarThumbnailForContact:self.contact completion:^(UIImage *image) {
+        self.avatarImage = image;
+        self.avatarImageView.image = image;
+    }];
+    
+    [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        NSString *contactId = note.userInfo[@"Id"];
+        UIImage *image = note.userInfo[@"Image"];
+        if ([self.contact.id isEqualToString:contactId]) {
+            self.avatarImageView.image = image;
         }
     }];
 }
@@ -133,9 +147,8 @@ static NSString *ChatCellId = @"MVContactProfileChatCell";
     self.statusLabel = statusLabel;
     avatarImageView.layer.cornerRadius = 30;
     avatarImageView.layer.masksToBounds = YES;
-    [[MVContactManager sharedInstance] loadAvatarThumbnailForContact:self.contact completion:^(UIImage *image) {
-        avatarImageView.image = image;
-    }];
+    avatarImageView.image = self.avatarImage;
+    self.avatarImageView = avatarImageView;
 }
 
 - (void)fillPhoneCell:(UITableViewCell *)cell withIndex:(NSUInteger)index {

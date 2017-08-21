@@ -93,6 +93,9 @@ static MVFileManager *instance;
 - (void)generateImagesForChats:(NSArray <MVChatModel *> *)chats {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         for (MVChatModel *chat in chats) {
+            if (chat.isPeerToPeer) {
+                continue;
+            }
             NSString *letter = [[chat.title substringToIndex:1] uppercaseString];
             UIImage *image = [self generateGradientImageForLetter:letter];
             [MVJsonHelper writeData:UIImagePNGRepresentation(image) toFileWithName:[@"chat" stringByAppendingString:chat.id] extenssion:@"png"];

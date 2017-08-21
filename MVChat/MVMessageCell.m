@@ -57,6 +57,7 @@
     [self.contentView addSubview:self.timeLabel];
     
     self.messageLabel.numberOfLines = 0;
+    self.messageLabel.font = [UIFont systemFontOfSize:14];
     self.timeLabel.font = [UIFont systemFontOfSize:12];
     
     UIImage *bubbleImage;

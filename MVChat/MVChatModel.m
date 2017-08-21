@@ -7,6 +7,8 @@
 //
 
 #import "MVChatModel.h"
+#import "MVContactModel.h"
+#import "MVMessageModel.h"
 
 @implementation MVChatModel
 - (instancetype)initWithId:(NSString *)id andTitle:(NSString *)title {
@@ -24,5 +26,25 @@
     } else {
         return NO;
     }
+}
+
+- (MVContactModel *)getPeer {
+    for (MVContactModel *contact in self.participants) {
+        if (!contact.iam) {
+            return contact;
+        }
+    }
+    
+    return nil;
+}
+- (id)copyWithZone:(NSZone *)zone {
+    MVChatModel *copy = [[MVChatModel allocWithZone:zone] init];
+    copy.id = [self.id copy];
+    copy.title = [self.title copy];
+    copy.participants = [self.participants copy];
+    copy.lastUpdateDate = [self.lastUpdateDate copy];
+    copy.lastMessage = [self.lastMessage copy];
+    
+    return copy;
 }
 @end

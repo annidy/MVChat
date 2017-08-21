@@ -10,6 +10,7 @@
 #import "MVChatModel.h"
 #import "MVMessageModel.h"
 #import "MVChatManager.h"
+#import "MVContactManager.h"
 
 static NSDateFormatter *defaultDateFormatter;
 static NSDateFormatter *todayDateFormatter;
@@ -47,7 +48,12 @@ static NSDateFormatter *todayDateFormatter;
 }
 
 - (void)fillWithChat:(MVChatModel *)chat {
-    self.titleLabel.text = chat.title;
+    if (chat.isPeerToPeer) {
+        self.titleLabel.text = chat.getPeer.name;
+    } else {
+        self.titleLabel.text = chat.title;
+    }
+    
     self.messageLabel.text = chat.lastMessage.text;
     NSDateFormatter *formatter;
     if ([[NSCalendar currentCalendar] isDateInToday:chat.lastUpdateDate]) {
@@ -58,12 +64,18 @@ static NSDateFormatter *todayDateFormatter;
     self.dateLabel.text = [formatter stringFromDate:chat.lastUpdateDate];
 
     self.avatarImageView.image = nil;
-    [[MVChatManager sharedInstance] loadAvatarThumbnailForChat:chat completion:^(UIImage *image) {
-        self.avatarImageView.image = image;
-    }];
+    
+    if (chat.isPeerToPeer) {
+        [[MVContactManager sharedInstance] loadAvatarThumbnailForContact:chat.getPeer completion:^(UIImage *image) {
+            self.avatarImageView.image = image;
+        }];
+    } else {
+        [[MVChatManager sharedInstance] loadAvatarThumbnailForChat:chat completion:^(UIImage *image) {
+            self.avatarImageView.image = image;
+        }];
+    }
     
     self.chatModel = chat;
-
 }
 
 -(void)dealloc {
@@ -79,7 +91,14 @@ static NSDateFormatter *todayDateFormatter;
     [[NSNotificationCenter defaultCenter] addObserverForName:@"ChatAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
         NSString *chatId = note.userInfo[@"Id"];
         UIImage *image = note.userInfo[@"Image"];
-        if ([self.chatModel.id isEqualToString:chatId]) {
+        if (!self.chatModel.isPeerToPeer && [self.chatModel.id isEqualToString:chatId]) {
+            self.avatarImageView.image = image;
+        }
+    }];
+    [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        NSString *contactId = note.userInfo[@"Id"];
+        UIImage *image = note.userInfo[@"Image"];
+        if (self.chatModel.isPeerToPeer && [self.chatModel.getPeer.id isEqualToString:contactId]) {
             self.avatarImageView.image = image;
         }
     }];

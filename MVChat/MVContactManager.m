@@ -134,18 +134,23 @@
         contact.lastSeenDate = lastSeenDate;
     }
     
+    NSMutableArray *changedContacts = [NSMutableArray new];
     @synchronized (self.contacts) {
         for (MVContactModel *existingContact in self.contacts) {
             for (MVContactModel *updatedContact in contacts) {
                 if ([existingContact.id isEqualToString:updatedContact.id]) {
                     existingContact.lastSeenDate = updatedContact.lastSeenDate;
+                    [changedContacts addObject:existingContact];
                 }
             }
         }
     }
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)([self getRandomDelay] * NSEC_PER_SEC)), self.managerQueue, ^{
-        [self generateUserActivity];
-    });
+    
+    [[MVDatabaseManager sharedInstance] updateContacts:changedContacts withCompletion:^(BOOL success) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)([self getRandomDelay] * NSEC_PER_SEC)), self.managerQueue, ^{
+            [self generateUserActivity];
+        });
+    }];
 }
 
 //Legacy

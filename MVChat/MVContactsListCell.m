@@ -13,6 +13,7 @@
 @interface MVContactsListCell()
 @property (strong, nonatomic) IBOutlet UIImageView *avatarImageView;
 @property (strong, nonatomic) IBOutlet UILabel *nameLabel;
+@property (strong, nonatomic) IBOutlet UILabel *lastSeenLabel;
 @end
 
 @implementation MVContactsListCell
@@ -22,6 +23,23 @@
     self.avatarImageView.image = nil;
     [[MVContactManager sharedInstance] loadAvatarThumbnailForContact:contact completion:^(UIImage *image) {
         self.avatarImageView.image = image;
+    }];
+    
+    self.lastSeenLabel.text = [[MVContactManager sharedInstance] lastSeenTimeStringForDate:contact.lastSeenDate];
+    [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactLastSeenTimeUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        NSString *contactId = note.userInfo[@"Id"];
+        if ([contactId isEqualToString:contact.id]) {
+            NSDate *lastSeenDate = note.userInfo[@"LastSeenTime"];
+            self.lastSeenLabel.text = [[MVContactManager sharedInstance] lastSeenTimeStringForDate:lastSeenDate];
+        }
+    }];
+    
+    [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        NSString *contactId = note.userInfo[@"Id"];
+        UIImage *image = note.userInfo[@"Image"];
+        if ([contact.id isEqualToString:contactId]) {
+            self.avatarImageView.image = image;
+        }
     }];
 }
 

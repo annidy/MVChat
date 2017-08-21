@@ -15,6 +15,7 @@
 #import <DBAttachmentPickerController.h>
 #import <DBAttachment.h>
 #import "MVFileManager.h"
+#import "MVContactProfileViewController.h"
 
 typedef enum : NSUInteger {
     MVChatSettingsModeNew,
@@ -92,6 +93,16 @@ static NSString *DeleteContactCellId = @"MVChatSettingsDeleteCell";
         self.chatTitle = self.chat.title;
         [[MVChatManager sharedInstance] loadAvatarThumbnailForChat:self.chat completion:^(UIImage *image) {
             self.avatarImage = image;
+            self.avatarImageView.image = image;
+        }];
+        
+        [[NSNotificationCenter defaultCenter] addObserverForName:@"ChatAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+            NSString *chatId = note.userInfo[@"Id"];
+            UIImage *image = note.userInfo[@"Image"];
+            if ([self.chat.id isEqualToString:chatId]) {
+                self.avatarImageView.image = image;
+                self.avatarImage = image;
+            }
         }];
     }
 }
@@ -220,13 +231,33 @@ static NSString *DeleteContactCellId = @"MVChatSettingsDeleteCell";
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ContactCellId];
         UIImageView *contactAvatarImageView = [cell viewWithTag:1];
         UILabel *contactNameLabel = [cell viewWithTag:2];
+        UILabel *lastSeenLabel = [cell viewWithTag:3];
+        
         contactNameLabel.text = contact.name;
         [[MVContactManager sharedInstance] loadAvatarThumbnailForContact:contact completion:^(UIImage *image) {
             contactAvatarImageView.image = image;
         }];
         
+        [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+            NSString *contactId = note.userInfo[@"Id"];
+            UIImage *image = note.userInfo[@"Image"];
+            if ([contact.id isEqualToString:contactId]) {
+                contactAvatarImageView.image = image;
+            }
+        }];
+        
         contactAvatarImageView.layer.masksToBounds = YES;
-        contactAvatarImageView.layer.cornerRadius = 10;
+        contactAvatarImageView.layer.cornerRadius = 15;
+        
+        lastSeenLabel.text = [[MVContactManager sharedInstance] lastSeenTimeStringForDate:contact.lastSeenDate];
+        [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactLastSeenTimeUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+            NSString *contactId = note.userInfo[@"Id"];
+            if ([contactId isEqualToString:contact.id]) {
+                NSDate *lastSeenDate = note.userInfo[@"LastSeenTime"];
+                lastSeenLabel.text = [[MVContactManager sharedInstance] lastSeenTimeStringForDate:lastSeenDate];
+                contact.lastSeenDate = lastSeenDate;
+            }
+        }];
         
         return cell;
     } else {
@@ -241,8 +272,13 @@ static NSString *DeleteContactCellId = @"MVChatSettingsDeleteCell";
         if (indexPath.row == 1) {
             [self showChatPhotoSelectController];
         }
-    } else if (indexPath.section == 1 && indexPath.row == 0) {
+    } else if (indexPath.section == 1) {
+        if (indexPath.row == 0) {
             [self showContactsSelectController];
+        } else {
+            [self showContactProfileForContact:self.contacts[indexPath.row - 1]];
+        }
+        
     } else if (indexPath.section == 2 && indexPath.row == 0) {
         [self showDeleteAlert];
     }
@@ -305,6 +341,11 @@ static NSString *DeleteContactCellId = @"MVChatSettingsDeleteCell";
     
     attachmentPicker.mediaType = DBAttachmentMediaTypeImage;
     [attachmentPicker presentOnViewController:self];
+}
+
+- (void)showContactProfileForContact:(MVContactModel *)contact {
+    MVContactProfileViewController *contactProfile = [MVContactProfileViewController loadFromStoryboardWithContact:contact];
+    [self.navigationController pushViewController:contactProfile animated:YES];
 }
 
 #pragma mark - Helpers

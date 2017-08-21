@@ -13,6 +13,7 @@
 #import "MVMessageHeader.h"
 #import "MVContactManager.h"
 #import "MVDataAggregator.h"
+#import "MVSystemMessageCell.h"
 
 
 @implementation NSMutableIndexSet (Increment)
@@ -57,6 +58,7 @@
     [self.messagesTableView registerClass:[MVMessageCell class] forCellReuseIdentifier:@"MessageCellOutgoingTailessFirst"];
     [self.messagesTableView registerClass:[MVMessageCell class] forCellReuseIdentifier:@"MessageCellIncomingTailessFirst"];
     [self.messagesTableView registerClass:[MVMessageHeader class] forCellReuseIdentifier:@"MessageHeader"];
+    [self.messagesTableView registerClass:[MVSystemMessageCell class] forCellReuseIdentifier:@"MessageCellSystem"];
     
     self.messagesTableView.tableFooterView = [UIView new];
     self.messagesTableView.delegate = self;
@@ -278,6 +280,15 @@
     NSString *section = self.sections[indexPath.section];
     MVMessageModel *model = self.messages[section][indexPath.row];
     
+    if (model.type == MVMessageTypeSystem) {
+        CGFloat maxLabelWidth = UIScreen.mainScreen.bounds.size.width - 40;
+        self.referenceLabel.font = [UIFont systemFontOfSize:12];
+        [self.referenceLabel setText:model.text];
+        CGFloat height = [self.referenceLabel sizeThatFits:CGSizeMake(maxLabelWidth, CGFLOAT_MAX)].height;
+        height += 20;
+        return height;
+    }
+    
     MessageDirection direction = model.direction;
     BOOL hasTail = [self messageHasTailAtIndexPath:indexPath];
     BOOL firstInTailessSection = [self messageIsFirstInTailessGroup:indexPath];
@@ -315,6 +326,7 @@
     
     CGFloat maxLabelWidth = UIScreen.mainScreen.bounds.size.width * multipler - bubbleTailessMargin - tailOffset;
     
+    self.referenceLabel.font = [UIFont systemFontOfSize:14];
     [self.referenceLabel setText:model.text];
     height += [self.referenceLabel sizeThatFits:CGSizeMake(maxLabelWidth, CGFLOAT_MAX)].height;
     
@@ -331,28 +343,32 @@
         return header;
     }
     
-    NSIndexPath *indexPathTwo = [NSIndexPath indexPathForRow:indexPath.row - 1 inSection:indexPath.section];
-    indexPath = indexPathTwo;
-    
     NSString *section = self.sections[indexPath.section];
-    MVMessageModel *model = self.messages[section][indexPath.row];
+    MVMessageModel *model = self.messages[section][indexPath.row - 1];
 
-    MVMessageCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
-    cell.messageLabel.text = model.text;
-    cell.timeLabel.text = [self timeFromDate:model.sendDate];
-    
-    cell.avatarImage.image = nil;
-    [[MVContactManager sharedInstance] loadAvatarThumbnailForContact:model.contact completion:^(UIImage *image) {
-        cell.avatarImage.image = image;
-    }];
-    
-    __weak MVMessageCell *weakCell = cell;
-    [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        NSString *avatarName = note.userInfo[@"Avatar"];
-        weakCell.avatarImage.image = [UIImage imageNamed:avatarName];
-    }];
-    
-    return cell;
+    if (model.type == MVMessageTypeSystem) {
+        MVSystemMessageCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
+        cell.titleLabel.text = model.text;
+        
+        return cell;
+    } else {
+        MVMessageCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
+        cell.messageLabel.text = model.text;
+        cell.timeLabel.text = [self timeFromDate:model.sendDate];
+        
+        cell.avatarImage.image = nil;
+        [[MVContactManager sharedInstance] loadAvatarThumbnailForContact:model.contact completion:^(UIImage *image) {
+            cell.avatarImage.image = image;
+        }];
+        
+        __weak MVMessageCell *weakCell = cell;
+        [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+            NSString *avatarName = note.userInfo[@"Avatar"];
+            weakCell.avatarImage.image = [UIImage imageNamed:avatarName];
+        }];
+        
+        return cell;
+    }
 }
 
 - (NSString *)cellIdForIndexPath:(NSIndexPath *)indexPath {
@@ -365,6 +381,10 @@
     
     NSString *section = self.sections[indexPath.section];
     MVMessageModel *model = self.messages[section][indexPath.row];
+    
+    if (model.type == MVMessageTypeSystem) {
+        return @"MessageCellSystem";
+    }
     
     NSMutableString *cellId = [NSMutableString stringWithString:@"MessageCell"];
     if (model.direction == MessageDirectionOutgoing) {

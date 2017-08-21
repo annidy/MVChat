@@ -14,11 +14,17 @@ typedef enum : NSUInteger {
     MessageDirectionOutgoing
 } MessageDirection;
 
+typedef enum : NSUInteger {
+    MVMessageTypeText,
+    MVMessageTypeSystem
+} MVMessageType;
+
 @interface MVMessageModel : NSObject
 @property (strong, nonatomic) NSString *id;
 @property (strong, nonatomic) NSString *chatId;
 @property (strong, nonatomic) NSString *text;
 @property (assign, nonatomic) MessageDirection direction;
+@property (assign, nonatomic) MVMessageType type;
 @property (strong, nonatomic) NSDate *sendDate;
 @property (strong, nonatomic) MVContactModel *contact;
 @end

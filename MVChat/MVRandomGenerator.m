@@ -167,6 +167,10 @@ static MVRandomGenerator *singleton;
     [chatContacts addObject:[[MVDatabaseManager sharedInstance] myContact]];
     chat.participants = [chatContacts copy];
     
+    if (chat.isPeerToPeer) {
+        chat.title = @"";
+    }
+    
     return chat;
 }
 
@@ -222,6 +226,7 @@ static MVRandomGenerator *singleton;
     message.chatId = chatId;
     message.text = [[self textGenerator] sentences:[self randomUIntegerWithMin:1 andMax:5]];
     message.contact = sender;
+    message.type = MVMessageTypeText;
     
     if ([sender.id isEqualToString:[[MVDatabaseManager new] myContact].id]) {
         message.direction = MessageDirectionOutgoing;
