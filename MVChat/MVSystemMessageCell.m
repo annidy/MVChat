@@ -46,7 +46,34 @@
     [[label.bottomAnchor constraintEqualToAnchor:container.bottomAnchor constant:-5] setActive:YES];
     
     self.titleLabel = label;
+}
+
+#pragma mark - MVMessageCell
++ (CGFloat)heightWithTailType:(MVMessageCellTailType)tailType direction:(MessageDirection)direction andText:(NSString *)text {
+    return [self heightWithText:text];
+}
+
++ (CGFloat)heightWithText:(NSString *)text {
+    CGFloat height = 20;
     
+    [self.referenceLabel setText:text];
+    
+    CGFloat maxLabelWidth = UIScreen.mainScreen.bounds.size.width - 40;
+    height += [self.referenceLabel sizeThatFits:CGSizeMake(maxLabelWidth, CGFLOAT_MAX)].height;
+    
+    return height;
+}
+
+#pragma mark - Helpers
+static UILabel *referenceLabel;
++ (UILabel *)referenceLabel {
+    if (!referenceLabel) {
+        referenceLabel = [UILabel new];
+        referenceLabel.font = [UIFont systemFontOfSize:12];
+        referenceLabel.numberOfLines = 0;
+    }
+    
+    return referenceLabel;
 }
 
 @end

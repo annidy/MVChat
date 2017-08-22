@@ -6,10 +6,9 @@
 //  Copyright © 2017 Mark Vasiv. All rights reserved.
 //
 
-#import "MVMessageCell.h"
-#import "MVMessageModel.h"
+#import "MVTextMessageCell.h"
 
-@interface MVMessageCell ()
+@interface MVTextMessageCell ()
 @property (strong, nonatomic) NSLayoutConstraint *timeLeftConstraint;
 @property (assign, nonatomic) MessageDirection direction;
 @property (assign, nonatomic) BOOL hasTail;
@@ -17,7 +16,7 @@
 @property (assign, nonatomic) BOOL lastInTailessSection;
 @end
 
-@implementation MVMessageCell
+@implementation MVTextMessageCell
 #pragma mark - Lifecycle
 -(instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
@@ -146,5 +145,54 @@
 
 -(CGFloat)slidingConstraint {
     return self.timeLeftConstraint.constant;
+}
+
+#pragma mark - MVMessageCell
++ (CGFloat)heightWithTailType:(MVMessageCellTailType)tailType direction:(MessageDirection)direction andText:(NSString *)text {
+    
+    CGFloat height = 0;
+    
+    if (tailType == MVMessageCellTailTypeTailess || tailType == MVMessageCellTailTypeLastTailess) {
+        height += 1;
+    } else {
+        height += verticalMargin;
+    }
+    
+    CGFloat tailOffset = bubbleTailMargin;
+    if (tailType == MVMessageCellTailTypeTailess || tailType == MVMessageCellTailTypeFirstTailess) {
+        height += 1;
+        tailOffset -= tailWidth;
+    } else {
+        height += verticalMargin;
+    }
+    
+    height += 2 * verticalMargin;
+    
+    CGFloat multipler;
+    if (direction == MessageDirectionOutgoing) {
+        multipler = 0.8;
+    } else {
+        multipler = 0.7;
+    }
+    
+    CGFloat maxLabelWidth = UIScreen.mainScreen.bounds.size.width * multipler - bubbleTailessMargin - tailOffset;
+    
+    
+    [self.referenceLabel setText:text];
+    height += [self.referenceLabel sizeThatFits:CGSizeMake(maxLabelWidth, CGFLOAT_MAX)].height;
+    
+    return height;
+}
+
+#pragma mark - Helpers
+static UILabel *referenceLabel;
++ (UILabel *)referenceLabel {
+    if (!referenceLabel) {
+        referenceLabel = [UILabel new];
+        referenceLabel.font = [UIFont systemFontOfSize:14];
+        referenceLabel.numberOfLines = 0;
+    }
+    
+    return referenceLabel;
 }
 @end

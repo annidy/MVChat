@@ -9,7 +9,7 @@
 #import "MVMessagesViewController.h"
 #import "MVMessageModel.h"
 #import "MVChatManager.h"
-#import "MVMessageCell.h"
+#import "MVTextMessageCell.h"
 #import "MVMessageHeader.h"
 #import "MVContactManager.h"
 #import "MVDataAggregator.h"
@@ -38,6 +38,7 @@
 @property (strong, nonatomic) UILabel *referenceLabel;
 @property (assign, nonatomic) NSUInteger loadedPageIndex;
 @property (assign, nonatomic) BOOL loadingNewPage;
+@property (strong, nonatomic) NSCache *cellHeightCache;
 @end
 
 @implementation MVMessagesViewController
@@ -49,14 +50,14 @@
     [MVChatManager sharedInstance].messagesListener = self;
     
     self.sliderOffset = 0;
-    [self.messagesTableView registerClass:[MVMessageCell class] forCellReuseIdentifier:@"MessageCellIncoming"];
-    [self.messagesTableView registerClass:[MVMessageCell class] forCellReuseIdentifier:@"MessageCellOutgoing"];
-    [self.messagesTableView registerClass:[MVMessageCell class] forCellReuseIdentifier:@"MessageCellIncomingLast"];
-    [self.messagesTableView registerClass:[MVMessageCell class] forCellReuseIdentifier:@"MessageCellOutgoingLast"];
-    [self.messagesTableView registerClass:[MVMessageCell class] forCellReuseIdentifier:@"MessageCellOutgoingTailess"];
-    [self.messagesTableView registerClass:[MVMessageCell class] forCellReuseIdentifier:@"MessageCellIncomingTailess"];
-    [self.messagesTableView registerClass:[MVMessageCell class] forCellReuseIdentifier:@"MessageCellOutgoingTailessFirst"];
-    [self.messagesTableView registerClass:[MVMessageCell class] forCellReuseIdentifier:@"MessageCellIncomingTailessFirst"];
+    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MessageCellIncoming"];
+    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MessageCellOutgoing"];
+    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MessageCellIncomingLast"];
+    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MessageCellOutgoingLast"];
+    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MessageCellOutgoingTailess"];
+    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MessageCellIncomingTailess"];
+    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MessageCellOutgoingTailessFirst"];
+    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MessageCellIncomingTailessFirst"];
     [self.messagesTableView registerClass:[MVMessageHeader class] forCellReuseIdentifier:@"MessageHeader"];
     [self.messagesTableView registerClass:[MVSystemMessageCell class] forCellReuseIdentifier:@"MessageCellSystem"];
     
@@ -93,6 +94,8 @@
             [self handleNewMessages:updates];
         });
     }];
+    
+    self.cellHeightCache = [NSCache new];
 }
 
 #pragma mark - Lazy loading
@@ -270,65 +273,27 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row == 0) {
-        return 26;
+    NSNumber *cachedHeight = [self.cellHeightCache objectForKey:indexPath];
+    if (cachedHeight) {
+        return [cachedHeight floatValue];
     }
-    
-    NSIndexPath *indexPathTwo = [NSIndexPath indexPathForRow:indexPath.row - 1 inSection:indexPath.section];
-    indexPath = indexPathTwo;
     
     NSString *section = self.sections[indexPath.section];
-    MVMessageModel *model = self.messages[section][indexPath.row];
     
-    if (model.type == MVMessageTypeSystem) {
-        CGFloat maxLabelWidth = UIScreen.mainScreen.bounds.size.width - 40;
-        self.referenceLabel.font = [UIFont systemFontOfSize:12];
-        [self.referenceLabel setText:model.text];
-        CGFloat height = [self.referenceLabel sizeThatFits:CGSizeMake(maxLabelWidth, CGFLOAT_MAX)].height;
-        height += 20;
-        return height;
-    }
-    
-    MessageDirection direction = model.direction;
-    BOOL hasTail = [self messageHasTailAtIndexPath:indexPath];
-    BOOL firstInTailessSection = [self messageIsFirstInTailessGroup:indexPath];
-    BOOL lastInTailessSection = [self messageIsLastInTailessGroup:indexPath];
-    
-    CGFloat height = 0;
-    
-    if (!hasTail && !firstInTailessSection) {
-        height += 1;
-    } else if (hasTail && lastInTailessSection) {
-        height += 1;
+    CGFloat height;
+    if (indexPath.row == 0) {
+        height = [MVMessageHeader heightWithText:section];
     } else {
-        height += verticalMargin;
+        MVMessageModel *model = self.messages[section][indexPath.row - 1];
+        if (model.type == MVMessageTypeSystem) {
+            height = [MVSystemMessageCell heightWithText:model.text];
+        } else {
+            MVMessageCellTailType tailType = [self messageCellTailTypeAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row - 1 inSection:indexPath.section]];
+            height = [MVTextMessageCell heightWithTailType:tailType direction:model.direction andText:model.text];
+        }
     }
     
-    if (!hasTail) {
-        height += 1;
-    } else {
-        height += verticalMargin;
-    }
-    
-    height += 2 * verticalMargin;
-    
-    CGFloat tailOffset = bubbleTailMargin;
-    if (!hasTail) {
-        tailOffset -= tailWidth;
-    }
-    
-    CGFloat multipler;
-    if (direction == MessageDirectionOutgoing) {
-        multipler = 0.8;
-    } else {
-        multipler = 0.7;
-    }
-    
-    CGFloat maxLabelWidth = UIScreen.mainScreen.bounds.size.width * multipler - bubbleTailessMargin - tailOffset;
-    
-    self.referenceLabel.font = [UIFont systemFontOfSize:14];
-    [self.referenceLabel setText:model.text];
-    height += [self.referenceLabel sizeThatFits:CGSizeMake(maxLabelWidth, CGFLOAT_MAX)].height;
+    [self.cellHeightCache setObject:@(height) forKey:indexPath];
     
     return height;
 }
@@ -352,7 +317,7 @@
         
         return cell;
     } else {
-        MVMessageCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
+        MVTextMessageCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
         cell.messageLabel.text = model.text;
         cell.timeLabel.text = [self timeFromDate:model.sendDate];
         
@@ -361,7 +326,7 @@
             cell.avatarImage.image = image;
         }];
         
-        __weak MVMessageCell *weakCell = cell;
+        __weak MVTextMessageCell *weakCell = cell;
         [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
             NSString *avatarName = note.userInfo[@"Avatar"];
             weakCell.avatarImage.image = [UIImage imageNamed:avatarName];
@@ -453,7 +418,7 @@
     
     if (panRecognizer.state == UIGestureRecognizerStateEnded || panRecognizer.state == UIGestureRecognizerStateFailed || panRecognizer.state == UIGestureRecognizerStateCancelled) {
         CGFloat constant = 0;
-        for (MVMessageCell *cell in visibleCells) {
+        for (MVTextMessageCell *cell in visibleCells) {
             [cell setSlidingConstraint:constant];
         }
         
@@ -481,7 +446,7 @@
     if (oldConstant != constant) {
         CGFloat path = ABS(oldConstant - constant);
         NSTimeInterval duration = path / velocityX;
-        for (MVMessageCell *cell in visibleCells) {
+        for (MVTextMessageCell *cell in visibleCells) {
             [cell setSlidingConstraint:constant];
         }
         
@@ -553,6 +518,71 @@
     return [formatter stringFromDate:date];
 }
 
+- (MessageDirection) messageDirectionAtIndexPath:(NSIndexPath *)indexPath {
+    NSString *section = self.sections[indexPath.section];
+    MVMessageModel *message = self.messages[section][indexPath.row];
+    
+    return message.direction;
+}
+
+- (MVMessageCellTailType)messageCellTailTypeAtIndexPath:(NSIndexPath *)indexPath {
+    NSString *section = self.sections[indexPath.section];
+    NSArray *messages = self.messages[section];
+    
+    MVMessageModel *model = messages[indexPath.row];
+    MVMessageModel *nextModel;
+    MVMessageModel *previousModel;
+    MVMessageModel *beforePreviousModel;
+    
+    MVMessageModel * (^messageModelWithSameDirection)(NSInteger) = ^MVMessageModel *(NSInteger index) {
+        if (messages.count > index && index >= 0) {
+            MVMessageModel *possibleModel = messages[index];
+            if (possibleModel.direction == model.direction) {
+                return possibleModel;
+            }
+        }
+        return nil;
+    };
+    
+    nextModel = messageModelWithSameDirection(indexPath.row + 1);
+    previousModel = messageModelWithSameDirection(indexPath.row - 1);
+    beforePreviousModel = messageModelWithSameDirection(indexPath.row - 2);
+    
+    BOOL previousHasTail = NO;
+    if (previousModel) {
+        previousHasTail = YES;
+        if (beforePreviousModel) {
+            NSTimeInterval interval = [previousModel.sendDate timeIntervalSinceDate:beforePreviousModel.sendDate];
+            if (interval < 60) {
+                previousHasTail = NO;
+            }
+        }
+    }
+    
+    MVMessageCellTailType tailType = MVMessageCellTailTypeDefault;
+    
+    NSTimeInterval interval = 0;
+    if (nextModel) {
+        interval = [nextModel.sendDate timeIntervalSinceDate:model.sendDate];
+    }
+    
+    if (!nextModel || interval > 60) {
+        if (previousModel && !previousHasTail) {
+            tailType = MVMessageCellTailTypeLastTailess;
+        } else {
+            tailType = MVMessageCellTailTypeDefault;
+        }
+    } else {
+        if (previousModel && !previousHasTail) {
+            tailType = MVMessageCellTailTypeTailess;
+        } else {
+            tailType = MVMessageCellTailTypeFirstTailess;
+        }
+    }
+    
+    return tailType;
+}
+
 - (BOOL) messageHasTailAtIndexPath:(NSIndexPath *)indexPath {
     NSString *section = self.sections[indexPath.section];
     NSArray *messages = self.messages[section];
@@ -568,18 +598,11 @@
     return hasTail;
 }
 
-- (MessageDirection) messageDirectionAtIndexPath:(NSIndexPath *)indexPath {
-    NSString *section = self.sections[indexPath.section];
-    MVMessageModel *message = self.messages[section][indexPath.row];
-    
-    return message.direction;
-}
-
 - (BOOL) messageIsFirstInTailessGroup:(NSIndexPath *)indexPath {
     BOOL first = NO;
     BOOL hasTail = [self messageHasTailAtIndexPath:indexPath];
     if (!hasTail) {
-        if (indexPath.row - 1 >=                    0) {
+        if (indexPath.row - 1 >=0) {
             NSIndexPath *previousIndexPath = [NSIndexPath indexPathForRow:indexPath.row - 1 inSection:indexPath.section];
             BOOL sameDirection = [self messageDirectionAtIndexPath:indexPath] == [self messageDirectionAtIndexPath:previousIndexPath];
             BOOL previousHasTail = [self messageHasTailAtIndexPath:previousIndexPath];

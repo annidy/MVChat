@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "MVMessageCellProtocol.h"
 
-@interface MVSystemMessageCell : UITableViewCell
+@interface MVSystemMessageCell : UITableViewCell <MVMessageCellProtocol>
 @property (strong, nonatomic) UILabel *titleLabel;
 @end

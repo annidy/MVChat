@@ -46,7 +46,7 @@
 		CDF479AF1EB66C00003B3C8E /* MVChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF479AE1EB66C00003B3C8E /* MVChatViewController.m */; };
 		CDF479B41EB68980003B3C8E /* MVMessagesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF479B31EB68980003B3C8E /* MVMessagesViewController.m */; };
 		CDF479B71EB68AAF003B3C8E /* MVFooterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF479B61EB68AAF003B3C8E /* MVFooterViewController.m */; };
-		CDF479C51EB6993A003B3C8E /* MVMessageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF479C41EB6993A003B3C8E /* MVMessageCell.m */; };
+		CDF479C51EB6993A003B3C8E /* MVTextMessageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF479C41EB6993A003B3C8E /* MVTextMessageCell.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -99,6 +99,7 @@
 		CD2C9F831F3F421600BB38DA /* MVChatSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVChatSettingsViewController.m; sourceTree = "<group>"; };
 		CD4059811F4B168D00808D3A /* MVSystemMessageCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVSystemMessageCell.h; sourceTree = "<group>"; };
 		CD4059821F4B168D00808D3A /* MVSystemMessageCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVSystemMessageCell.m; sourceTree = "<group>"; };
+		CD4059A61F4CA44800808D3A /* MVMessageCellProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVMessageCellProtocol.h; sourceTree = "<group>"; };
 		CD61CF9D1F2E2C9D00A5884D /* MVTableViewHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVTableViewHeader.h; sourceTree = "<group>"; };
 		CD61CF9E1F2E2C9D00A5884D /* MVTableViewHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVTableViewHeader.m; sourceTree = "<group>"; };
 		CD61CFA01F2E3A0000A5884D /* MVContactsListSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVContactsListSearchViewController.h; sourceTree = "<group>"; };
@@ -127,8 +128,8 @@
 		CDF479B31EB68980003B3C8E /* MVMessagesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVMessagesViewController.m; sourceTree = "<group>"; };
 		CDF479B51EB68AAF003B3C8E /* MVFooterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVFooterViewController.h; sourceTree = "<group>"; };
 		CDF479B61EB68AAF003B3C8E /* MVFooterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVFooterViewController.m; sourceTree = "<group>"; };
-		CDF479C31EB6993A003B3C8E /* MVMessageCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVMessageCell.h; sourceTree = "<group>"; };
-		CDF479C41EB6993A003B3C8E /* MVMessageCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVMessageCell.m; sourceTree = "<group>"; };
+		CDF479C31EB6993A003B3C8E /* MVTextMessageCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVTextMessageCell.h; sourceTree = "<group>"; };
+		CDF479C41EB6993A003B3C8E /* MVTextMessageCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVTextMessageCell.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -312,8 +313,9 @@
 		CDEA5CC11EC746E6004C7433 /* Chat */ = {
 			isa = PBXGroup;
 			children = (
-				CDF479C31EB6993A003B3C8E /* MVMessageCell.h */,
-				CDF479C41EB6993A003B3C8E /* MVMessageCell.m */,
+				CD4059A61F4CA44800808D3A /* MVMessageCellProtocol.h */,
+				CDF479C31EB6993A003B3C8E /* MVTextMessageCell.h */,
+				CDF479C41EB6993A003B3C8E /* MVTextMessageCell.m */,
 				CD28B3671EB7694700BFFCAA /* MVSlidingCell.h */,
 				CD28B38D1EB7E1D100BFFCAA /* MVMessageHeader.h */,
 				CD28B38E1EB7E1D100BFFCAA /* MVMessageHeader.m */,
@@ -512,7 +514,7 @@
 				CD0503621F27D20700A1C4D2 /* MVContactsListController.m in Sources */,
 				CD05F6871F2A8B9200721421 /* MVNavigationController.m in Sources */,
 				CD05508A1F06E8110076FB25 /* MVDatabaseManager.m in Sources */,
-				CDF479C51EB6993A003B3C8E /* MVMessageCell.m in Sources */,
+				CDF479C51EB6993A003B3C8E /* MVTextMessageCell.m in Sources */,
 				CD28B34A1EB6A5F800BFFCAA /* AppDelegate.m in Sources */,
 				CDAB09871E7DE2D800A142DC /* main.m in Sources */,
 				CD28B3961EBCA72E00BFFCAA /* MVContactManager.m in Sources */,

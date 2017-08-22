@@ -25,16 +25,13 @@
     container.layer.masksToBounds = YES;
     container.translatesAutoresizingMaskIntoConstraints = NO;
     [self.contentView addSubview:container];
-    //[[container.centerYAnchor constraintEqualToAnchor:self.contentView.centerYAnchor] setActive:YES];
-    //[[container.centerXAnchor constraintEqualToAnchor:self.contentView.centerXAnchor] setActive:YES];
-    //[[container.heightAnchor constraintEqualToConstant:44] setActive:YES];
+
     [[container.topAnchor constraintEqualToAnchor:self.contentView.topAnchor constant:2] setActive:YES];
-    [[container.bottomAnchor constraintEqualToAnchor:self.contentView.bottomAnchor constant:2] setActive:YES];
+    [[container.bottomAnchor constraintEqualToAnchor:self.contentView.bottomAnchor constant:-2] setActive:YES];
     [[container.centerXAnchor constraintEqualToAnchor:self.contentView.centerXAnchor] setActive:YES];
     
     UILabel *label = [UILabel new];
     label.textAlignment = NSTextAlignmentCenter;
-    label.text = @"Hello";
     label.font = [UIFont systemFontOfSize:12];
     label.translatesAutoresizingMaskIntoConstraints = NO;
     [container addSubview:label];
@@ -45,5 +42,33 @@
     
     self.titleLabel = label;
     
+}
+
+#pragma mark - MVMessageCell
++ (CGFloat)heightWithTailType:(MVMessageCellTailType)tailType direction:(MessageDirection)direction andText:(NSString *)text {
+    return [self heightWithText:text];
+}
+
++ (CGFloat)heightWithText:(NSString *)text {
+    CGFloat height = 14;
+    
+    [self.referenceLabel setText:text];
+    
+    CGFloat maxLabelWidth = UIScreen.mainScreen.bounds.size.width - 20;
+    height += [self.referenceLabel sizeThatFits:CGSizeMake(maxLabelWidth, CGFLOAT_MAX)].height;
+    
+    return height;
+}
+
+#pragma mark - Helpers
+static UILabel *referenceLabel;
++ (UILabel *)referenceLabel {
+    if (!referenceLabel) {
+        referenceLabel = [UILabel new];
+        referenceLabel.font = [UIFont systemFontOfSize:12];
+        referenceLabel.numberOfLines = 0;
+    }
+    
+    return referenceLabel;
 }
 @end
