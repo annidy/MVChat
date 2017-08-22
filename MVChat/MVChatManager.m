@@ -460,4 +460,17 @@ static MVChatManager *sharedManager;
     }];
 }
 
+static NSDateFormatter *timeFormatter;
+- (NSDateFormatter *)timeFormatter {
+    if (!timeFormatter) {
+        timeFormatter = [NSDateFormatter new];
+        timeFormatter.dateFormat = @"HH:mm";
+    }
+    
+    return timeFormatter;
+}
+
+- (NSString *)timeFromDate:(NSDate *)date {
+    return [self.timeFormatter stringFromDate:date];
+}
 @end

@@ -10,5 +10,4 @@
 #import "MVMessageCellProtocol.h"
 
 @interface MVSystemMessageCell : UITableViewCell <MVMessageCellProtocol>
-@property (strong, nonatomic) UILabel *titleLabel;
 @end

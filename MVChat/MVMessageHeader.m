@@ -8,6 +8,10 @@
 
 #import "MVMessageHeader.h"
 
+@interface MVMessageHeader ()
+@property (strong, nonatomic) UILabel *titleLabel;
+@end
+
 @implementation MVMessageHeader
 -(instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
@@ -58,6 +62,14 @@
     height += [self.referenceLabel sizeThatFits:CGSizeMake(maxLabelWidth, CGFLOAT_MAX)].height;
     
     return height;
+}
+
+- (void)fillWithModel:(MVMessageModel *)messageModel {
+    
+}
+
+- (void)fillWithText:(NSString *)text {
+    self.titleLabel.text = text;
 }
 
 #pragma mark - Helpers

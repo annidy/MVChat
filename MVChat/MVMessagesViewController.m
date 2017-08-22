@@ -50,16 +50,16 @@
     [MVChatManager sharedInstance].messagesListener = self;
     
     self.sliderOffset = 0;
-    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MessageCellIncoming"];
-    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MessageCellOutgoing"];
-    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MessageCellIncomingLast"];
-    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MessageCellOutgoingLast"];
-    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MessageCellOutgoingTailess"];
-    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MessageCellIncomingTailess"];
-    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MessageCellOutgoingTailessFirst"];
-    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MessageCellIncomingTailessFirst"];
-    [self.messagesTableView registerClass:[MVMessageHeader class] forCellReuseIdentifier:@"MessageHeader"];
-    [self.messagesTableView registerClass:[MVSystemMessageCell class] forCellReuseIdentifier:@"MessageCellSystem"];
+    [self.messagesTableView registerClass:[MVMessageHeader class] forCellReuseIdentifier:@"MVMessageHeader"];
+    [self.messagesTableView registerClass:[MVSystemMessageCell class] forCellReuseIdentifier:@"MVMessageCellSystem"];
+    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellIncomingTailTypeDefault"];
+    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellIncomingTailTypeTailess"];
+    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellIncomingTailTypeLastTailess"];
+    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellIncomingTailTypeFirstTailess"];
+    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellOutgoingTailTypeDefault"];
+    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellOutgoingTailTypeTailess"];
+    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellOutgoingTailTypeLastTailess"];
+    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellOutgoingTailTypeFirstTailess"];
     
     self.messagesTableView.tableFooterView = [UIView new];
     self.messagesTableView.delegate = self;
@@ -300,72 +300,60 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSString *cellId = [self cellIdForIndexPath:indexPath];
+    UITableViewCell <MVMessageCellProtocol> *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
     
     if (indexPath.row == 0) {
         NSString *sectionTitle = self.sections[indexPath.section];
-        MVMessageHeader *header = [tableView dequeueReusableCellWithIdentifier:cellId];
-        header.titleLabel.text = sectionTitle;
-        return header;
+        [cell fillWithText:sectionTitle];
+    } else {
+        NSString *section = self.sections[indexPath.section];
+        MVMessageModel *model = self.messages[section][indexPath.row - 1];
+        
+        if (model.type == MVMessageTypeSystem) {
+            [cell fillWithText:model.text];
+        } else {
+            [cell fillWithModel:model];
+        }
     }
     
-    NSString *section = self.sections[indexPath.section];
-    MVMessageModel *model = self.messages[section][indexPath.row - 1];
-
-    if (model.type == MVMessageTypeSystem) {
-        MVSystemMessageCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
-        cell.titleLabel.text = model.text;
-        
-        return cell;
-    } else {
-        MVTextMessageCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
-        cell.messageLabel.text = model.text;
-        cell.timeLabel.text = [self timeFromDate:model.sendDate];
-        
-        cell.avatarImage.image = nil;
-        [[MVContactManager sharedInstance] loadAvatarThumbnailForContact:model.contact completion:^(UIImage *image) {
-            cell.avatarImage.image = image;
-        }];
-        
-        __weak MVTextMessageCell *weakCell = cell;
-        [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-            NSString *avatarName = note.userInfo[@"Avatar"];
-            weakCell.avatarImage.image = [UIImage imageNamed:avatarName];
-        }];
-        
-        return cell;
-    }
+    return cell;
 }
 
 - (NSString *)cellIdForIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.row == 0) {
-        return @"MessageHeader";
+        return @"MVMessageHeader";
     }
-    
-    NSIndexPath *indexPathTwo = [NSIndexPath indexPathForRow:indexPath.row - 1 inSection:indexPath.section];
-    indexPath = indexPathTwo;
     
     NSString *section = self.sections[indexPath.section];
-    MVMessageModel *model = self.messages[section][indexPath.row];
+    MVMessageModel *model = self.messages[section][indexPath.row - 1];
     
     if (model.type == MVMessageTypeSystem) {
-        return @"MessageCellSystem";
+        return @"MVMessageCellSystem";
     }
     
-    NSMutableString *cellId = [NSMutableString stringWithString:@"MessageCell"];
+    NSMutableString *cellId = [NSMutableString stringWithString:@"MVMessageCell"];
     if (model.direction == MessageDirectionOutgoing) {
         [cellId appendString:@"Outgoing"];
     } else {
         [cellId appendString:@"Incoming"];
     }
-    if (![self messageHasTailAtIndexPath:indexPath]) {
-        [cellId appendString:@"Tailess"];
-        if ([self messageIsFirstInTailessGroup:indexPath]) {
-            [cellId appendString:@"First"];
-        }
-    } else {
-        if ([self messageIsLastInTailessGroup:indexPath]) {
-            [cellId appendString:@"Last"];
-        }
+    
+    MVMessageCellTailType tailType = [self messageCellTailTypeAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row - 1 inSection:indexPath.section]];
+    switch (tailType) {
+        case MVMessageCellTailTypeDefault:
+            [cellId appendString:@"TailTypeDefault"];
+            break;
+        case MVMessageCellTailTypeTailess:
+            [cellId appendString:@"TailTypeTailess"];
+            break;
+        case MVMessageCellTailTypeLastTailess:
+            [cellId appendString:@"TailTypeLastTailess"];
+            break;
+        case MVMessageCellTailTypeFirstTailess:
+            [cellId appendString:@"TailTypeFirstTailess"];
+            break;
+        default:
+            break;
     }
 
     return [cellId copy];
@@ -502,27 +490,16 @@
 }
 
 #pragma mark - Helpers
-- (NSString *)timeFromDate:(NSDate *)date {
-    NSDateFormatter *timeFormatter = [NSDateFormatter new];
-    timeFormatter.dateFormat = @"HH:mm";
-    
-    return [timeFormatter stringFromDate:date];
-}
-
+static NSDateFormatter *dateFormatter;
 - (NSString *)headerTitleFromDate:(NSDate *)date {
-    NSDateFormatter *formatter = [NSDateFormatter new];
-    formatter.timeStyle = NSDateFormatterNoStyle;
-    formatter.dateStyle = NSDateFormatterShortStyle;
-    formatter.doesRelativeDateFormatting = YES;
+    if (!dateFormatter) {
+        dateFormatter = [NSDateFormatter new];
+        dateFormatter.timeStyle = NSDateFormatterNoStyle;
+        dateFormatter.dateStyle = NSDateFormatterShortStyle;
+        dateFormatter.doesRelativeDateFormatting = YES;
+    }
     
-    return [formatter stringFromDate:date];
-}
-
-- (MessageDirection) messageDirectionAtIndexPath:(NSIndexPath *)indexPath {
-    NSString *section = self.sections[indexPath.section];
-    MVMessageModel *message = self.messages[section][indexPath.row];
-    
-    return message.direction;
+    return [dateFormatter stringFromDate:date];
 }
 
 - (MVMessageCellTailType)messageCellTailTypeAtIndexPath:(NSIndexPath *)indexPath {
@@ -532,30 +509,27 @@
     MVMessageModel *model = messages[indexPath.row];
     MVMessageModel *nextModel;
     MVMessageModel *previousModel;
-    MVMessageModel *beforePreviousModel;
     
-    MVMessageModel * (^messageModelWithSameDirection)(NSInteger) = ^MVMessageModel *(NSInteger index) {
+    MVMessageModel * (^messageModelWithSameDirectionAndType)(NSInteger) = ^MVMessageModel *(NSInteger index) {
         if (messages.count > index && index >= 0) {
             MVMessageModel *possibleModel = messages[index];
-            if (possibleModel.direction == model.direction) {
+            if (possibleModel.direction == model.direction && possibleModel.type == model.type) {
                 return possibleModel;
             }
         }
         return nil;
     };
     
-    nextModel = messageModelWithSameDirection(indexPath.row + 1);
-    previousModel = messageModelWithSameDirection(indexPath.row - 1);
-    beforePreviousModel = messageModelWithSameDirection(indexPath.row - 2);
+    nextModel = messageModelWithSameDirectionAndType(indexPath.row + 1);
+    previousModel = messageModelWithSameDirectionAndType(indexPath.row - 1);
     
     BOOL previousHasTail = NO;
     if (previousModel) {
-        previousHasTail = YES;
-        if (beforePreviousModel) {
-            NSTimeInterval interval = [previousModel.sendDate timeIntervalSinceDate:beforePreviousModel.sendDate];
-            if (interval < 60) {
-                previousHasTail = NO;
-            }
+        NSTimeInterval interval = [model.sendDate timeIntervalSinceDate:previousModel.sendDate];
+        if (interval < 60) {
+            previousHasTail = NO;
+        } else {
+            previousHasTail = YES;
         }
     }
     
@@ -581,55 +555,5 @@
     }
     
     return tailType;
-}
-
-- (BOOL) messageHasTailAtIndexPath:(NSIndexPath *)indexPath {
-    NSString *section = self.sections[indexPath.section];
-    NSArray *messages = self.messages[section];
-    BOOL hasTail = YES;
-    if (messages.count > indexPath.row + 1) {
-        MVMessageModel *model = messages[indexPath.row];
-        MVMessageModel *nextModel = messages[indexPath.row + 1];
-        NSTimeInterval interval = [nextModel.sendDate timeIntervalSinceDate:model.sendDate];
-        if (model.direction == nextModel.direction && interval < 60) {
-            hasTail = NO;
-        }
-    }
-    return hasTail;
-}
-
-- (BOOL) messageIsFirstInTailessGroup:(NSIndexPath *)indexPath {
-    BOOL first = NO;
-    BOOL hasTail = [self messageHasTailAtIndexPath:indexPath];
-    if (!hasTail) {
-        if (indexPath.row - 1 >=0) {
-            NSIndexPath *previousIndexPath = [NSIndexPath indexPathForRow:indexPath.row - 1 inSection:indexPath.section];
-            BOOL sameDirection = [self messageDirectionAtIndexPath:indexPath] == [self messageDirectionAtIndexPath:previousIndexPath];
-            BOOL previousHasTail = [self messageHasTailAtIndexPath:previousIndexPath];
-            if (previousHasTail && sameDirection) {
-                first = YES;
-            }
-        } else {
-            first = YES;
-        }
-    }
-    
-    return first;
-}
-
-- (BOOL) messageIsLastInTailessGroup:(NSIndexPath *)indexPath {
-    BOOL last = NO;
-    BOOL hasTail = [self messageHasTailAtIndexPath:indexPath];
-    if (hasTail) {
-        if (indexPath.row - 1 >= 0) {
-            NSIndexPath *previousIndexPath = [NSIndexPath indexPathForRow:indexPath.row - 1 inSection:indexPath.section];
-            BOOL sameDirection = [self messageDirectionAtIndexPath:indexPath] == [self messageDirectionAtIndexPath:previousIndexPath];
-            BOOL previousHasTail = [self messageHasTailAtIndexPath:previousIndexPath];
-            if (!previousHasTail && sameDirection) {
-                last = YES;
-            }
-        }
-    }
-    return last;
 }
 @end
