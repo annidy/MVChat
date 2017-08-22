@@ -10,7 +10,6 @@
 #import "MVContactManager.h"
 #import "MVChatManager.h"
 
-static CGFloat innerMargin = 25;
 static CGFloat MVBubbleWidthMultiplierOutgoing = 0.8;
 static CGFloat MVBubbleWidthMultiplierIncoming = 0.7;
 static CGFloat MVBubbleTailSideOffset = 15;

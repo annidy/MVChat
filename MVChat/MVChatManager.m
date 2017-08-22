@@ -66,26 +66,34 @@ static MVChatManager *sharedManager;
 }
 
 - (void)loadMessagesForChatWithId:(NSString *)chatId withCallback:(void (^)(BOOL))callback {
-    [[MVDatabaseManager sharedInstance] messagesFromChatWithId:chatId completion:^(NSArray<MVMessageModel *> *messages) {
-        dispatch_async(self.managerQueue, ^{
-            NSMutableArray *messagesCopy = [messages mutableCopy];
-            [self sortMessages:messagesCopy];
-            
-            NSUInteger numberOfPages = messagesCopy.count/MVMessagesPageSize;
-            if (messagesCopy.count%MVMessagesPageSize != 0) {
-                numberOfPages++;
+    dispatch_async(self.managerQueue, ^{
+        @synchronized (self.chatsMessages) {
+            if ([self.chatsMessages objectForKey:chatId]) {
+                return;
             }
-            
-            @synchronized (self.chatsMessages) {
-                [self.chatsMessages setObject:[[messagesCopy reverseObjectEnumerator] allObjects] forKey:chatId];
-                [self.chatsMessagesPages setObject:@(numberOfPages) forKey:chatId];
-            }
-            
-            if (callback) {
-                callback(YES);
-            }
-        });
-    }];
+        }
+        
+        [[MVDatabaseManager sharedInstance] messagesFromChatWithId:chatId completion:^(NSArray<MVMessageModel *> *messages) {
+            dispatch_async(self.managerQueue, ^{
+                NSMutableArray *messagesCopy = [messages mutableCopy];
+                [self sortMessages:messagesCopy];
+                
+                NSUInteger numberOfPages = messagesCopy.count/MVMessagesPageSize;
+                if (messagesCopy.count%MVMessagesPageSize != 0) {
+                    numberOfPages++;
+                }
+                
+                @synchronized (self.chatsMessages) {
+                    [self.chatsMessages setObject:[[messagesCopy reverseObjectEnumerator] allObjects] forKey:chatId];
+                    [self.chatsMessagesPages setObject:@(numberOfPages) forKey:chatId];
+                }
+                
+                if (callback) {
+                    callback(YES);
+                }
+            });
+        }];
+    });
 }
 
 #pragma mark - Handle updates

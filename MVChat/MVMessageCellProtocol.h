@@ -16,10 +16,12 @@ typedef enum : NSUInteger {
     MVMessageCellTailTypeLastTailess
 } MVMessageCellTailType;
 
-@protocol MVMessageCellProtocol <NSObject>
+@protocol MVMessageCellComplexProtocol <NSObject>
 + (CGFloat)heightWithTailType:(MVMessageCellTailType)tailType direction:(MessageDirection)direction andText:(NSString *)text;
 - (void)fillWithModel:(MVMessageModel *)messageModel;
-@optional
+@end
+
+@protocol MVMessageCellSimpleProtocol <NSObject>
 + (CGFloat)heightWithText:(NSString *)text;
 - (void)fillWithText:(NSString *)text;
 @end

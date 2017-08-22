@@ -49,10 +49,6 @@
 }
 
 #pragma mark - MVMessageCell
-+ (CGFloat)heightWithTailType:(MVMessageCellTailType)tailType direction:(MessageDirection)direction andText:(NSString *)text {
-    return [self heightWithText:text];
-}
-
 + (CGFloat)heightWithText:(NSString *)text {
     CGFloat height = 14;
     
@@ -62,10 +58,6 @@
     height += [self.referenceLabel sizeThatFits:CGSizeMake(maxLabelWidth, CGFLOAT_MAX)].height;
     
     return height;
-}
-
-- (void)fillWithModel:(MVMessageModel *)messageModel {
-    
 }
 
 - (void)fillWithText:(NSString *)text {

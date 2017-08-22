@@ -314,9 +314,9 @@
 			isa = PBXGroup;
 			children = (
 				CD4059A61F4CA44800808D3A /* MVMessageCellProtocol.h */,
+				CD28B3671EB7694700BFFCAA /* MVSlidingCell.h */,
 				CDF479C31EB6993A003B3C8E /* MVTextMessageCell.h */,
 				CDF479C41EB6993A003B3C8E /* MVTextMessageCell.m */,
-				CD28B3671EB7694700BFFCAA /* MVSlidingCell.h */,
 				CD28B38D1EB7E1D100BFFCAA /* MVMessageHeader.h */,
 				CD28B38E1EB7E1D100BFFCAA /* MVMessageHeader.m */,
 				CD4059811F4B168D00808D3A /* MVSystemMessageCell.h */,

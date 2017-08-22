@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 #import "MVMessageCellProtocol.h"
 
-@interface MVMessageHeader : UITableViewCell <MVMessageCellProtocol>
+@interface MVMessageHeader : UITableViewCell <MVMessageCellSimpleProtocol>
 @end

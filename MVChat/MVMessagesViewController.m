@@ -34,7 +34,6 @@
 @property (strong, nonatomic) NSMutableDictionary <NSString *, NSMutableArray <MVMessageModel *>*> *messages;
 @property (assign, nonatomic) CGFloat sliderOffset;
 @property (assign, nonatomic) BOOL autoscrollEnabled;
-@property (strong, nonatomic) MVDataAggregator *messageCallbackHandler;
 @property (strong, nonatomic) UILabel *referenceLabel;
 @property (assign, nonatomic) NSUInteger loadedPageIndex;
 @property (assign, nonatomic) BOOL loadingNewPage;
@@ -43,13 +42,29 @@
 
 @implementation MVMessagesViewController
 
+#pragma mark - Lifecycle
+- (instancetype)initWithCoder:(NSCoder *)aDecoder {
+    if (self = [super initWithCoder:aDecoder]) {
+        _messageModels = [NSArray new];
+        _sections = [NSMutableArray new];
+        _messages = [NSMutableDictionary new];
+        _cellHeightCache = [NSCache new];
+        _sliderOffset = 0;
+        _autoscrollEnabled = YES;
+        _loadedPageIndex = -1;
+    }
+    
+    return self;
+}
+
+- (void)dealloc {
+    [self.messagesTableView removeObserver:self forKeyPath:@"contentSize"];
+}
+
 #pragma mark - View lifecycle
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [MVChatManager sharedInstance].messagesListener = self;
-    
-    self.sliderOffset = 0;
     [self.messagesTableView registerClass:[MVMessageHeader class] forCellReuseIdentifier:@"MVMessageHeader"];
     [self.messagesTableView registerClass:[MVSystemMessageCell class] forCellReuseIdentifier:@"MVMessageCellSystem"];
     [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellIncomingTailTypeDefault"];
@@ -60,67 +75,17 @@
     [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellOutgoingTailTypeTailess"];
     [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellOutgoingTailTypeLastTailess"];
     [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellOutgoingTailTypeFirstTailess"];
-    
     self.messagesTableView.tableFooterView = [UIView new];
-    self.messagesTableView.delegate = self;
-    self.messagesTableView.dataSource = self;
     self.messagesTableView.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
     
-    //self.messageModels = [[MVChatManager sharedInstance] messagesForChatWithId:self.chatId];
-    
-    UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
-    [self.view addGestureRecognizer:panRecognizer];
-    panRecognizer.delegate = self;
-    
-    //[self mapWithSections];
     [self.messagesTableView addObserver:self forKeyPath:@"contentSize" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:nil];
-    self.autoscrollEnabled = YES;
-    
-    self.messageCallbackHandler = [[MVDataAggregator alloc] initWithThrottle:0.5 allowingFirst:YES maxObjectsCount:50 andBlock:^(NSArray *models) {
+
+    [MVChatManager sharedInstance].messagesListener = self;
+    [[MVChatManager sharedInstance] loadMessagesForChatWithId:self.chatId withCallback:^(BOOL success) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self handleNewMessages:models];
+            [self tryToLoadNextPage];
         });
     }];
-    
-    self.loadedPageIndex = 0;
-    
-    [[MVChatManager sharedInstance] messagesPage:0 forChatWithId:self.chatId withCallback:^(NSArray<MVMessageModel *> *messages) {
-        NSMutableArray *updates = [NSMutableArray new];
-        for (MVMessageModel *message in messages) {
-            [updates addObject:[MVMessageUpdateModel updateModelWithMessage:message andPosition:MessageUpdatePositionStart]];
-        }
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self handleNewMessages:updates];
-        });
-    }];
-    
-    self.cellHeightCache = [NSCache new];
-}
-
-#pragma mark - Lazy loading
-- (NSArray<MVMessageModel *> *)messageModels {
-    if (!_messageModels) _messageModels = [NSArray new];
-    return _messageModels;
-}
-
-- (NSMutableArray<NSString *> *)sections {
-    if (!_sections) _sections = [NSMutableArray new];
-    return _sections;
-}
-
-- (NSMutableDictionary<NSString *,NSMutableArray<MVMessageModel *> *> *)messages {
-    if (!_messages) _messages = [NSMutableDictionary new];
-    return _messages;
-}
-
--(UILabel *)referenceLabel {
-    if (!_referenceLabel) {
-        _referenceLabel = [UILabel new];
-        _referenceLabel.numberOfLines = 0;
-    }
-    
-    return _referenceLabel;
 }
 
 #pragma mark - KVO
@@ -168,7 +133,7 @@
 }
 
 #pragma mark - Data handling
-- (void)handleNewMessages:(NSArray <MVMessageModel *> *)models {
+- (void)handleNewMessages:(NSArray <MVMessageUpdateModel *> *)models {
     NSMutableArray *sections = [self.sections mutableCopy];
     NSMutableDictionary *messages = [self.messages mutableCopy];
     
@@ -233,7 +198,9 @@
 }
 
 - (void)handleNewMessage:(MVMessageUpdateModel *)messageUpdate {
-    [self.messageCallbackHandler call:messageUpdate];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self handleNewMessages:@[messageUpdate]];
+    });
 }
 
 - (void)addToSections:(MVMessageModel *)model {
@@ -300,19 +267,21 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSString *cellId = [self cellIdForIndexPath:indexPath];
-    UITableViewCell <MVMessageCellProtocol> *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
     
     if (indexPath.row == 0) {
+        id <MVMessageCellSimpleProtocol> simpleCell = (id <MVMessageCellSimpleProtocol>) cell;
         NSString *sectionTitle = self.sections[indexPath.section];
-        [cell fillWithText:sectionTitle];
+        [simpleCell fillWithText:sectionTitle];
     } else {
         NSString *section = self.sections[indexPath.section];
         MVMessageModel *model = self.messages[section][indexPath.row - 1];
-        
         if (model.type == MVMessageTypeSystem) {
-            [cell fillWithText:model.text];
+            id <MVMessageCellSimpleProtocol> simpleCell = (id <MVMessageCellSimpleProtocol>) cell;
+            [simpleCell fillWithText:model.text];
         } else {
-            [cell fillWithModel:model];
+            id <MVMessageCellComplexProtocol> complexCell = (id <MVMessageCellComplexProtocol>) cell;
+            [complexCell fillWithModel:model];
         }
     }
     
@@ -390,8 +359,7 @@
     return YES;
 }
 
-- (void)handlePanGesture:(UIPanGestureRecognizer *)panRecognizer {
-    
+- (IBAction)handlePanGesture:(UIPanGestureRecognizer *)panRecognizer {
     NSMutableArray<id <MVSlidingCell>> *visibleCells = [NSMutableArray new];
     
     for (UITableViewCell *cell in self.messagesTableView.visibleCells) {
@@ -486,6 +454,10 @@
                 }
             });
         }];
+    } else {
+        @synchronized (self) {
+            self.loadingNewPage = NO;
+        }
     }
 }
 

@@ -58,4 +58,5 @@ static NSUInteger MVMessagesPageSize = 1000;
 - (void)loadAvatarThumbnailForChat:(MVChatModel *)chat completion:(void (^)(UIImage *))callback;
 
 - (NSString *)timeFromDate:(NSDate *)date;
+- (void)loadMessagesForChatWithId:(NSString *)chatId withCallback:(void (^)(BOOL))callback;
 @end

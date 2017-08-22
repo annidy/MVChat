@@ -11,5 +11,5 @@
 #import "MVMessageCellProtocol.h"
 @class MVMessageModel;
 
-@interface MVTextMessageCell : UITableViewCell <MVSlidingCell, MVMessageCellProtocol>
+@interface MVTextMessageCell : UITableViewCell <MVSlidingCell, MVMessageCellComplexProtocol>
 @end
