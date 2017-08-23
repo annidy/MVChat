@@ -232,7 +232,7 @@ static UILabel *referenceMessageLabel;
     self.timeLeftConstraint.constant = constant;
 }
 
--(CGFloat)slidingConstraint {
+- (CGFloat)slidingConstraint {
     return self.timeLeftConstraint.constant;
 }
 

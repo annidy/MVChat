@@ -230,6 +230,40 @@
     }
 }
 
+- (void)tryToLoadNextPage {
+    @synchronized (self) {
+        if (self.loadingNewPage) {
+            return;
+        }
+        
+        self.loadingNewPage = YES;
+    }
+    
+    if ([[MVChatManager sharedInstance] numberOfPagesInChatWithId:self.chatId] > self.loadedPageIndex + 1) {
+        [[MVChatManager sharedInstance] messagesPage:self.loadedPageIndex + 1 forChatWithId:self.chatId withCallback:^(NSArray<MVMessageModel *> *messages) {
+            NSMutableArray *updates = [NSMutableArray new];
+            
+            for (MVMessageModel *message in messages) {
+                [updates addObject:[MVMessageUpdateModel updateModelWithMessage:message andPosition:MessageUpdatePositionStart]];
+            }
+            
+            self.loadedPageIndex++;
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self handleNewMessages:updates];
+                
+                @synchronized (self) {
+                    self.loadingNewPage = NO;
+                }
+            });
+        }];
+    } else {
+        @synchronized (self) {
+            self.loadingNewPage = NO;
+        }
+    }
+}
+
 #pragma mark - Table view
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return self.sections.count;
@@ -288,48 +322,7 @@
     return cell;
 }
 
-- (NSString *)cellIdForIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row == 0) {
-        return @"MVMessageHeader";
-    }
-    
-    NSString *section = self.sections[indexPath.section];
-    MVMessageModel *model = self.messages[section][indexPath.row - 1];
-    
-    if (model.type == MVMessageTypeSystem) {
-        return @"MVMessageCellSystem";
-    }
-    
-    NSMutableString *cellId = [NSMutableString stringWithString:@"MVMessageCell"];
-    if (model.direction == MessageDirectionOutgoing) {
-        [cellId appendString:@"Outgoing"];
-    } else {
-        [cellId appendString:@"Incoming"];
-    }
-    
-    MVMessageCellTailType tailType = [self messageCellTailTypeAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row - 1 inSection:indexPath.section]];
-    switch (tailType) {
-        case MVMessageCellTailTypeDefault:
-            [cellId appendString:@"TailTypeDefault"];
-            break;
-        case MVMessageCellTailTypeTailess:
-            [cellId appendString:@"TailTypeTailess"];
-            break;
-        case MVMessageCellTailTypeLastTailess:
-            [cellId appendString:@"TailTypeLastTailess"];
-            break;
-        case MVMessageCellTailTypeFirstTailess:
-            [cellId appendString:@"TailTypeFirstTailess"];
-            break;
-        default:
-            break;
-    }
-
-    return [cellId copy];
-}
-
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    
     if (![cell conformsToProtocol:NSProtocolFromString(@"MVSlidingCell")]) {
         return;
     }
@@ -342,11 +335,10 @@
     }
     
     [slidingCell.contentView layoutIfNeeded];
-    
 }
 
 #pragma mark - Gesture recognizers
--(BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
     CGPoint translation = [(UIPanGestureRecognizer *)gestureRecognizer translationInView:self.view];
     if (ABS(translation.y) > 1) {
         return NO;
@@ -355,7 +347,7 @@
     }
 }
 
--(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
     return YES;
 }
 
@@ -414,7 +406,7 @@
     }
 }
 
--(void)scrollViewDidScroll:(UIScrollView *)scrollView {
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     if(self.messagesTableView.contentOffset.y >= (self.messagesTableView.contentSize.height - self.messagesTableView.frame.size.height)) {
         self.autoscrollEnabled = YES;
     }
@@ -424,40 +416,6 @@
     
     if(self.messagesTableView.contentOffset.y <= 200) {
         [self tryToLoadNextPage];
-    }
-}
-
-- (void)tryToLoadNextPage {
-    @synchronized (self) {
-        if (self.loadingNewPage) {
-            return;
-        }
-        
-        self.loadingNewPage = YES;
-    }
-    
-    if ([[MVChatManager sharedInstance] numberOfPagesInChatWithId:self.chatId] > self.loadedPageIndex + 1) {
-        [[MVChatManager sharedInstance] messagesPage:self.loadedPageIndex + 1 forChatWithId:self.chatId withCallback:^(NSArray<MVMessageModel *> *messages) {
-            NSMutableArray *updates = [NSMutableArray new];
-            
-            for (MVMessageModel *message in messages) {
-                [updates addObject:[MVMessageUpdateModel updateModelWithMessage:message andPosition:MessageUpdatePositionStart]];
-            }
-            
-            self.loadedPageIndex++;
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self handleNewMessages:updates];
-                
-                @synchronized (self) {
-                    self.loadingNewPage = NO;
-                }
-            });
-        }];
-    } else {
-        @synchronized (self) {
-            self.loadingNewPage = NO;
-        }
     }
 }
 
@@ -472,6 +430,46 @@ static NSDateFormatter *dateFormatter;
     }
     
     return [dateFormatter stringFromDate:date];
+}
+
+- (NSString *)cellIdForIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.row == 0) {
+        return @"MVMessageHeader";
+    }
+    
+    NSString *section = self.sections[indexPath.section];
+    MVMessageModel *model = self.messages[section][indexPath.row - 1];
+    
+    if (model.type == MVMessageTypeSystem) {
+        return @"MVMessageCellSystem";
+    }
+    
+    NSMutableString *cellId = [NSMutableString stringWithString:@"MVMessageCell"];
+    if (model.direction == MessageDirectionOutgoing) {
+        [cellId appendString:@"Outgoing"];
+    } else {
+        [cellId appendString:@"Incoming"];
+    }
+    
+    MVMessageCellTailType tailType = [self messageCellTailTypeAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row - 1 inSection:indexPath.section]];
+    switch (tailType) {
+        case MVMessageCellTailTypeDefault:
+            [cellId appendString:@"TailTypeDefault"];
+            break;
+        case MVMessageCellTailTypeTailess:
+            [cellId appendString:@"TailTypeTailess"];
+            break;
+        case MVMessageCellTailTypeLastTailess:
+            [cellId appendString:@"TailTypeLastTailess"];
+            break;
+        case MVMessageCellTailTypeFirstTailess:
+            [cellId appendString:@"TailTypeFirstTailess"];
+            break;
+        default:
+            break;
+    }
+    
+    return [cellId copy];
 }
 
 - (MVMessageCellTailType)messageCellTailTypeAtIndexPath:(NSIndexPath *)indexPath {

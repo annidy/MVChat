@@ -10,6 +10,6 @@
 #import <UIKit/UIKit.h>
 
 @protocol MVSlidingCell <NSObject>
-- (CGFloat) slidingConstraint;
-- (void) setSlidingConstraint:(CGFloat)constant;
+- (CGFloat)slidingConstraint;
+- (void)setSlidingConstraint:(CGFloat)constant;
 @end

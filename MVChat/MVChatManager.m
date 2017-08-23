@@ -142,6 +142,12 @@ static MVChatManager *sharedManager;
                 [self.chatsMessages setObject:[NSMutableArray new] forKey:chatId];
             }
             [[self.chatsMessages objectForKey:chatId] addObjectsFromArray:messagesCopy];
+            NSUInteger messagesCount = [[self.chatsMessages objectForKey:chatId] count];
+            NSUInteger numberOfPages = messagesCount/MVMessagesPageSize;
+            if (messagesCopy.count%MVMessagesPageSize != 0) {
+                numberOfPages++;
+            }
+            [self.chatsMessagesPages setObject:@(numberOfPages) forKey:chatId];
         }
     
         if ([self.messagesListener.chatId isEqualToString:chatId]) {
