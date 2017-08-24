@@ -1036,12 +1036,120 @@
             </objects>
             <point key="canvasLocation" x="2183" y="-419"/>
         </scene>
+        <!--Overlay Menu Controller-->
+        <scene sceneID="1GY-4s-3Hv">
+            <objects>
+                <viewController storyboardIdentifier="MVOverlayMenuController" id="nkc-fg-bjW" customClass="MVOverlayMenuController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="a9i-8O-UAV"/>
+                        <viewControllerLayoutGuide type="bottom" id="HCg-Fy-Vvr"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="4bd-VE-KEA">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PGR-ph-S1F">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="E2p-fV-yiV">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="50" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="eAn-kg-8MS">
+                                            <rect key="frame" x="8" y="93" width="359" height="566"/>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                            <prototypes>
+                                                <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="MVBarButtonMenuTextCell" id="Abv-Tu-4lE" customClass="MVOverlayMenuCell">
+                                                    <rect key="frame" x="0.0" y="28" width="359" height="50"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Abv-Tu-4lE" id="ews-uj-ccc">
+                                                        <rect key="frame" x="0.0" y="0.0" width="359" height="50"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <subviews>
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ixF-OA-saQ">
+                                                                <rect key="frame" x="599" y="9" width="60" height="36"/>
+                                                                <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                                                <state key="normal" title="Button"/>
+                                                                <connections>
+                                                                    <action selector="buttonTapped:" destination="Abv-Tu-4lE" eventType="touchUpInside" id="1C0-ts-Xgc"/>
+                                                                </connections>
+                                                            </button>
+                                                        </subviews>
+                                                        <constraints>
+                                                            <constraint firstItem="ixF-OA-saQ" firstAttribute="centerY" secondItem="ews-uj-ccc" secondAttribute="centerY" id="lwi-GB-SnX"/>
+                                                            <constraint firstAttribute="trailing" secondItem="ixF-OA-saQ" secondAttribute="trailing" constant="-300" id="o6b-Lr-snK"/>
+                                                        </constraints>
+                                                    </tableViewCellContentView>
+                                                    <connections>
+                                                        <outlet property="button" destination="ixF-OA-saQ" id="MBH-5B-9Ru"/>
+                                                        <outlet property="rightButtonConstraint" destination="o6b-Lr-snK" id="KJV-vv-tcG"/>
+                                                    </connections>
+                                                </tableViewCell>
+                                            </prototypes>
+                                            <connections>
+                                                <outlet property="dataSource" destination="nkc-fg-bjW" id="GTs-ha-YLo"/>
+                                                <outlet property="delegate" destination="nkc-fg-bjW" id="Snh-Q3-Ii5"/>
+                                            </connections>
+                                        </tableView>
+                                        <button opaque="NO" alpha="0.0" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zYt-0J-VAP">
+                                            <rect key="frame" x="325" y="20" width="40" height="40"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="40" id="3yU-L9-yWc"/>
+                                                <constraint firstAttribute="width" constant="40" id="rWa-XK-9Lp"/>
+                                            </constraints>
+                                            <inset key="contentEdgeInsets" minX="8" minY="8" maxX="8" maxY="8"/>
+                                            <state key="normal" title="Button" image="iconMenuCancel"/>
+                                            <connections>
+                                                <action selector="cancelButtonTapped:" destination="nkc-fg-bjW" eventType="touchUpInside" id="tmS-Ua-PBI"/>
+                                            </connections>
+                                        </button>
+                                        <label opaque="NO" userInteractionEnabled="NO" alpha="0.0" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Select Action" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dPl-26-qnH">
+                                            <rect key="frame" x="106" y="51" width="187" height="38.5"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="32"/>
+                                            <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstAttribute="trailing" secondItem="zYt-0J-VAP" secondAttribute="trailing" constant="10" id="5LD-yf-4kC"/>
+                                        <constraint firstItem="zYt-0J-VAP" firstAttribute="top" secondItem="E2p-fV-yiV" secondAttribute="top" constant="20" id="KQP-E3-jKr"/>
+                                        <constraint firstItem="eAn-kg-8MS" firstAttribute="leading" secondItem="E2p-fV-yiV" secondAttribute="leadingMargin" id="Msq-Tw-g9B"/>
+                                        <constraint firstItem="dPl-26-qnH" firstAttribute="centerY" secondItem="zYt-0J-VAP" secondAttribute="centerY" constant="30" id="Trc-Uz-CM2"/>
+                                        <constraint firstAttribute="trailing" secondItem="dPl-26-qnH" secondAttribute="trailing" constant="82" id="isd-6V-iMy"/>
+                                        <constraint firstItem="eAn-kg-8MS" firstAttribute="top" secondItem="E2p-fV-yiV" secondAttribute="topMargin" constant="85" id="k2K-r7-qUr"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="eAn-kg-8MS" secondAttribute="trailing" id="pXb-LY-dCK"/>
+                                        <constraint firstAttribute="bottomMargin" secondItem="eAn-kg-8MS" secondAttribute="bottom" id="sd0-E4-Ks6"/>
+                                    </constraints>
+                                </view>
+                                <blurEffect style="light"/>
+                            </visualEffectView>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="HCg-Fy-Vvr" firstAttribute="top" secondItem="PGR-ph-S1F" secondAttribute="bottom" id="Mjr-3p-OTm"/>
+                            <constraint firstAttribute="trailing" secondItem="PGR-ph-S1F" secondAttribute="trailing" id="eO3-08-PaM"/>
+                            <constraint firstItem="PGR-ph-S1F" firstAttribute="leading" secondItem="4bd-VE-KEA" secondAttribute="leading" id="hif-D7-f66"/>
+                            <constraint firstItem="PGR-ph-S1F" firstAttribute="top" secondItem="4bd-VE-KEA" secondAttribute="top" id="npR-tL-MoH"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="blurView" destination="PGR-ph-S1F" id="Rge-Pb-Ydc"/>
+                        <outlet property="cancelButton" destination="zYt-0J-VAP" id="sPL-k7-MQO"/>
+                        <outlet property="menuTableView" destination="eAn-kg-8MS" id="ZLz-nT-jo4"/>
+                        <outlet property="titleLabel" destination="dPl-26-qnH" id="7gw-9T-d39"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="n4j-BT-ai4" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2976.8000000000002" y="-413.3433283358321"/>
+        </scene>
     </scenes>
     <resources>
         <image name="iconChats" width="29" height="25"/>
         <image name="iconChatsSelect" width="31" height="26"/>
         <image name="iconContacts" width="24" height="23"/>
         <image name="iconContactsSelect" width="22" height="21"/>
+        <image name="iconMenuCancel" width="200" height="200"/>
         <image name="iconSettings" width="22" height="22"/>
         <image name="iconSettingsSelect" width="22" height="22"/>
     </resources>

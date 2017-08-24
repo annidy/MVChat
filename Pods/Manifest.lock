@@ -1,12 +1,17 @@
 PODS:
   - DBAttachmentPickerController (1.1.4)
+  - INTUAnimationEngine (1.4.2):
+    - INTUAnimationEngine/SpringSolver (= 1.4.2)
+  - INTUAnimationEngine/SpringSolver (1.4.2)
 
 DEPENDENCIES:
   - DBAttachmentPickerController
+  - INTUAnimationEngine
 
 SPEC CHECKSUMS:
   DBAttachmentPickerController: 9b3c5f84a9e4530da6d9e098c710f2152957c31e
+  INTUAnimationEngine: 3a7d63738cd51af573d16848a771feedea7cc9f2
 
-PODFILE CHECKSUM: eca960c4d482accd5086d93ce5004457b7395730
+PODFILE CHECKSUM: 271cc1652ced6cfed5ea7989c93aed81a794e326
 
 COCOAPODS: 1.3.1

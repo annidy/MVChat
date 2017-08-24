@@ -7,47 +7,66 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		06B5069A5F19FE4AD66D07EEF5312B32 /* DBAttachmentPickerController-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 09BFA611248D9CFFF542C06A96DBD532 /* DBAttachmentPickerController-dummy.m */; };
-		0DD2BBACFED9CBCAA9D7244BA6D32329 /* UIImage+DBAssetIcons.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BFFBAB4ACD8A87AE395FAFA39AC35DC /* UIImage+DBAssetIcons.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		0EA7825901F479034B4D2750CEC978F7 /* DBAttachmentPickerController.h in Headers */ = {isa = PBXBuildFile; fileRef = CFC54EBF03CEBBB9D6BBC7F743E56E24 /* DBAttachmentPickerController.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		0F5B696F279C18CC799FA22C67A02AA4 /* DBAttachmentAlertController.m in Sources */ = {isa = PBXBuildFile; fileRef = C3919292BB9DF87BD971911C9CFB11D8 /* DBAttachmentAlertController.m */; };
-		1166DA6ACEE279E8E316765BD325CE9D /* fr.lproj in Resources */ = {isa = PBXBuildFile; fileRef = CA0B88ECA52835B87EC36C41F5AEBA68 /* fr.lproj */; };
-		187A1495424D70FD11AA7E1A98D2F030 /* DBAssetPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = B83607548829A81B880DDBC92C5B9ABA /* DBAssetPickerController.m */; };
-		21A2A8B8E433E7FB17899E6BCF220781 /* DBAssetPickerController.h in Headers */ = {isa = PBXBuildFile; fileRef = 66F6D85E1BBE9865A45A2BFE060D6645 /* DBAssetPickerController.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		29135F9A3934E40EA499B19D685B60B3 /* DBAssetItemsViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = CF278D4762027361168BA66C8264F5B9 /* DBAssetItemsViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		2E5F9D4373EFC48CBFB7673D177B3B90 /* Pods-MVChat-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 27A24C30A06889667064AE4117543154 /* Pods-MVChat-dummy.m */; };
-		35BDF50775735C022D06A27A45D35BE2 /* UIImage+DBAssetIcons.m in Sources */ = {isa = PBXBuildFile; fileRef = C3F31ECF9094206B486052663DB1601D /* UIImage+DBAssetIcons.m */; };
-		35ED13AC016CB5BF96068B250A436101 /* DBAssetItemsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2698D59E7787586027E62C0404AA38F5 /* DBAssetItemsViewController.m */; };
-		37B54144DB7E69E8C89C623F532251E0 /* zh-Hans.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 436CBBE491003AA091A910AACFB9C78B /* zh-Hans.lproj */; };
-		3C17AC5F89C0C111362E4142CEF159E3 /* DBThumbnailPhotoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA9C65E824F65BFD9A8EB70F7AE43A22 /* DBThumbnailPhotoCell.m */; };
-		3E1B394F21BABDBEFEA043BFB495F10E /* pt-BR.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 299A141A144BA9A03879ECAA62AECFDD /* pt-BR.lproj */; };
-		3FEC663283625872FC23CB486CD3C9C0 /* es.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 82149EA279DA19A7F8ED92262E8CA569 /* es.lproj */; };
-		4AB2306BEE73DD9401D8EBC3E766E478 /* ru.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 45489554DB73533768A53BDFA363AB50 /* ru.lproj */; };
-		4C60E7F64DE1183D5E0A3EB2CE9FFF6D /* DBAttachmentAlertController.h in Headers */ = {isa = PBXBuildFile; fileRef = 8093CB64E1644C78B2CF2726D60B1C48 /* DBAttachmentAlertController.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		5A290177FCD74EF219DA8159E4EB3793 /* DBAssetGroupCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EF435AFD001C29AB8A90B6BEE4DAE7C /* DBAssetGroupCell.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		5A564B459D48F8F232C17460D3920022 /* DBAttachment.h in Headers */ = {isa = PBXBuildFile; fileRef = A5D9F4AC7674EE870F7B4676AD019F23 /* DBAttachment.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		615F027AC1A3A09037259720AAF5C250 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
+		017E194FFCA7745B0C0D465F48A78767 /* INTUAnimationEngine-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = EE951DD2DF60A2297C0498666078574C /* INTUAnimationEngine-dummy.m */; };
+		06B5069A5F19FE4AD66D07EEF5312B32 /* DBAttachmentPickerController-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 632C1F60200B44ABC43196828C9F25C8 /* DBAttachmentPickerController-dummy.m */; };
+		0DD2BBACFED9CBCAA9D7244BA6D32329 /* UIImage+DBAssetIcons.h in Headers */ = {isa = PBXBuildFile; fileRef = BC6D7C8DED7946EE1B356495C881798A /* UIImage+DBAssetIcons.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		0EA7825901F479034B4D2750CEC978F7 /* DBAttachmentPickerController.h in Headers */ = {isa = PBXBuildFile; fileRef = 2ABF051F75CBB53C54A97B12540F833F /* DBAttachmentPickerController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		0F5B696F279C18CC799FA22C67A02AA4 /* DBAttachmentAlertController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4EA6F730CF63FC1C6A648A322C34D9CB /* DBAttachmentAlertController.m */; };
+		1166DA6ACEE279E8E316765BD325CE9D /* fr.lproj in Resources */ = {isa = PBXBuildFile; fileRef = FA4748C18D3FE47BAC19CE72C16AEEC2 /* fr.lproj */; };
+		187A1495424D70FD11AA7E1A98D2F030 /* DBAssetPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = EDF4F4233260DE078BCCF1963FABC131 /* DBAssetPickerController.m */; };
+		21A2A8B8E433E7FB17899E6BCF220781 /* DBAssetPickerController.h in Headers */ = {isa = PBXBuildFile; fileRef = 3CDC3E687BD3F7B9F0DC1E67C60E5198 /* DBAssetPickerController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		237B42F311A2F4432DE27010DD123CDD /* INTUInterpolationFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = D72612C551615CB8C35B8E3A2DD28732 /* INTUInterpolationFunctions.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
+		29135F9A3934E40EA499B19D685B60B3 /* DBAssetItemsViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 7E434BC59D2166C06DF000C832A4393A /* DBAssetItemsViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		35BDF50775735C022D06A27A45D35BE2 /* UIImage+DBAssetIcons.m in Sources */ = {isa = PBXBuildFile; fileRef = B3402F9D50A1CA6A4A9A6ECE79D6815D /* UIImage+DBAssetIcons.m */; };
+		35ED13AC016CB5BF96068B250A436101 /* DBAssetItemsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 54BFEB9454FE5980AA945F037170AC64 /* DBAssetItemsViewController.m */; };
+		37B54144DB7E69E8C89C623F532251E0 /* zh-Hans.lproj in Resources */ = {isa = PBXBuildFile; fileRef = A152F2AA47FE039E072E0FA1E5771410 /* zh-Hans.lproj */; };
+		3C17AC5F89C0C111362E4142CEF159E3 /* DBThumbnailPhotoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EA7AF57C8AEB82992EF85883297FB0A /* DBThumbnailPhotoCell.m */; };
+		3E1B394F21BABDBEFEA043BFB495F10E /* pt-BR.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 5A82CEB53285DADA0142CF6923AAABF3 /* pt-BR.lproj */; };
+		3FEC663283625872FC23CB486CD3C9C0 /* es.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 2CDA59DB65BC884CE8E052D1B9EA64D6 /* es.lproj */; };
+		4AB2306BEE73DD9401D8EBC3E766E478 /* ru.lproj in Resources */ = {isa = PBXBuildFile; fileRef = ED00BE2B9594F554ABBD45477E792F8C /* ru.lproj */; };
+		4C60E7F64DE1183D5E0A3EB2CE9FFF6D /* DBAttachmentAlertController.h in Headers */ = {isa = PBXBuildFile; fileRef = 558B1A949CD309A68D052DA8A52D0B4D /* DBAttachmentAlertController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5A290177FCD74EF219DA8159E4EB3793 /* DBAssetGroupCell.h in Headers */ = {isa = PBXBuildFile; fileRef = A2875F5DC2AC29B7A6D4DA32981C03A0 /* DBAssetGroupCell.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5A564B459D48F8F232C17460D3920022 /* DBAttachment.h in Headers */ = {isa = PBXBuildFile; fileRef = 97D47CFD43FD0A9354AC861C548F5F50 /* DBAttachment.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		662ACC2A24FEC46E262C920FA37826BB /* INTUAnimationEngineDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = E64B59097D0584A3E110D0BA91E78588 /* INTUAnimationEngineDefines.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		69F2756705F98B6D7A740F2203F9FE14 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
-		7129C84DB8530F0B6527116E6C5E6489 /* DBThumbnailPhotoCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C1B0C565908500DAE1C35EB28A897B5 /* DBThumbnailPhotoCell.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		7559C32DE4DCA6B1191B89F8B564AB93 /* NSIndexSet+DBLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = 839B7EAFD38AA209E5D06FEAD767C6F7 /* NSIndexSet+DBLibrary.m */; };
-		7BE9EFE11C256B39F17A33864825178B /* DBAssetGroupCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1274ED0E4AB8F5AB3E8EFECA6B9DCAA7 /* DBAssetGroupCell.m */; };
-		8D5F0C19FE6A0ADCEE4B60C65A95F84A /* DBAssetGroupsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CB2E4ADA79611B3B08448BC6850E9D5 /* DBAssetGroupsViewController.m */; };
-		93AA70744EF858780131E7A0C24589B2 /* DBAssetImageView.h in Headers */ = {isa = PBXBuildFile; fileRef = 81588609BEBAB8EF7DE6CE20C8851171 /* DBAssetImageView.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		981759504657873523BC967FC6C16139 /* NSBundle+DBLibrary.h in Headers */ = {isa = PBXBuildFile; fileRef = D0C55BBFECE5EC7423D80A8693AD2D98 /* NSBundle+DBLibrary.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		98D42EC431F3D30086923FB1AE295A36 /* DBAttachmentPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60367FC91B6C21601A4DC1FE683BA26B /* DBAttachmentPickerController.m */; };
-		99FF744E11FC704949C4664EE2EB2FF0 /* uk.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 8510E6F4CCBE1F08C3E9A69B8E6C066E /* uk.lproj */; };
-		B091D3ECC2E2BBBD9550929AEEEAF502 /* NSBundle+DBLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = F8ACD20E16EAA61EF711287644168656 /* NSBundle+DBLibrary.m */; };
-		B38AD27EE3C953E5CA9CF236292462AB /* de.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 7698508C0FA3B4CDE7E403956533A44E /* de.lproj */; };
-		C3FF916E79361E0F619A46DE04935585 /* DBAttachment.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F600FA540549EAE33E963EB6C249CA /* DBAttachment.m */; };
-		CFCA5117B28FBA5851A670BABECEFDE5 /* en.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 5716B98B5507D9547FBAFE4943D40667 /* en.lproj */; };
-		D0379B994461F6C8EF7374A9E6A94E2A /* DBAssetGroupsViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = C907D05F8419AA138EE6735150F4BB46 /* DBAssetGroupsViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		E14A169C9DB91F84D13B006CB46D0213 /* ja.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 2FC0059B7E865A134D66301583223E8E /* ja.lproj */; };
-		E15DCE0BB4FE24CA121AF30ABACC0431 /* zh-Hant.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 738AF31C2B9E6FA7898FD31E51FCA8D8 /* zh-Hant.lproj */; };
-		F7646624530B9B4F8BC5A8ED26C8C910 /* NSIndexSet+DBLibrary.h in Headers */ = {isa = PBXBuildFile; fileRef = EEDDBDA492E956F57CA1F89A361783D0 /* NSIndexSet+DBLibrary.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F99E47001E9428CD152ECEF47A7AEA03 /* DBAssetImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = EC04405841B46E0A291F6763DD993646 /* DBAssetImageView.m */; };
+		6F90AD9947D396389EA7ACABB29CE5E2 /* INTUSpringSolver.c in Sources */ = {isa = PBXBuildFile; fileRef = 8148816929E0AB8B7E47587E11DCEC60 /* INTUSpringSolver.c */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
+		7129C84DB8530F0B6527116E6C5E6489 /* DBThumbnailPhotoCell.h in Headers */ = {isa = PBXBuildFile; fileRef = BD4E06CAC9AAFA0C26B7DFE8150E8D8C /* DBThumbnailPhotoCell.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7559C32DE4DCA6B1191B89F8B564AB93 /* NSIndexSet+DBLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = 5366C3EBDF915A0776783B7F008F343B /* NSIndexSet+DBLibrary.m */; };
+		79EE7200DBD3575F0472AFE241508F64 /* INTUEasingFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = A3A8BD2F89D09F395CE2E99D558F2CC9 /* INTUEasingFunctions.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
+		7BE9EFE11C256B39F17A33864825178B /* DBAssetGroupCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E1F1C65785E6FA0B604B34D0A310560 /* DBAssetGroupCell.m */; };
+		7D79E646DC13EA3B7FAE98F8751F8DA5 /* INTUInterpolationFunctions.h in Headers */ = {isa = PBXBuildFile; fileRef = 58C69F9C3627A7F3B94AA6119FEBAC3D /* INTUInterpolationFunctions.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		8D5F0C19FE6A0ADCEE4B60C65A95F84A /* DBAssetGroupsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F00AF9D3D183188FD29617A9BDD47A93 /* DBAssetGroupsViewController.m */; };
+		93AA70744EF858780131E7A0C24589B2 /* DBAssetImageView.h in Headers */ = {isa = PBXBuildFile; fileRef = 8D093598DCC3C591F1DABC8165D412E5 /* DBAssetImageView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		981759504657873523BC967FC6C16139 /* NSBundle+DBLibrary.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CEEECF0F4044B93B39B25B5BA795AF6 /* NSBundle+DBLibrary.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		98D42EC431F3D30086923FB1AE295A36 /* DBAttachmentPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4C2B258EB2F0AEAF7D3F1996750277D /* DBAttachmentPickerController.m */; };
+		99612286C654CD9924CF8A9C23CDBCF0 /* INTUVector.h in Headers */ = {isa = PBXBuildFile; fileRef = 0DD9A8981F3FE5A91653C732CEC3345D /* INTUVector.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		99FF744E11FC704949C4664EE2EB2FF0 /* uk.lproj in Resources */ = {isa = PBXBuildFile; fileRef = E9EA24B0363C1797D76DA4AB63ED7792 /* uk.lproj */; };
+		A59D2F6D390807754A68FAF5084A4BF3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
+		B091D3ECC2E2BBBD9550929AEEEAF502 /* NSBundle+DBLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = 8EA7A06F057C2A0884031717306C9636 /* NSBundle+DBLibrary.m */; };
+		B38AD27EE3C953E5CA9CF236292462AB /* de.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 896892796A62486CB9945A7A4C673FAB /* de.lproj */; };
+		B61398F3B28033639384D3EAA4A6F8EF /* Pods-MVChat-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 27A24C30A06889667064AE4117543154 /* Pods-MVChat-dummy.m */; };
+		C3FF916E79361E0F619A46DE04935585 /* DBAttachment.m in Sources */ = {isa = PBXBuildFile; fileRef = 493FCB9765F181162A3635E3C1D74831 /* DBAttachment.m */; };
+		CA0E53B4A1A97B2380C26E3EB1566428 /* INTUAnimationEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C2C1F3E62BF1ADA2FDA57C783C956D6 /* INTUAnimationEngine.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
+		CAC7A77FACB13B10F66374DEF0477E02 /* INTUAnimationEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = B4463E9FDB48355460577167E87B98BB /* INTUAnimationEngine.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		CFCA5117B28FBA5851A670BABECEFDE5 /* en.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 531A4842CBD19C21505D58C4D3BE3177 /* en.lproj */; };
+		D0379B994461F6C8EF7374A9E6A94E2A /* DBAssetGroupsViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 0B7229A31B4D9BBF712B665FB4F51A06 /* DBAssetGroupsViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D31C7EEA3021EA64BBC34645421BCF5B /* INTUSpringSolver.h in Headers */ = {isa = PBXBuildFile; fileRef = 08572EA51C5B12140D43A20747ED5B1E /* INTUSpringSolver.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		DD08DE099705B91CDB4950D16CA36945 /* INTUEasingFunctions.h in Headers */ = {isa = PBXBuildFile; fileRef = 040B0B5F508F956649C9EBB038CDC9C7 /* INTUEasingFunctions.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		E14A169C9DB91F84D13B006CB46D0213 /* ja.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 95024CC6F7FF26A2E72F03952718A68D /* ja.lproj */; };
+		E15DCE0BB4FE24CA121AF30ABACC0431 /* zh-Hant.lproj in Resources */ = {isa = PBXBuildFile; fileRef = AF9B8082BEF4641DE468275FD3ED9D26 /* zh-Hant.lproj */; };
+		E79F1F23622BCF6747D7DC21895B82C1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
+		F7646624530B9B4F8BC5A8ED26C8C910 /* NSIndexSet+DBLibrary.h in Headers */ = {isa = PBXBuildFile; fileRef = B654E69D13B0F01015FC5493DFF987BC /* NSIndexSet+DBLibrary.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F99E47001E9428CD152ECEF47A7AEA03 /* DBAssetImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = E007A0CD008893D574CD843ACB981639 /* DBAssetImageView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		2142DD7C2C14F9EA6815D1B094EA0AC3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9E3BB0A2A87C3F351E722F86F39C67DD;
+			remoteInfo = DBAttachmentPickerController;
+		};
 		77B3BA4A6144988ADED2CB855919A6C2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
@@ -55,73 +74,103 @@
 			remoteGlobalIDString = 60768CE8764DADBEF89A8F19911BB3DE;
 			remoteInfo = "DBAttachmentPickerController-DBAttachmentPickerController";
 		};
-		EC372CC5EA53AC2EBE64C7CE49E76232 /* PBXContainerItemProxy */ = {
+		C75C6F5C315AD5BCF44C509183DDADAB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 9E3BB0A2A87C3F351E722F86F39C67DD;
-			remoteInfo = DBAttachmentPickerController;
+			remoteGlobalIDString = 50243B28600257A1672000EF8ACD7883;
+			remoteInfo = INTUAnimationEngine;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		09BFA611248D9CFFF542C06A96DBD532 /* DBAttachmentPickerController-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "DBAttachmentPickerController-dummy.m"; sourceTree = "<group>"; };
+		040B0B5F508F956649C9EBB038CDC9C7 /* INTUEasingFunctions.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = INTUEasingFunctions.h; path = INTUAnimationEngine/INTUEasingFunctions.h; sourceTree = "<group>"; };
+		08572EA51C5B12140D43A20747ED5B1E /* INTUSpringSolver.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = INTUSpringSolver.h; path = INTUAnimationEngine/SpringSolver/INTUSpringSolver.h; sourceTree = "<group>"; };
 		0A51BC6FFE5474F27496AA382A4663CD /* Pods-MVChat-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-MVChat-acknowledgements.markdown"; sourceTree = "<group>"; };
-		0C1B0C565908500DAE1C35EB28A897B5 /* DBThumbnailPhotoCell.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DBThumbnailPhotoCell.h; path = Source/Cells/DBThumbnailPhotoCell.h; sourceTree = "<group>"; };
-		1274ED0E4AB8F5AB3E8EFECA6B9DCAA7 /* DBAssetGroupCell.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DBAssetGroupCell.m; path = Source/Cells/DBAssetGroupCell.m; sourceTree = "<group>"; };
-		2698D59E7787586027E62C0404AA38F5 /* DBAssetItemsViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DBAssetItemsViewController.m; path = Source/DBAssetPickerController/DBAssetItemsViewController.m; sourceTree = "<group>"; };
+		0B7229A31B4D9BBF712B665FB4F51A06 /* DBAssetGroupsViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DBAssetGroupsViewController.h; path = Source/DBAssetPickerController/DBAssetGroupsViewController.h; sourceTree = "<group>"; };
+		0BD2560000381EFA2279B071E736DE3E /* DBAttachmentPickerController.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = DBAttachmentPickerController.bundle; path = DBAttachmentPickerController.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		0DD9A8981F3FE5A91653C732CEC3345D /* INTUVector.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = INTUVector.h; path = INTUAnimationEngine/SpringSolver/INTUVector.h; sourceTree = "<group>"; };
+		0EA7AF57C8AEB82992EF85883297FB0A /* DBThumbnailPhotoCell.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DBThumbnailPhotoCell.m; path = Source/Cells/DBThumbnailPhotoCell.m; sourceTree = "<group>"; };
+		1CDFF2AE9DAACB0D735C3A7924F0F1E9 /* DBAttachmentPickerController-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "DBAttachmentPickerController-prefix.pch"; sourceTree = "<group>"; };
 		27A24C30A06889667064AE4117543154 /* Pods-MVChat-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-MVChat-dummy.m"; sourceTree = "<group>"; };
-		286758BFB9EBC3D6479422CCD5E0E737 /* DBThumbnailPhotoCell.xib */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.xib; name = DBThumbnailPhotoCell.xib; path = Source/Cells/DBThumbnailPhotoCell.xib; sourceTree = "<group>"; };
-		299A141A144BA9A03879ECAA62AECFDD /* pt-BR.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = "pt-BR.lproj"; path = "Source/Localization/pt-BR.lproj"; sourceTree = "<group>"; };
-		2C50E5836583A6D5E5FB0B8E6F6DBE32 /* libPods-MVChat.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libPods-MVChat.a"; path = "libPods-MVChat.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		2EF435AFD001C29AB8A90B6BEE4DAE7C /* DBAssetGroupCell.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DBAssetGroupCell.h; path = Source/Cells/DBAssetGroupCell.h; sourceTree = "<group>"; };
-		2FC0059B7E865A134D66301583223E8E /* ja.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = ja.lproj; path = Source/Localization/ja.lproj; sourceTree = "<group>"; };
-		436CBBE491003AA091A910AACFB9C78B /* zh-Hans.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = "zh-Hans.lproj"; path = "Source/Localization/zh-Hans.lproj"; sourceTree = "<group>"; };
-		45489554DB73533768A53BDFA363AB50 /* ru.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = ru.lproj; path = Source/Localization/ru.lproj; sourceTree = "<group>"; };
-		4BFFBAB4ACD8A87AE395FAFA39AC35DC /* UIImage+DBAssetIcons.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIImage+DBAssetIcons.h"; path = "Source/Categories/UIImage+DBAssetIcons.h"; sourceTree = "<group>"; };
+		2ABF051F75CBB53C54A97B12540F833F /* DBAttachmentPickerController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DBAttachmentPickerController.h; path = Source/DBAttachmentPickerController.h; sourceTree = "<group>"; };
+		2CDA59DB65BC884CE8E052D1B9EA64D6 /* es.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = es.lproj; path = Source/Localization/es.lproj; sourceTree = "<group>"; };
+		3CDC3E687BD3F7B9F0DC1E67C60E5198 /* DBAssetPickerController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DBAssetPickerController.h; path = Source/DBAssetPickerController/DBAssetPickerController.h; sourceTree = "<group>"; };
+		493FCB9765F181162A3635E3C1D74831 /* DBAttachment.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DBAttachment.m; path = Source/Models/DBAttachment.m; sourceTree = "<group>"; };
+		4E1F1C65785E6FA0B604B34D0A310560 /* DBAssetGroupCell.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DBAssetGroupCell.m; path = Source/Cells/DBAssetGroupCell.m; sourceTree = "<group>"; };
+		4EA6F730CF63FC1C6A648A322C34D9CB /* DBAttachmentAlertController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DBAttachmentAlertController.m; path = Source/DBAttachmentAlertController/DBAttachmentAlertController.m; sourceTree = "<group>"; };
+		531A4842CBD19C21505D58C4D3BE3177 /* en.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = en.lproj; path = Source/Localization/en.lproj; sourceTree = "<group>"; };
+		5366C3EBDF915A0776783B7F008F343B /* NSIndexSet+DBLibrary.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSIndexSet+DBLibrary.m"; path = "Source/Categories/NSIndexSet+DBLibrary.m"; sourceTree = "<group>"; };
+		54BFEB9454FE5980AA945F037170AC64 /* DBAssetItemsViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DBAssetItemsViewController.m; path = Source/DBAssetPickerController/DBAssetItemsViewController.m; sourceTree = "<group>"; };
+		558B1A949CD309A68D052DA8A52D0B4D /* DBAttachmentAlertController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DBAttachmentAlertController.h; path = Source/DBAttachmentAlertController/DBAttachmentAlertController.h; sourceTree = "<group>"; };
 		55ECF13EB8B0668A7AAE4DB12613A7D1 /* Pods-MVChat.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MVChat.release.xcconfig"; sourceTree = "<group>"; };
-		5716B98B5507D9547FBAFE4943D40667 /* en.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = en.lproj; path = Source/Localization/en.lproj; sourceTree = "<group>"; };
-		60367FC91B6C21601A4DC1FE683BA26B /* DBAttachmentPickerController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DBAttachmentPickerController.m; path = Source/DBAttachmentPickerController.m; sourceTree = "<group>"; };
+		58C69F9C3627A7F3B94AA6119FEBAC3D /* INTUInterpolationFunctions.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = INTUInterpolationFunctions.h; path = INTUAnimationEngine/INTUInterpolationFunctions.h; sourceTree = "<group>"; };
+		5A82CEB53285DADA0142CF6923AAABF3 /* pt-BR.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = "pt-BR.lproj"; path = "Source/Localization/pt-BR.lproj"; sourceTree = "<group>"; };
+		5CEEECF0F4044B93B39B25B5BA795AF6 /* NSBundle+DBLibrary.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSBundle+DBLibrary.h"; path = "Source/Categories/NSBundle+DBLibrary.h"; sourceTree = "<group>"; };
+		632C1F60200B44ABC43196828C9F25C8 /* DBAttachmentPickerController-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "DBAttachmentPickerController-dummy.m"; sourceTree = "<group>"; };
 		65FF4A39ABA9923F9DFB9FA5B0454C81 /* Pods-MVChat-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-MVChat-resources.sh"; sourceTree = "<group>"; };
 		6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.3.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
-		66F6D85E1BBE9865A45A2BFE060D6645 /* DBAssetPickerController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DBAssetPickerController.h; path = Source/DBAssetPickerController/DBAssetPickerController.h; sourceTree = "<group>"; };
-		6AAD85906718542FDA3AC0847C964C77 /* ResourceBundle-DBAttachmentPickerController-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "ResourceBundle-DBAttachmentPickerController-Info.plist"; sourceTree = "<group>"; };
-		6CB2E4ADA79611B3B08448BC6850E9D5 /* DBAssetGroupsViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DBAssetGroupsViewController.m; path = Source/DBAssetPickerController/DBAssetGroupsViewController.m; sourceTree = "<group>"; };
-		738AF31C2B9E6FA7898FD31E51FCA8D8 /* zh-Hant.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = "zh-Hant.lproj"; path = "Source/Localization/zh-Hant.lproj"; sourceTree = "<group>"; };
-		746D2C4F320EFCAA0BBB899E6DB691C7 /* DBAssetGroupsViewController.xib */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.xib; name = DBAssetGroupsViewController.xib; path = Source/DBAssetPickerController/DBAssetGroupsViewController.xib; sourceTree = "<group>"; };
-		7698508C0FA3B4CDE7E403956533A44E /* de.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = de.lproj; path = Source/Localization/de.lproj; sourceTree = "<group>"; };
-		8093CB64E1644C78B2CF2726D60B1C48 /* DBAttachmentAlertController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DBAttachmentAlertController.h; path = Source/DBAttachmentAlertController/DBAttachmentAlertController.h; sourceTree = "<group>"; };
-		81588609BEBAB8EF7DE6CE20C8851171 /* DBAssetImageView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DBAssetImageView.h; path = Source/Common/DBAssetImageView.h; sourceTree = "<group>"; };
-		82149EA279DA19A7F8ED92262E8CA569 /* es.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = es.lproj; path = Source/Localization/es.lproj; sourceTree = "<group>"; };
-		839B7EAFD38AA209E5D06FEAD767C6F7 /* NSIndexSet+DBLibrary.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSIndexSet+DBLibrary.m"; path = "Source/Categories/NSIndexSet+DBLibrary.m"; sourceTree = "<group>"; };
-		8510E6F4CCBE1F08C3E9A69B8E6C066E /* uk.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = uk.lproj; path = Source/Localization/uk.lproj; sourceTree = "<group>"; };
-		8820F6DAF1E371284D8557FF207DC6D9 /* DBAssetItemsViewController.xib */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.xib; name = DBAssetItemsViewController.xib; path = Source/DBAssetPickerController/DBAssetItemsViewController.xib; sourceTree = "<group>"; };
-		89F89C058DC16DBC58CB3D8BCE9619B5 /* DBAttachmentPickerController.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = DBAttachmentPickerController.bundle; path = DBAttachmentPickerController.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		6BDC68F7B2657A29E602B980AA5C29E6 /* DBAssetItemsViewController.xib */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.xib; name = DBAssetItemsViewController.xib; path = Source/DBAssetPickerController/DBAssetItemsViewController.xib; sourceTree = "<group>"; };
+		6C2C1F3E62BF1ADA2FDA57C783C956D6 /* INTUAnimationEngine.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = INTUAnimationEngine.m; path = INTUAnimationEngine/INTUAnimationEngine.m; sourceTree = "<group>"; };
+		7196B4D07D34AE18A957E04ED91660AF /* ResourceBundle-DBAttachmentPickerController-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "ResourceBundle-DBAttachmentPickerController-Info.plist"; sourceTree = "<group>"; };
+		73B698231BBA6FE93A49FC56B96CDEE4 /* DBThumbnailPhotoCell.xib */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.xib; name = DBThumbnailPhotoCell.xib; path = Source/Cells/DBThumbnailPhotoCell.xib; sourceTree = "<group>"; };
+		7E434BC59D2166C06DF000C832A4393A /* DBAssetItemsViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DBAssetItemsViewController.h; path = Source/DBAssetPickerController/DBAssetItemsViewController.h; sourceTree = "<group>"; };
+		8148816929E0AB8B7E47587E11DCEC60 /* INTUSpringSolver.c */ = {isa = PBXFileReference; includeInIndex = 1; name = INTUSpringSolver.c; path = INTUAnimationEngine/SpringSolver/INTUSpringSolver.c; sourceTree = "<group>"; };
+		896892796A62486CB9945A7A4C673FAB /* de.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = de.lproj; path = Source/Localization/de.lproj; sourceTree = "<group>"; };
+		8D093598DCC3C591F1DABC8165D412E5 /* DBAssetImageView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DBAssetImageView.h; path = Source/Common/DBAssetImageView.h; sourceTree = "<group>"; };
+		8EA7A06F057C2A0884031717306C9636 /* NSBundle+DBLibrary.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSBundle+DBLibrary.m"; path = "Source/Categories/NSBundle+DBLibrary.m"; sourceTree = "<group>"; };
+		906AE86BA76592E505768E01B53B2252 /* libPods-MVChat.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libPods-MVChat.a"; path = "libPods-MVChat.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		A5D9F4AC7674EE870F7B4676AD019F23 /* DBAttachment.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DBAttachment.h; path = Source/Models/DBAttachment.h; sourceTree = "<group>"; };
-		AA9C65E824F65BFD9A8EB70F7AE43A22 /* DBThumbnailPhotoCell.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DBThumbnailPhotoCell.m; path = Source/Cells/DBThumbnailPhotoCell.m; sourceTree = "<group>"; };
-		AC54ADEA252CDFD587C637D2DA0BA101 /* libDBAttachmentPickerController.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libDBAttachmentPickerController.a; path = libDBAttachmentPickerController.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		B2EA1D6734F8EC3E1CC554E1984D54AF /* DBAssetGroupCell.xib */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.xib; name = DBAssetGroupCell.xib; path = Source/Cells/DBAssetGroupCell.xib; sourceTree = "<group>"; };
-		B78E5AD868505797C5708AAC0C8B5A7B /* DBAttachmentPickerController.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = DBAttachmentPickerController.xcconfig; sourceTree = "<group>"; };
-		B83607548829A81B880DDBC92C5B9ABA /* DBAssetPickerController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DBAssetPickerController.m; path = Source/DBAssetPickerController/DBAssetPickerController.m; sourceTree = "<group>"; };
-		C3919292BB9DF87BD971911C9CFB11D8 /* DBAttachmentAlertController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DBAttachmentAlertController.m; path = Source/DBAttachmentAlertController/DBAttachmentAlertController.m; sourceTree = "<group>"; };
+		95024CC6F7FF26A2E72F03952718A68D /* ja.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = ja.lproj; path = Source/Localization/ja.lproj; sourceTree = "<group>"; };
+		97D47CFD43FD0A9354AC861C548F5F50 /* DBAttachment.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DBAttachment.h; path = Source/Models/DBAttachment.h; sourceTree = "<group>"; };
+		98066276C15BA0ACC5AF2F9B33311D67 /* libINTUAnimationEngine.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libINTUAnimationEngine.a; path = libINTUAnimationEngine.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		A152F2AA47FE039E072E0FA1E5771410 /* zh-Hans.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = "zh-Hans.lproj"; path = "Source/Localization/zh-Hans.lproj"; sourceTree = "<group>"; };
+		A2875F5DC2AC29B7A6D4DA32981C03A0 /* DBAssetGroupCell.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DBAssetGroupCell.h; path = Source/Cells/DBAssetGroupCell.h; sourceTree = "<group>"; };
+		A3A8BD2F89D09F395CE2E99D558F2CC9 /* INTUEasingFunctions.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = INTUEasingFunctions.m; path = INTUAnimationEngine/INTUEasingFunctions.m; sourceTree = "<group>"; };
+		A5CBE5882AA9B903F68D6332D8AC45E4 /* INTUAnimationEngine.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = INTUAnimationEngine.xcconfig; sourceTree = "<group>"; };
+		AF9B8082BEF4641DE468275FD3ED9D26 /* zh-Hant.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = "zh-Hant.lproj"; path = "Source/Localization/zh-Hant.lproj"; sourceTree = "<group>"; };
+		B3402F9D50A1CA6A4A9A6ECE79D6815D /* UIImage+DBAssetIcons.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIImage+DBAssetIcons.m"; path = "Source/Categories/UIImage+DBAssetIcons.m"; sourceTree = "<group>"; };
+		B4463E9FDB48355460577167E87B98BB /* INTUAnimationEngine.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = INTUAnimationEngine.h; path = INTUAnimationEngine/INTUAnimationEngine.h; sourceTree = "<group>"; };
+		B654E69D13B0F01015FC5493DFF987BC /* NSIndexSet+DBLibrary.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSIndexSet+DBLibrary.h"; path = "Source/Categories/NSIndexSet+DBLibrary.h"; sourceTree = "<group>"; };
+		B84A981BFB1DD0D36DD11FFBCD345F3B /* DBAttachmentPickerController.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = DBAttachmentPickerController.xcconfig; sourceTree = "<group>"; };
+		BC6D7C8DED7946EE1B356495C881798A /* UIImage+DBAssetIcons.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIImage+DBAssetIcons.h"; path = "Source/Categories/UIImage+DBAssetIcons.h"; sourceTree = "<group>"; };
+		BD4E06CAC9AAFA0C26B7DFE8150E8D8C /* DBThumbnailPhotoCell.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DBThumbnailPhotoCell.h; path = Source/Cells/DBThumbnailPhotoCell.h; sourceTree = "<group>"; };
 		C39F4571A6A0E568E53CF29AC0A24EC1 /* Pods-MVChat-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-MVChat-acknowledgements.plist"; sourceTree = "<group>"; };
-		C3F31ECF9094206B486052663DB1601D /* UIImage+DBAssetIcons.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIImage+DBAssetIcons.m"; path = "Source/Categories/UIImage+DBAssetIcons.m"; sourceTree = "<group>"; };
-		C907D05F8419AA138EE6735150F4BB46 /* DBAssetGroupsViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DBAssetGroupsViewController.h; path = Source/DBAssetPickerController/DBAssetGroupsViewController.h; sourceTree = "<group>"; };
-		CA0B88ECA52835B87EC36C41F5AEBA68 /* fr.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = fr.lproj; path = Source/Localization/fr.lproj; sourceTree = "<group>"; };
-		CF278D4762027361168BA66C8264F5B9 /* DBAssetItemsViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DBAssetItemsViewController.h; path = Source/DBAssetPickerController/DBAssetItemsViewController.h; sourceTree = "<group>"; };
-		CFC54EBF03CEBBB9D6BBC7F743E56E24 /* DBAttachmentPickerController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DBAttachmentPickerController.h; path = Source/DBAttachmentPickerController.h; sourceTree = "<group>"; };
-		D0C55BBFECE5EC7423D80A8693AD2D98 /* NSBundle+DBLibrary.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSBundle+DBLibrary.h"; path = "Source/Categories/NSBundle+DBLibrary.h"; sourceTree = "<group>"; };
-		D6F600FA540549EAE33E963EB6C249CA /* DBAttachment.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DBAttachment.m; path = Source/Models/DBAttachment.m; sourceTree = "<group>"; };
-		DD28989B63319F34547342729CFA0A74 /* DBAttachmentPickerController-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "DBAttachmentPickerController-prefix.pch"; sourceTree = "<group>"; };
+		D72612C551615CB8C35B8E3A2DD28732 /* INTUInterpolationFunctions.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = INTUInterpolationFunctions.m; path = INTUAnimationEngine/INTUInterpolationFunctions.m; sourceTree = "<group>"; };
+		D80B8EAD105ED45AA0B09A18F6D50898 /* DBAssetGroupCell.xib */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.xib; name = DBAssetGroupCell.xib; path = Source/Cells/DBAssetGroupCell.xib; sourceTree = "<group>"; };
+		E007A0CD008893D574CD843ACB981639 /* DBAssetImageView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DBAssetImageView.m; path = Source/Common/DBAssetImageView.m; sourceTree = "<group>"; };
 		E4D3E070615252F41375124C9295890E /* Pods-MVChat.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MVChat.debug.xcconfig"; sourceTree = "<group>"; };
 		E5881D168A904B933371E7D9E704118F /* Pods-MVChat-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-MVChat-frameworks.sh"; sourceTree = "<group>"; };
-		EC04405841B46E0A291F6763DD993646 /* DBAssetImageView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DBAssetImageView.m; path = Source/Common/DBAssetImageView.m; sourceTree = "<group>"; };
-		EEDDBDA492E956F57CA1F89A361783D0 /* NSIndexSet+DBLibrary.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSIndexSet+DBLibrary.h"; path = "Source/Categories/NSIndexSet+DBLibrary.h"; sourceTree = "<group>"; };
-		F8ACD20E16EAA61EF711287644168656 /* NSBundle+DBLibrary.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSBundle+DBLibrary.m"; path = "Source/Categories/NSBundle+DBLibrary.m"; sourceTree = "<group>"; };
+		E64B59097D0584A3E110D0BA91E78588 /* INTUAnimationEngineDefines.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = INTUAnimationEngineDefines.h; path = INTUAnimationEngine/INTUAnimationEngineDefines.h; sourceTree = "<group>"; };
+		E9EA24B0363C1797D76DA4AB63ED7792 /* uk.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = uk.lproj; path = Source/Localization/uk.lproj; sourceTree = "<group>"; };
+		ED00BE2B9594F554ABBD45477E792F8C /* ru.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = ru.lproj; path = Source/Localization/ru.lproj; sourceTree = "<group>"; };
+		EDF4F4233260DE078BCCF1963FABC131 /* DBAssetPickerController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DBAssetPickerController.m; path = Source/DBAssetPickerController/DBAssetPickerController.m; sourceTree = "<group>"; };
+		EE951DD2DF60A2297C0498666078574C /* INTUAnimationEngine-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "INTUAnimationEngine-dummy.m"; sourceTree = "<group>"; };
+		F00AF9D3D183188FD29617A9BDD47A93 /* DBAssetGroupsViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DBAssetGroupsViewController.m; path = Source/DBAssetPickerController/DBAssetGroupsViewController.m; sourceTree = "<group>"; };
+		F1E93F019AD8DA3F44E9060B6EDC3CD9 /* INTUAnimationEngine-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "INTUAnimationEngine-prefix.pch"; sourceTree = "<group>"; };
+		F4C2B258EB2F0AEAF7D3F1996750277D /* DBAttachmentPickerController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DBAttachmentPickerController.m; path = Source/DBAttachmentPickerController.m; sourceTree = "<group>"; };
+		FA4748C18D3FE47BAC19CE72C16AEEC2 /* fr.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = fr.lproj; path = Source/Localization/fr.lproj; sourceTree = "<group>"; };
+		FBFF24FB9E1445D88AE07A41B070AABA /* libDBAttachmentPickerController.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libDBAttachmentPickerController.a; path = libDBAttachmentPickerController.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		FE0413CC9CAB74985C27208F142261EF /* DBAssetGroupsViewController.xib */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.xib; name = DBAssetGroupsViewController.xib; path = Source/DBAssetPickerController/DBAssetGroupsViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		028A53D4F09383880397CAE621C07B7C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E79F1F23622BCF6747D7DC21895B82C1 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		51D996522D9B879DEC5DF0EC05DDB477 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A59D2F6D390807754A68FAF5084A4BF3 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		63E535CB86F2402A556FD1D06F273191 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -137,21 +186,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E2C220B73EC73077AD42699140AE79B2 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				615F027AC1A3A09037259720AAF5C250 /* Foundation.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0027D61102F9E5934B911F3670F7709A /* Pods */ = {
+		155639E4DBA1F417FDCE2964A0BEC0A3 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				9B5760B070E15E5994888A09D0D2233E /* DBAttachmentPickerController */,
+				37B5A875FC2A7F90FEA4411D81BAA9B9 /* DBAttachmentPickerController */,
+				A5CF6A020C1BC893807A38C45DB7CD40 /* INTUAnimationEngine */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -171,16 +213,80 @@
 			path = "Target Support Files/Pods-MVChat";
 			sourceTree = "<group>";
 		};
-		76E3834FD4058240C30996749F898C47 /* Support Files */ = {
+		37B5A875FC2A7F90FEA4411D81BAA9B9 /* DBAttachmentPickerController */ = {
 			isa = PBXGroup;
 			children = (
-				B78E5AD868505797C5708AAC0C8B5A7B /* DBAttachmentPickerController.xcconfig */,
-				09BFA611248D9CFFF542C06A96DBD532 /* DBAttachmentPickerController-dummy.m */,
-				DD28989B63319F34547342729CFA0A74 /* DBAttachmentPickerController-prefix.pch */,
-				6AAD85906718542FDA3AC0847C964C77 /* ResourceBundle-DBAttachmentPickerController-Info.plist */,
+				A2875F5DC2AC29B7A6D4DA32981C03A0 /* DBAssetGroupCell.h */,
+				4E1F1C65785E6FA0B604B34D0A310560 /* DBAssetGroupCell.m */,
+				0B7229A31B4D9BBF712B665FB4F51A06 /* DBAssetGroupsViewController.h */,
+				F00AF9D3D183188FD29617A9BDD47A93 /* DBAssetGroupsViewController.m */,
+				8D093598DCC3C591F1DABC8165D412E5 /* DBAssetImageView.h */,
+				E007A0CD008893D574CD843ACB981639 /* DBAssetImageView.m */,
+				7E434BC59D2166C06DF000C832A4393A /* DBAssetItemsViewController.h */,
+				54BFEB9454FE5980AA945F037170AC64 /* DBAssetItemsViewController.m */,
+				3CDC3E687BD3F7B9F0DC1E67C60E5198 /* DBAssetPickerController.h */,
+				EDF4F4233260DE078BCCF1963FABC131 /* DBAssetPickerController.m */,
+				97D47CFD43FD0A9354AC861C548F5F50 /* DBAttachment.h */,
+				493FCB9765F181162A3635E3C1D74831 /* DBAttachment.m */,
+				558B1A949CD309A68D052DA8A52D0B4D /* DBAttachmentAlertController.h */,
+				4EA6F730CF63FC1C6A648A322C34D9CB /* DBAttachmentAlertController.m */,
+				2ABF051F75CBB53C54A97B12540F833F /* DBAttachmentPickerController.h */,
+				F4C2B258EB2F0AEAF7D3F1996750277D /* DBAttachmentPickerController.m */,
+				BD4E06CAC9AAFA0C26B7DFE8150E8D8C /* DBThumbnailPhotoCell.h */,
+				0EA7AF57C8AEB82992EF85883297FB0A /* DBThumbnailPhotoCell.m */,
+				5CEEECF0F4044B93B39B25B5BA795AF6 /* NSBundle+DBLibrary.h */,
+				8EA7A06F057C2A0884031717306C9636 /* NSBundle+DBLibrary.m */,
+				B654E69D13B0F01015FC5493DFF987BC /* NSIndexSet+DBLibrary.h */,
+				5366C3EBDF915A0776783B7F008F343B /* NSIndexSet+DBLibrary.m */,
+				BC6D7C8DED7946EE1B356495C881798A /* UIImage+DBAssetIcons.h */,
+				B3402F9D50A1CA6A4A9A6ECE79D6815D /* UIImage+DBAssetIcons.m */,
+				758DDB566331F7D17D29F7F3BB780219 /* Resources */,
+				9F3A8081402C15000C94C773EDE0431F /* Support Files */,
 			);
-			name = "Support Files";
-			path = "../Target Support Files/DBAttachmentPickerController";
+			name = DBAttachmentPickerController;
+			path = DBAttachmentPickerController;
+			sourceTree = "<group>";
+		};
+		3AA70B19A12882A14762FEE353C20101 /* SpringSolver */ = {
+			isa = PBXGroup;
+			children = (
+				8148816929E0AB8B7E47587E11DCEC60 /* INTUSpringSolver.c */,
+				08572EA51C5B12140D43A20747ED5B1E /* INTUSpringSolver.h */,
+				0DD9A8981F3FE5A91653C732CEC3345D /* INTUVector.h */,
+			);
+			name = SpringSolver;
+			sourceTree = "<group>";
+		};
+		758DDB566331F7D17D29F7F3BB780219 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				D80B8EAD105ED45AA0B09A18F6D50898 /* DBAssetGroupCell.xib */,
+				FE0413CC9CAB74985C27208F142261EF /* DBAssetGroupsViewController.xib */,
+				6BDC68F7B2657A29E602B980AA5C29E6 /* DBAssetItemsViewController.xib */,
+				73B698231BBA6FE93A49FC56B96CDEE4 /* DBThumbnailPhotoCell.xib */,
+				896892796A62486CB9945A7A4C673FAB /* de.lproj */,
+				531A4842CBD19C21505D58C4D3BE3177 /* en.lproj */,
+				2CDA59DB65BC884CE8E052D1B9EA64D6 /* es.lproj */,
+				FA4748C18D3FE47BAC19CE72C16AEEC2 /* fr.lproj */,
+				95024CC6F7FF26A2E72F03952718A68D /* ja.lproj */,
+				5A82CEB53285DADA0142CF6923AAABF3 /* pt-BR.lproj */,
+				ED00BE2B9594F554ABBD45477E792F8C /* ru.lproj */,
+				E9EA24B0363C1797D76DA4AB63ED7792 /* uk.lproj */,
+				A152F2AA47FE039E072E0FA1E5771410 /* zh-Hans.lproj */,
+				AF9B8082BEF4641DE468275FD3ED9D26 /* zh-Hant.lproj */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		75D43B43B63613176E3C234FA55015AC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0BD2560000381EFA2279B071E736DE3E /* DBAttachmentPickerController.bundle */,
+				FBFF24FB9E1445D88AE07A41B070AABA /* libDBAttachmentPickerController.a */,
+				98066276C15BA0ACC5AF2F9B33311D67 /* libINTUAnimationEngine.a */,
+				906AE86BA76592E505768E01B53B2252 /* libPods-MVChat.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		7DB346D0F39D3F0E887471402A8071AB = {
@@ -188,44 +294,39 @@
 			children = (
 				93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */,
 				BC3CA7F9E30CC8F7E2DD044DD34432FC /* Frameworks */,
-				0027D61102F9E5934B911F3670F7709A /* Pods */,
-				C189396A4E2E9B390E86195153E54AB5 /* Products */,
+				155639E4DBA1F417FDCE2964A0BEC0A3 /* Pods */,
+				75D43B43B63613176E3C234FA55015AC /* Products */,
 				B50C76136F89CB81580AE6476FD3BE26 /* Targets Support Files */,
 			);
 			sourceTree = "<group>";
 		};
-		9B5760B070E15E5994888A09D0D2233E /* DBAttachmentPickerController */ = {
+		9F3A8081402C15000C94C773EDE0431F /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				2EF435AFD001C29AB8A90B6BEE4DAE7C /* DBAssetGroupCell.h */,
-				1274ED0E4AB8F5AB3E8EFECA6B9DCAA7 /* DBAssetGroupCell.m */,
-				C907D05F8419AA138EE6735150F4BB46 /* DBAssetGroupsViewController.h */,
-				6CB2E4ADA79611B3B08448BC6850E9D5 /* DBAssetGroupsViewController.m */,
-				81588609BEBAB8EF7DE6CE20C8851171 /* DBAssetImageView.h */,
-				EC04405841B46E0A291F6763DD993646 /* DBAssetImageView.m */,
-				CF278D4762027361168BA66C8264F5B9 /* DBAssetItemsViewController.h */,
-				2698D59E7787586027E62C0404AA38F5 /* DBAssetItemsViewController.m */,
-				66F6D85E1BBE9865A45A2BFE060D6645 /* DBAssetPickerController.h */,
-				B83607548829A81B880DDBC92C5B9ABA /* DBAssetPickerController.m */,
-				A5D9F4AC7674EE870F7B4676AD019F23 /* DBAttachment.h */,
-				D6F600FA540549EAE33E963EB6C249CA /* DBAttachment.m */,
-				8093CB64E1644C78B2CF2726D60B1C48 /* DBAttachmentAlertController.h */,
-				C3919292BB9DF87BD971911C9CFB11D8 /* DBAttachmentAlertController.m */,
-				CFC54EBF03CEBBB9D6BBC7F743E56E24 /* DBAttachmentPickerController.h */,
-				60367FC91B6C21601A4DC1FE683BA26B /* DBAttachmentPickerController.m */,
-				0C1B0C565908500DAE1C35EB28A897B5 /* DBThumbnailPhotoCell.h */,
-				AA9C65E824F65BFD9A8EB70F7AE43A22 /* DBThumbnailPhotoCell.m */,
-				D0C55BBFECE5EC7423D80A8693AD2D98 /* NSBundle+DBLibrary.h */,
-				F8ACD20E16EAA61EF711287644168656 /* NSBundle+DBLibrary.m */,
-				EEDDBDA492E956F57CA1F89A361783D0 /* NSIndexSet+DBLibrary.h */,
-				839B7EAFD38AA209E5D06FEAD767C6F7 /* NSIndexSet+DBLibrary.m */,
-				4BFFBAB4ACD8A87AE395FAFA39AC35DC /* UIImage+DBAssetIcons.h */,
-				C3F31ECF9094206B486052663DB1601D /* UIImage+DBAssetIcons.m */,
-				FA970A502C4D1F86A126CC6C3BC8F0FE /* Resources */,
-				76E3834FD4058240C30996749F898C47 /* Support Files */,
+				B84A981BFB1DD0D36DD11FFBCD345F3B /* DBAttachmentPickerController.xcconfig */,
+				632C1F60200B44ABC43196828C9F25C8 /* DBAttachmentPickerController-dummy.m */,
+				1CDFF2AE9DAACB0D735C3A7924F0F1E9 /* DBAttachmentPickerController-prefix.pch */,
+				7196B4D07D34AE18A957E04ED91660AF /* ResourceBundle-DBAttachmentPickerController-Info.plist */,
 			);
-			name = DBAttachmentPickerController;
-			path = DBAttachmentPickerController;
+			name = "Support Files";
+			path = "../Target Support Files/DBAttachmentPickerController";
+			sourceTree = "<group>";
+		};
+		A5CF6A020C1BC893807A38C45DB7CD40 /* INTUAnimationEngine */ = {
+			isa = PBXGroup;
+			children = (
+				B4463E9FDB48355460577167E87B98BB /* INTUAnimationEngine.h */,
+				6C2C1F3E62BF1ADA2FDA57C783C956D6 /* INTUAnimationEngine.m */,
+				E64B59097D0584A3E110D0BA91E78588 /* INTUAnimationEngineDefines.h */,
+				040B0B5F508F956649C9EBB038CDC9C7 /* INTUEasingFunctions.h */,
+				A3A8BD2F89D09F395CE2E99D558F2CC9 /* INTUEasingFunctions.m */,
+				58C69F9C3627A7F3B94AA6119FEBAC3D /* INTUInterpolationFunctions.h */,
+				D72612C551615CB8C35B8E3A2DD28732 /* INTUInterpolationFunctions.m */,
+				3AA70B19A12882A14762FEE353C20101 /* SpringSolver */,
+				C0D8F91697F916FD4A28866868EDF947 /* Support Files */,
+			);
+			name = INTUAnimationEngine;
+			path = INTUAnimationEngine;
 			sourceTree = "<group>";
 		};
 		B50C76136F89CB81580AE6476FD3BE26 /* Targets Support Files */ = {
@@ -244,14 +345,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		C189396A4E2E9B390E86195153E54AB5 /* Products */ = {
+		C0D8F91697F916FD4A28866868EDF947 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				89F89C058DC16DBC58CB3D8BCE9619B5 /* DBAttachmentPickerController.bundle */,
-				AC54ADEA252CDFD587C637D2DA0BA101 /* libDBAttachmentPickerController.a */,
-				2C50E5836583A6D5E5FB0B8E6F6DBE32 /* libPods-MVChat.a */,
+				A5CBE5882AA9B903F68D6332D8AC45E4 /* INTUAnimationEngine.xcconfig */,
+				EE951DD2DF60A2297C0498666078574C /* INTUAnimationEngine-dummy.m */,
+				F1E93F019AD8DA3F44E9060B6EDC3CD9 /* INTUAnimationEngine-prefix.pch */,
 			);
-			name = Products;
+			name = "Support Files";
+			path = "../Target Support Files/INTUAnimationEngine";
 			sourceTree = "<group>";
 		};
 		D35AF013A5F0BAD4F32504907A52519E /* iOS */ = {
@@ -260,27 +362,6 @@
 				6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */,
 			);
 			name = iOS;
-			sourceTree = "<group>";
-		};
-		FA970A502C4D1F86A126CC6C3BC8F0FE /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				B2EA1D6734F8EC3E1CC554E1984D54AF /* DBAssetGroupCell.xib */,
-				746D2C4F320EFCAA0BBB899E6DB691C7 /* DBAssetGroupsViewController.xib */,
-				8820F6DAF1E371284D8557FF207DC6D9 /* DBAssetItemsViewController.xib */,
-				286758BFB9EBC3D6479422CCD5E0E737 /* DBThumbnailPhotoCell.xib */,
-				7698508C0FA3B4CDE7E403956533A44E /* de.lproj */,
-				5716B98B5507D9547FBAFE4943D40667 /* en.lproj */,
-				82149EA279DA19A7F8ED92262E8CA569 /* es.lproj */,
-				CA0B88ECA52835B87EC36C41F5AEBA68 /* fr.lproj */,
-				2FC0059B7E865A134D66301583223E8E /* ja.lproj */,
-				299A141A144BA9A03879ECAA62AECFDD /* pt-BR.lproj */,
-				45489554DB73533768A53BDFA363AB50 /* ru.lproj */,
-				8510E6F4CCBE1F08C3E9A69B8E6C066E /* uk.lproj */,
-				436CBBE491003AA091A910AACFB9C78B /* zh-Hans.lproj */,
-				738AF31C2B9E6FA7898FD31E51FCA8D8 /* zh-Hant.lproj */,
-			);
-			name = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -305,24 +386,37 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C374F65AEB1084B6A231CA1439AD144E /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CAC7A77FACB13B10F66374DEF0477E02 /* INTUAnimationEngine.h in Headers */,
+				662ACC2A24FEC46E262C920FA37826BB /* INTUAnimationEngineDefines.h in Headers */,
+				DD08DE099705B91CDB4950D16CA36945 /* INTUEasingFunctions.h in Headers */,
+				7D79E646DC13EA3B7FAE98F8751F8DA5 /* INTUInterpolationFunctions.h in Headers */,
+				D31C7EEA3021EA64BBC34645421BCF5B /* INTUSpringSolver.h in Headers */,
+				99612286C654CD9924CF8A9C23CDBCF0 /* INTUVector.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		199F19139FF4A727868744FE8A820745 /* Pods-MVChat */ = {
+		50243B28600257A1672000EF8ACD7883 /* INTUAnimationEngine */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 3691140EBCF12500AD8AC3DFB6D8A05A /* Build configuration list for PBXNativeTarget "Pods-MVChat" */;
+			buildConfigurationList = 979C70B04203E60E289AF8431EC9A8BD /* Build configuration list for PBXNativeTarget "INTUAnimationEngine" */;
 			buildPhases = (
-				1446656BF3DD16FF96A6F7016411D92B /* Sources */,
-				E2C220B73EC73077AD42699140AE79B2 /* Frameworks */,
+				87B840396B87D72B8D51D16FAD4850FC /* Sources */,
+				51D996522D9B879DEC5DF0EC05DDB477 /* Frameworks */,
+				C374F65AEB1084B6A231CA1439AD144E /* Headers */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				65195E5B3CC0034769953E20C1CCA585 /* PBXTargetDependency */,
 			);
-			name = "Pods-MVChat";
-			productName = "Pods-MVChat";
-			productReference = 2C50E5836583A6D5E5FB0B8E6F6DBE32 /* libPods-MVChat.a */;
+			name = INTUAnimationEngine;
+			productName = INTUAnimationEngine;
+			productReference = 98066276C15BA0ACC5AF2F9B33311D67 /* libINTUAnimationEngine.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		60768CE8764DADBEF89A8F19911BB3DE /* DBAttachmentPickerController-DBAttachmentPickerController */ = {
@@ -339,7 +433,7 @@
 			);
 			name = "DBAttachmentPickerController-DBAttachmentPickerController";
 			productName = "DBAttachmentPickerController-DBAttachmentPickerController";
-			productReference = 89F89C058DC16DBC58CB3D8BCE9619B5 /* DBAttachmentPickerController.bundle */;
+			productReference = 0BD2560000381EFA2279B071E736DE3E /* DBAttachmentPickerController.bundle */;
 			productType = "com.apple.product-type.bundle";
 		};
 		9E3BB0A2A87C3F351E722F86F39C67DD /* DBAttachmentPickerController */ = {
@@ -357,7 +451,25 @@
 			);
 			name = DBAttachmentPickerController;
 			productName = DBAttachmentPickerController;
-			productReference = AC54ADEA252CDFD587C637D2DA0BA101 /* libDBAttachmentPickerController.a */;
+			productReference = FBFF24FB9E1445D88AE07A41B070AABA /* libDBAttachmentPickerController.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		B7F02CAF930E12793FB30DCE46D6EB57 /* Pods-MVChat */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DB6F319B8BE6F89F2FCD2417359285F9 /* Build configuration list for PBXNativeTarget "Pods-MVChat" */;
+			buildPhases = (
+				0AB4AA7E520E10F080006BFD7531FD9D /* Sources */,
+				028A53D4F09383880397CAE621C07B7C /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4AEFE2A90C3BEDB6F60D1996BFCDE3E5 /* PBXTargetDependency */,
+				321272F22878B9068757CCBFD581A338 /* PBXTargetDependency */,
+			);
+			name = "Pods-MVChat";
+			productName = "Pods-MVChat";
+			productReference = 906AE86BA76592E505768E01B53B2252 /* libPods-MVChat.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -377,13 +489,14 @@
 				en,
 			);
 			mainGroup = 7DB346D0F39D3F0E887471402A8071AB;
-			productRefGroup = C189396A4E2E9B390E86195153E54AB5 /* Products */;
+			productRefGroup = 75D43B43B63613176E3C234FA55015AC /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				9E3BB0A2A87C3F351E722F86F39C67DD /* DBAttachmentPickerController */,
 				60768CE8764DADBEF89A8F19911BB3DE /* DBAttachmentPickerController-DBAttachmentPickerController */,
-				199F19139FF4A727868744FE8A820745 /* Pods-MVChat */,
+				50243B28600257A1672000EF8ACD7883 /* INTUAnimationEngine */,
+				B7F02CAF930E12793FB30DCE46D6EB57 /* Pods-MVChat */,
 			);
 		};
 /* End PBXProject section */
@@ -409,11 +522,23 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		1446656BF3DD16FF96A6F7016411D92B /* Sources */ = {
+		0AB4AA7E520E10F080006BFD7531FD9D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2E5F9D4373EFC48CBFB7673D177B3B90 /* Pods-MVChat-dummy.m in Sources */,
+				B61398F3B28033639384D3EAA4A6F8EF /* Pods-MVChat-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		87B840396B87D72B8D51D16FAD4850FC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				017E194FFCA7745B0C0D465F48A78767 /* INTUAnimationEngine-dummy.m in Sources */,
+				CA0E53B4A1A97B2380C26E3EB1566428 /* INTUAnimationEngine.m in Sources */,
+				79EE7200DBD3575F0472AFE241508F64 /* INTUEasingFunctions.m in Sources */,
+				237B42F311A2F4432DE27010DD123CDD /* INTUInterpolationFunctions.m in Sources */,
+				6F90AD9947D396389EA7ACABB29CE5E2 /* INTUSpringSolver.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -447,11 +572,17 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		65195E5B3CC0034769953E20C1CCA585 /* PBXTargetDependency */ = {
+		321272F22878B9068757CCBFD581A338 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = INTUAnimationEngine;
+			target = 50243B28600257A1672000EF8ACD7883 /* INTUAnimationEngine */;
+			targetProxy = C75C6F5C315AD5BCF44C509183DDADAB /* PBXContainerItemProxy */;
+		};
+		4AEFE2A90C3BEDB6F60D1996BFCDE3E5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = DBAttachmentPickerController;
 			target = 9E3BB0A2A87C3F351E722F86F39C67DD /* DBAttachmentPickerController */;
-			targetProxy = EC372CC5EA53AC2EBE64C7CE49E76232 /* PBXContainerItemProxy */;
+			targetProxy = 2142DD7C2C14F9EA6815D1B094EA0AC3 /* PBXContainerItemProxy */;
 		};
 		7C23E69245AFD25E30258C12FAD0A5D1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -462,7 +593,72 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		0FD93EF507ED3951A1ECE60D80C1A011 /* Release */ = {
+		2CEE265EBF1E6F92B23690A9D1D82652 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B84A981BFB1DD0D36DD11FFBCD345F3B /* DBAttachmentPickerController.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/DBAttachmentPickerController/DBAttachmentPickerController-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+			};
+			name = Release;
+		};
+		3411E5BFF90364FA22B75DC91B7E3868 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A5CBE5882AA9B903F68D6332D8AC45E4 /* INTUAnimationEngine.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/INTUAnimationEngine/INTUAnimationEngine-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+			};
+			name = Debug;
+		};
+		408B2A3AD8239B8944A388B38E9BA7D0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B84A981BFB1DD0D36DD11FFBCD345F3B /* DBAttachmentPickerController.xcconfig */;
+			buildSettings = {
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/DBAttachmentPickerController";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "Target Support Files/DBAttachmentPickerController/ResourceBundle-DBAttachmentPickerController-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				PRODUCT_NAME = DBAttachmentPickerController;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Release;
+		};
+		4509721F49A1A4E4D3DF34529A53C08B /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 55ECF13EB8B0668A7AAE4DB12613A7D1 /* Pods-MVChat.release.xcconfig */;
 			buildSettings = {
@@ -485,33 +681,9 @@
 			};
 			name = Release;
 		};
-		2CEE265EBF1E6F92B23690A9D1D82652 /* Release */ = {
+		6A7AD47002EA79F0B2881BFA6EE4ECC2 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B78E5AD868505797C5708AAC0C8B5A7B /* DBAttachmentPickerController.xcconfig */;
-			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREFIX_HEADER = "Target Support Files/DBAttachmentPickerController/DBAttachmentPickerController-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-			};
-			name = Release;
-		};
-		408B2A3AD8239B8944A388B38E9BA7D0 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = B78E5AD868505797C5708AAC0C8B5A7B /* DBAttachmentPickerController.xcconfig */;
+			baseConfigurationReference = B84A981BFB1DD0D36DD11FFBCD345F3B /* DBAttachmentPickerController.xcconfig */;
 			buildSettings = {
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/DBAttachmentPickerController";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -524,9 +696,9 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = bundle;
 			};
-			name = Release;
+			name = Debug;
 		};
-		46BFE30A420634ADEF90F9E146A02090 /* Debug */ = {
+		7F9610CD76EBFC7A1838AE40228CE5A4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E4D3E070615252F41375124C9295890E /* Pods-MVChat.debug.xcconfig */;
 			buildSettings = {
@@ -546,23 +718,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-			};
-			name = Debug;
-		};
-		6A7AD47002EA79F0B2881BFA6EE4ECC2 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = B78E5AD868505797C5708AAC0C8B5A7B /* DBAttachmentPickerController.xcconfig */;
-			buildSettings = {
-				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/DBAttachmentPickerController";
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_NO_COMMON_BLOCKS = YES;
-				INFOPLIST_FILE = "Target Support Files/DBAttachmentPickerController/ResourceBundle-DBAttachmentPickerController-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				PRODUCT_NAME = DBAttachmentPickerController;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				WRAPPER_EXTENSION = bundle;
 			};
 			name = Debug;
 		};
@@ -661,7 +816,7 @@
 		};
 		F69994C79D85C6F971EE6D0A1C23B402 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B78E5AD868505797C5708AAC0C8B5A7B /* DBAttachmentPickerController.xcconfig */;
+			baseConfigurationReference = B84A981BFB1DD0D36DD11FFBCD345F3B /* DBAttachmentPickerController.xcconfig */;
 			buildSettings = {
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
@@ -683,6 +838,30 @@
 			};
 			name = Debug;
 		};
+		FC584E33EB7EE961EF63A0E3EAC13401 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A5CBE5882AA9B903F68D6332D8AC45E4 /* INTUAnimationEngine.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/INTUAnimationEngine/INTUAnimationEngine-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -691,15 +870,6 @@
 			buildConfigurations = (
 				97803B46811A9BDB5E70FA1303AFBFFE /* Debug */,
 				BDD0139D6EB93FA375F887ABD62DAB2E /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		3691140EBCF12500AD8AC3DFB6D8A05A /* Build configuration list for PBXNativeTarget "Pods-MVChat" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				46BFE30A420634ADEF90F9E146A02090 /* Debug */,
-				0FD93EF507ED3951A1ECE60D80C1A011 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -718,6 +888,24 @@
 			buildConfigurations = (
 				F69994C79D85C6F971EE6D0A1C23B402 /* Debug */,
 				2CEE265EBF1E6F92B23690A9D1D82652 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		979C70B04203E60E289AF8431EC9A8BD /* Build configuration list for PBXNativeTarget "INTUAnimationEngine" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3411E5BFF90364FA22B75DC91B7E3868 /* Debug */,
+				FC584E33EB7EE961EF63A0E3EAC13401 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DB6F319B8BE6F89F2FCD2417359285F9 /* Build configuration list for PBXNativeTarget "Pods-MVChat" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7F9610CD76EBFC7A1838AE40228CE5A4 /* Debug */,
+				4509721F49A1A4E4D3DF34529A53C08B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

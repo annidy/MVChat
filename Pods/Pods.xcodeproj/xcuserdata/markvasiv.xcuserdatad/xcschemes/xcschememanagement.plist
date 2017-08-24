@@ -14,6 +14,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>INTUAnimationEngine.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Pods-MVChat.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -22,7 +27,7 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>199F19139FF4A727868744FE8A820745</key>
+		<key>50243B28600257A1672000EF8ACD7883</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -33,6 +38,11 @@
 			<true/>
 		</dict>
 		<key>9E3BB0A2A87C3F351E722F86F39C67DD</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>B7F02CAF930E12793FB30DCE46D6EB57</key>
 		<dict>
 			<key>primary</key>
 			<true/>

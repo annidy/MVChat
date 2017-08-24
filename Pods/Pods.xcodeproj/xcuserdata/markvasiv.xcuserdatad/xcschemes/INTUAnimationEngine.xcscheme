@@ -14,10 +14,10 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = 'B7F02CAF930E12793FB30DCE46D6EB57'
-               BlueprintName = 'Pods-MVChat'
+               BlueprintIdentifier = '50243B28600257A1672000EF8ACD7883'
+               BlueprintName = 'INTUAnimationEngine'
                ReferencedContainer = 'container:Pods.xcodeproj'
-               BuildableName = 'libPods-MVChat.a'>
+               BuildableName = 'libINTUAnimationEngine.a'>
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>

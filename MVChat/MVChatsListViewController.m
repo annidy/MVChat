@@ -17,12 +17,15 @@
 #import "MVContactsListController.h"
 #import "MVChatSettingsViewController.h"
 #import "MVFileManager.h"
+#import "MVOverlayMenuController.h"
 
-@interface MVChatsListViewController () <UITableViewDelegate, UITableViewDataSource, ChatsUpdatesListener, UISearchResultsUpdating, MVSearchProviderDelegate>
+
+@interface MVChatsListViewController () <UITableViewDelegate, UITableViewDataSource, ChatsUpdatesListener, UISearchResultsUpdating, MVSearchProviderDelegate, MVForceTouchPresentaionDelegate>
 @property (strong, nonatomic) IBOutlet UITableView *chatsList;
 @property (strong, nonatomic) NSArray <MVChatModel *> *chats;
 @property (strong, nonatomic) MVChatsListSearchViewController *searchResultsController;
 @property (strong, nonatomic) UISearchController *searchController;
+@property (strong, nonatomic) UIButton *createChatButton;
 @end
 
 @implementation MVChatsListViewController
@@ -54,10 +57,19 @@
     self.chatsList.dataSource = self;
     
     [self setupNavigationBar];
+    
+    [self registerForceTouchControllerWithDelegate:self andSourceView:self.createChatButton];
 }
 
 - (void)setupNavigationBar {
-    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"New" style:UIBarButtonItemStylePlain target:self action:@selector(createNewChat)];
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
+    [button setTitle:@"" forState:UIControlStateNormal];
+    [button setImage:[UIImage imageNamed:@"iconPlus"] forState:UIControlStateNormal];
+    button.frame = CGRectMake(0, 0, 30, 30);
+    [button addTarget:self action:@selector(createNewChat) forControlEvents:UIControlEventTouchUpInside];
+    self.createChatButton = button;
+    
+    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithCustomView:button];
     self.navigationItem.rightBarButtonItem = item;
     self.navigationItem.title = @"Chats";
 }
@@ -150,6 +162,30 @@
         [rootNavigationController pushViewController:settings animated:YES];
     }];
     [rootNavigationController pushViewController:contactsList animated:YES];
+}
+
+#pragma mark - MVForceTouchPresentaionDelegate
+- (UIViewController<MVForceTouchControllerProtocol> *)forceTouchViewControllerForContext:(NSString *)context {
+    MVOverlayMenuController *menu = [MVOverlayMenuController loadFromStoryboard];
+    NSMutableArray *menuElements = [NSMutableArray new];
+    [menuElements addObject:[MVOverlayMenuElement elementWithTitle:@"Create chat" action:^{
+        [self createNewChat];
+    }]];
+    [menuElements addObject:[MVOverlayMenuElement elementWithTitle:@"Avatars update" action:^{
+        
+    }]];
+    [menuElements addObject:[MVOverlayMenuElement elementWithTitle:@"Last seen update" action:^{
+        
+    }]];
+    [menuElements addObject:[MVOverlayMenuElement elementWithTitle:@"Messages update" action:^{
+        
+    }]];
+    [menuElements addObject:[MVOverlayMenuElement elementWithTitle:@"Chats update" action:^{
+        
+    }]];
+    menu.menuElements = [menuElements copy];
+    
+    return menu;
 }
 
 #pragma mark - Helpers

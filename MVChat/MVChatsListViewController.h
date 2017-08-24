@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "MVViewController.h"
 
-@interface MVChatsListViewController : UIViewController
+@interface MVChatsListViewController : MVViewController
 
 @end

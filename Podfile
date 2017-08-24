@@ -7,4 +7,5 @@ target 'MVChat' do
 
   # Pods for MVChat
   pod 'DBAttachmentPickerController'
+  pod 'INTUAnimationEngine'
 end

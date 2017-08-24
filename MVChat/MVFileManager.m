@@ -1,4 +1,4 @@
-//
+////
 //  MVFileManager.m
 //  MVChat
 //
@@ -159,11 +159,11 @@ static MVFileManager *instance;
     CGImageRef cgImage = CGBitmapContextCreateImage(context);
     
     CGContextRelease(context);
-    CFRelease(font);
-    CFRelease(string);
-    CFRelease(attributes);
-    CFRelease(attrString);
-    CFRelease(line);
+    //CFRelease(font);
+    //CFRelease(string);
+    //CFRelease(attributes);
+    //CFRelease(attrString);
+    //CFRelease(line);
     
     return [UIImage imageWithCGImage:cgImage];
 }

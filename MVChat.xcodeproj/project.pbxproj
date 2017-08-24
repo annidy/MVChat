@@ -33,6 +33,11 @@
 		CD28B3961EBCA72E00BFFCAA /* MVContactManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CD28B3951EBCA72E00BFFCAA /* MVContactManager.m */; };
 		CD2C9F841F3F421600BB38DA /* MVChatSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD2C9F831F3F421600BB38DA /* MVChatSettingsViewController.m */; };
 		CD4059831F4B168D00808D3A /* MVSystemMessageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4059821F4B168D00808D3A /* MVSystemMessageCell.m */; };
+		CD4059BA1F4DAA7600808D3A /* MVForceTouchGestureRecogniser.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4059B91F4DAA7600808D3A /* MVForceTouchGestureRecogniser.m */; };
+		CD4059C01F4DAC4A00808D3A /* MVOverlayMenuController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4059BF1F4DAC4A00808D3A /* MVOverlayMenuController.m */; };
+		CD4059C31F4DAE9D00808D3A /* NSInvocation+Protocols.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4059C21F4DAE9D00808D3A /* NSInvocation+Protocols.m */; };
+		CD4059C61F4DC8E300808D3A /* MVOverlayMenuCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4059C51F4DC8E300808D3A /* MVOverlayMenuCell.m */; };
+		CD4472351F4DF525008AB607 /* MVViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4472341F4DF525008AB607 /* MVViewController.m */; };
 		CD61CF9F1F2E2C9D00A5884D /* MVTableViewHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = CD61CF9E1F2E2C9D00A5884D /* MVTableViewHeader.m */; };
 		CD61CFA21F2E3A0000A5884D /* MVContactsListSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD61CFA11F2E3A0000A5884D /* MVContactsListSearchViewController.m */; };
 		CD6C2A3F1EC609F00007BA05 /* MVRandomGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = CD6C2A3E1EC609F00007BA05 /* MVRandomGenerator.m */; };
@@ -100,6 +105,16 @@
 		CD4059811F4B168D00808D3A /* MVSystemMessageCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVSystemMessageCell.h; sourceTree = "<group>"; };
 		CD4059821F4B168D00808D3A /* MVSystemMessageCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVSystemMessageCell.m; sourceTree = "<group>"; };
 		CD4059A61F4CA44800808D3A /* MVMessageCellProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVMessageCellProtocol.h; sourceTree = "<group>"; };
+		CD4059B81F4DAA7600808D3A /* MVForceTouchGestureRecogniser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVForceTouchGestureRecogniser.h; sourceTree = "<group>"; };
+		CD4059B91F4DAA7600808D3A /* MVForceTouchGestureRecogniser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVForceTouchGestureRecogniser.m; sourceTree = "<group>"; };
+		CD4059BE1F4DAC4A00808D3A /* MVOverlayMenuController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVOverlayMenuController.h; sourceTree = "<group>"; };
+		CD4059BF1F4DAC4A00808D3A /* MVOverlayMenuController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVOverlayMenuController.m; sourceTree = "<group>"; };
+		CD4059C11F4DAE9D00808D3A /* NSInvocation+Protocols.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSInvocation+Protocols.h"; sourceTree = "<group>"; };
+		CD4059C21F4DAE9D00808D3A /* NSInvocation+Protocols.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSInvocation+Protocols.m"; sourceTree = "<group>"; };
+		CD4059C41F4DC8E300808D3A /* MVOverlayMenuCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVOverlayMenuCell.h; sourceTree = "<group>"; };
+		CD4059C51F4DC8E300808D3A /* MVOverlayMenuCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVOverlayMenuCell.m; sourceTree = "<group>"; };
+		CD4472331F4DF525008AB607 /* MVViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVViewController.h; sourceTree = "<group>"; };
+		CD4472341F4DF525008AB607 /* MVViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVViewController.m; sourceTree = "<group>"; };
 		CD61CF9D1F2E2C9D00A5884D /* MVTableViewHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVTableViewHeader.h; sourceTree = "<group>"; };
 		CD61CF9E1F2E2C9D00A5884D /* MVTableViewHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVTableViewHeader.m; sourceTree = "<group>"; };
 		CD61CFA01F2E3A0000A5884D /* MVContactsListSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVContactsListSearchViewController.h; sourceTree = "<group>"; };
@@ -175,6 +190,64 @@
 			name = "Text generators";
 			sourceTree = "<group>";
 		};
+		CD4472361F4F3289008AB607 /* Overlay Menu */ = {
+			isa = PBXGroup;
+			children = (
+				CD4059BE1F4DAC4A00808D3A /* MVOverlayMenuController.h */,
+				CD4059BF1F4DAC4A00808D3A /* MVOverlayMenuController.m */,
+			);
+			name = "Overlay Menu";
+			sourceTree = "<group>";
+		};
+		CD4472371F4F32B3008AB607 /* Chat Settings */ = {
+			isa = PBXGroup;
+			children = (
+				CD2C9F821F3F421600BB38DA /* MVChatSettingsViewController.h */,
+				CD2C9F831F3F421600BB38DA /* MVChatSettingsViewController.m */,
+			);
+			name = "Chat Settings";
+			sourceTree = "<group>";
+		};
+		CD4472381F4F32BF008AB607 /* Contact Profile */ = {
+			isa = PBXGroup;
+			children = (
+				CD6FAF671F45EE70001E110C /* MVContactProfileViewController.h */,
+				CD6FAF681F45EE70001E110C /* MVContactProfileViewController.m */,
+			);
+			name = "Contact Profile";
+			sourceTree = "<group>";
+		};
+		CD4472391F4F32CA008AB607 /* CustomControllers */ = {
+			isa = PBXGroup;
+			children = (
+				CD05F6851F2A8B9200721421 /* MVNavigationController.h */,
+				CD05F6861F2A8B9200721421 /* MVNavigationController.m */,
+				CD05F6881F2A8BC900721421 /* MVTabBarController.h */,
+				CD05F6891F2A8BC900721421 /* MVTabBarController.m */,
+				CD4472331F4DF525008AB607 /* MVViewController.h */,
+				CD4472341F4DF525008AB607 /* MVViewController.m */,
+			);
+			name = CustomControllers;
+			sourceTree = "<group>";
+		};
+		CD44723A1F4F32F4008AB607 /* Overlay Menu */ = {
+			isa = PBXGroup;
+			children = (
+				CD4059C41F4DC8E300808D3A /* MVOverlayMenuCell.h */,
+				CD4059C51F4DC8E300808D3A /* MVOverlayMenuCell.m */,
+			);
+			name = "Overlay Menu";
+			sourceTree = "<group>";
+		};
+		CD44723B1F4F3302008AB607 /* Custom Views */ = {
+			isa = PBXGroup;
+			children = (
+				CD61CF9D1F2E2C9D00A5884D /* MVTableViewHeader.h */,
+				CD61CF9E1F2E2C9D00A5884D /* MVTableViewHeader.m */,
+			);
+			name = "Custom Views";
+			sourceTree = "<group>";
+		};
 		CD6C2A401EC609F90007BA05 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
@@ -187,6 +260,11 @@
 				CD0550911F0938DD0076FB25 /* Text generators */,
 				CDE957931F1A7B64007AE7EA /* MVDataAggregator.h */,
 				CDE957941F1A7B64007AE7EA /* MVDataAggregator.m */,
+				CD4059B81F4DAA7600808D3A /* MVForceTouchGestureRecogniser.h */,
+				CD4059B91F4DAA7600808D3A /* MVForceTouchGestureRecogniser.m */,
+				CD4059C11F4DAE9D00808D3A /* NSInvocation+Protocols.h */,
+				CD4059C21F4DAE9D00808D3A /* NSInvocation+Protocols.m */,
+				CD61CFA31F2E3A6A00A5884D /* MVSearchProviderDelegate.h */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -328,18 +406,13 @@
 		CDF479B81EB68DB4003B3C8E /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				CD4472391F4F32CA008AB607 /* CustomControllers */,
 				CD0503631F27D20D00A1C4D2 /* Contacts List */,
 				CDEA5CC01EC746D0004C7433 /* Chats List */,
 				CDEA5CBF1EC746C6004C7433 /* Chat */,
-				CD05F6851F2A8B9200721421 /* MVNavigationController.h */,
-				CD05F6861F2A8B9200721421 /* MVNavigationController.m */,
-				CD05F6881F2A8BC900721421 /* MVTabBarController.h */,
-				CD05F6891F2A8BC900721421 /* MVTabBarController.m */,
-				CD61CFA31F2E3A6A00A5884D /* MVSearchProviderDelegate.h */,
-				CD2C9F821F3F421600BB38DA /* MVChatSettingsViewController.h */,
-				CD2C9F831F3F421600BB38DA /* MVChatSettingsViewController.m */,
-				CD6FAF671F45EE70001E110C /* MVContactProfileViewController.h */,
-				CD6FAF681F45EE70001E110C /* MVContactProfileViewController.m */,
+				CD4472371F4F32B3008AB607 /* Chat Settings */,
+				CD4472381F4F32BF008AB607 /* Contact Profile */,
+				CD4472361F4F3289008AB607 /* Overlay Menu */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -356,11 +429,11 @@
 		CDF479C61EB6993F003B3C8E /* View */ = {
 			isa = PBXGroup;
 			children = (
+				CD44723B1F4F3302008AB607 /* Custom Views */,
 				CD0503671F27D2FB00A1C4D2 /* Contacts List */,
 				CDB89D3B1F2242E10024BFDB /* Chats List */,
 				CDEA5CC11EC746E6004C7433 /* Chat */,
-				CD61CF9D1F2E2C9D00A5884D /* MVTableViewHeader.h */,
-				CD61CF9E1F2E2C9D00A5884D /* MVTableViewHeader.m */,
+				CD44723A1F4F32F4008AB607 /* Overlay Menu */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -510,6 +583,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD4472351F4DF525008AB607 /* MVViewController.m in Sources */,
 				CD28B3621EB6A63300BFFCAA /* MVMessageModel.m in Sources */,
 				CD0503621F27D20700A1C4D2 /* MVContactsListController.m in Sources */,
 				CD05F6871F2A8B9200721421 /* MVNavigationController.m in Sources */,
@@ -518,12 +592,16 @@
 				CD28B34A1EB6A5F800BFFCAA /* AppDelegate.m in Sources */,
 				CDAB09871E7DE2D800A142DC /* main.m in Sources */,
 				CD28B3961EBCA72E00BFFCAA /* MVContactManager.m in Sources */,
+				CD4059BA1F4DAA7600808D3A /* MVForceTouchGestureRecogniser.m in Sources */,
 				CD0503661F27D2F300A1C4D2 /* MVContactsListCell.m in Sources */,
+				CD4059C31F4DAE9D00808D3A /* NSInvocation+Protocols.m in Sources */,
 				CDB97CE01F43522800950F6A /* MVFileManager.m in Sources */,
+				CD4059C01F4DAC4A00808D3A /* MVOverlayMenuController.m in Sources */,
 				CD28B3611EB6A63300BFFCAA /* MVContactModel.m in Sources */,
 				CD28B3601EB6A63300BFFCAA /* MVChatManager.m in Sources */,
 				CD0550901F0938D90076FB25 /* MVNameGenerator.m in Sources */,
 				CDE957951F1A7B64007AE7EA /* MVDataAggregator.m in Sources */,
+				CD4059C61F4DC8E300808D3A /* MVOverlayMenuCell.m in Sources */,
 				CDF479AF1EB66C00003B3C8E /* MVChatViewController.m in Sources */,
 				CD05F68D1F2B67DD00721421 /* MVChatsListSearchCollectionViewCell.m in Sources */,
 				CD05509A1F0951B70076FB25 /* MVTextGenerator.m in Sources */,
