@@ -16,11 +16,14 @@
 #import "MVFileManager.h"
 #import "MVContactProfileViewController.h"
 #import "MVContactModel.h"
+#import "MVContactManager.h"
+#import "MVOverlayMenuController.h"
 
-@interface MVChatViewController () <UIGestureRecognizerDelegate>
+@interface MVChatViewController () <MVForceTouchPresentaionDelegate>
 @property (weak, nonatomic) MVMessagesViewController *MessagesController;
 @property (weak, nonatomic) MVFooterViewController *FooterController;
 @property (strong, nonatomic) UILabel *navigationItemTitleLabel;
+@property (strong, nonatomic) UIImageView *avatarImageView;
 @end
 
 @implementation MVChatViewController
@@ -54,12 +57,63 @@
     self.navigationItemTitleLabel = titleLabel;
     self.navigationItem.titleView = titleLabel;
     
-    UITapGestureRecognizer *titleLabelTapRecogniser = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(navigationItemTitleTappedAction)];
-    [self.navigationItem.titleView addGestureRecognizer:titleLabelTapRecogniser];
-    
     //buttons
-    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"Spawn" style:UIBarButtonItemStylePlain target:self action:@selector(spawnNewMessage)];
+    UIImageView *imageView = [UIImageView new];
+    imageView.frame = CGRectMake(0, 0, 34, 34);
+    imageView.layer.cornerRadius = 17;
+    imageView.layer.masksToBounds = YES;
+    
+    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithCustomView:imageView];
     self.navigationItem.rightBarButtonItem = item;
+    self.avatarImageView = imageView;
+    if (self.chat.isPeerToPeer) {
+        [[MVContactManager sharedInstance] loadAvatarThumbnailForContact:self.chat.getPeer completion:^(UIImage *image) {
+            [self.avatarImageView setImage:image];
+        }];
+        
+        [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+            NSString *contactId = note.userInfo[@"Id"];
+            UIImage *image = note.userInfo[@"Image"];
+            if (self.chat.isPeerToPeer && [self.chat.getPeer.id isEqualToString:contactId]) {
+                [self.avatarImageView setImage:image];
+            }
+        }];
+    } else {
+        [[MVChatManager sharedInstance] loadAvatarThumbnailForChat:self.chat completion:^(UIImage *image) {
+            [self.avatarImageView setImage:image];
+        }];
+        [[NSNotificationCenter defaultCenter] addObserverForName:@"ChatAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+            NSString *chatId = note.userInfo[@"Id"];
+            UIImage *image = note.userInfo[@"Image"];
+            if (!self.chat.isPeerToPeer && [self.chat.id isEqualToString:chatId]) {
+                [self.avatarImageView setImage:image];
+            }
+        }];
+    }
+    
+    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(navigationItemTitleTappedAction)];
+    [self.avatarImageView addGestureRecognizer:tapGesture];
+    
+    [self registerForceTouchControllerWithDelegate:self andSourceView:self.avatarImageView];
+    
+}
+
+- (UIViewController<MVForceTouchControllerProtocol> *)forceTouchViewControllerForContext:(NSString *)context {
+    MVOverlayMenuController *menu = [MVOverlayMenuController loadFromStoryboard];
+    NSMutableArray *items = [NSMutableArray new];
+    [items addObject:[MVOverlayMenuElement elementWithTitle:@"Open profile" action:^{
+        [self navigationItemTitleTappedAction];
+    }]];
+    [items addObject:[MVOverlayMenuElement elementWithTitle:@"Spawn message" action:^{
+        [self spawnNewMessage];
+    }]];
+    [items addObject:[MVOverlayMenuElement elementWithTitle:@"Generate avatars" action:^{
+        
+    }]];
+    
+    menu.menuElements = items;
+    
+    return menu;
 }
 
 - (void)navigationItemTitleTappedAction {

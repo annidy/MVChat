@@ -29,7 +29,8 @@ static NSTimeInterval const kLongTapDefaultFinalInterval = 0.8f;
     MVForceTouchGestureRecogniser *recogniser = [MVForceTouchGestureRecogniser new];
     recogniser.forceTouchDelegate = delegate;
     [sourceView addGestureRecognizer:recogniser];
-    recogniser.forceTouchAvailable = [[sourceView traitCollection] forceTouchCapability] == UIForceTouchCapabilityAvailable;
+    recogniser.forceTouchAvailable = ([UIApplication sharedApplication].keyWindow.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable);
+    
     
     return recogniser;
 }

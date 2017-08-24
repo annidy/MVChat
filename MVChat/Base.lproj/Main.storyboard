@@ -1055,21 +1055,24 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="50" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="eAn-kg-8MS">
-                                            <rect key="frame" x="8" y="93" width="359" height="566"/>
+                                            <rect key="frame" x="0.0" y="93" width="375" height="566"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                             <prototypes>
                                                 <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="MVBarButtonMenuTextCell" id="Abv-Tu-4lE" customClass="MVOverlayMenuCell">
-                                                    <rect key="frame" x="0.0" y="28" width="359" height="50"/>
+                                                    <rect key="frame" x="0.0" y="28" width="375" height="50"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Abv-Tu-4lE" id="ews-uj-ccc">
-                                                        <rect key="frame" x="0.0" y="0.0" width="359" height="50"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                         <subviews>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ixF-OA-saQ">
-                                                                <rect key="frame" x="599" y="9" width="60" height="36"/>
-                                                                <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
-                                                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                                                <state key="normal" title="Button"/>
+                                                                <rect key="frame" x="584" y="7.5" width="91" height="35"/>
+                                                                <color key="backgroundColor" red="0.99019607843137258" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                                <inset key="contentEdgeInsets" minX="20" minY="7" maxX="20" maxY="7"/>
+                                                                <state key="normal" title="Button">
+                                                                    <color key="titleColor" red="0.44695311784744263" green="0.4510532021522522" blue="0.44691711664199829" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                                </state>
                                                                 <connections>
                                                                     <action selector="buttonTapped:" destination="Abv-Tu-4lE" eventType="touchUpInside" id="1C0-ts-Xgc"/>
                                                                 </connections>
@@ -1104,20 +1107,22 @@
                                             </connections>
                                         </button>
                                         <label opaque="NO" userInteractionEnabled="NO" alpha="0.0" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Select Action" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dPl-26-qnH">
-                                            <rect key="frame" x="106" y="51" width="187" height="38.5"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="32"/>
+                                            <rect key="frame" x="106" y="40" width="164" height="33.5"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="28"/>
                                             <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
                                     <constraints>
+                                        <constraint firstItem="dPl-26-qnH" firstAttribute="centerX" secondItem="E2p-fV-yiV" secondAttribute="centerX" id="5JC-fh-wfp"/>
                                         <constraint firstAttribute="trailing" secondItem="zYt-0J-VAP" secondAttribute="trailing" constant="10" id="5LD-yf-4kC"/>
+                                        <constraint firstItem="zYt-0J-VAP" firstAttribute="top" secondItem="E2p-fV-yiV" secondAttribute="top" priority="900" constant="38" id="FxI-no-WID"/>
                                         <constraint firstItem="zYt-0J-VAP" firstAttribute="top" secondItem="E2p-fV-yiV" secondAttribute="top" constant="20" id="KQP-E3-jKr"/>
-                                        <constraint firstItem="eAn-kg-8MS" firstAttribute="leading" secondItem="E2p-fV-yiV" secondAttribute="leadingMargin" id="Msq-Tw-g9B"/>
-                                        <constraint firstItem="dPl-26-qnH" firstAttribute="centerY" secondItem="zYt-0J-VAP" secondAttribute="centerY" constant="30" id="Trc-Uz-CM2"/>
-                                        <constraint firstAttribute="trailing" secondItem="dPl-26-qnH" secondAttribute="trailing" constant="82" id="isd-6V-iMy"/>
+                                        <constraint firstItem="eAn-kg-8MS" firstAttribute="leading" secondItem="E2p-fV-yiV" secondAttribute="leading" id="Msq-Tw-g9B"/>
+                                        <constraint firstAttribute="trailing" secondItem="zYt-0J-VAP" secondAttribute="trailing" priority="900" constant="40" id="ZR4-Uh-ZJC"/>
+                                        <constraint firstItem="dPl-26-qnH" firstAttribute="top" secondItem="E2p-fV-yiV" secondAttribute="top" constant="40" id="fIX-sL-KRp"/>
                                         <constraint firstItem="eAn-kg-8MS" firstAttribute="top" secondItem="E2p-fV-yiV" secondAttribute="topMargin" constant="85" id="k2K-r7-qUr"/>
-                                        <constraint firstAttribute="trailingMargin" secondItem="eAn-kg-8MS" secondAttribute="trailing" id="pXb-LY-dCK"/>
+                                        <constraint firstAttribute="trailing" secondItem="eAn-kg-8MS" secondAttribute="trailing" id="pXb-LY-dCK"/>
                                         <constraint firstAttribute="bottomMargin" secondItem="eAn-kg-8MS" secondAttribute="bottom" id="sd0-E4-Ks6"/>
                                     </constraints>
                                 </view>
@@ -1135,6 +1140,8 @@
                     <connections>
                         <outlet property="blurView" destination="PGR-ph-S1F" id="Rge-Pb-Ydc"/>
                         <outlet property="cancelButton" destination="zYt-0J-VAP" id="sPL-k7-MQO"/>
+                        <outlet property="cancelButtonRight" destination="5LD-yf-4kC" id="kX1-PA-Hfe"/>
+                        <outlet property="cancelButtonTop" destination="KQP-E3-jKr" id="IJu-2s-Kge"/>
                         <outlet property="menuTableView" destination="eAn-kg-8MS" id="ZLz-nT-jo4"/>
                         <outlet property="titleLabel" destination="dPl-26-qnH" id="7gw-9T-d39"/>
                     </connections>

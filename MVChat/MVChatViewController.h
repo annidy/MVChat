@@ -7,9 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "MVViewController.h"
 @class MVChatModel;
 
-@interface MVChatViewController : UIViewController
+@interface MVChatViewController : MVViewController
 @property (strong, nonatomic) MVChatModel *chat;
 + (instancetype)loadFromStoryboard;
 + (instancetype)loadFromStoryboardWithChat:(MVChatModel *)chat;

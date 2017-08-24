@@ -25,11 +25,14 @@ static NSString *textCellId = @"MVBarButtonMenuTextCell";
 @property (strong, nonatomic) IBOutlet UIVisualEffectView *blurView;
 @property (strong, nonatomic) IBOutlet UILabel *titleLabel;
 @property (strong, nonatomic) IBOutlet UIButton *cancelButton;
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *cancelButtonTop;
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *cancelButtonRight;
 @property (strong, nonatomic) IBOutlet UITableView *menuTableView;
 @property (strong, nonatomic) UIViewPropertyAnimator *blurAnimator;
 @property (assign, nonatomic) BOOL finalized;
 @property (assign, nonatomic) BOOL allowCancel;
 @property (strong, nonatomic) NSMutableArray <NSNumber *> *showAnimationIds;
+@property (assign, nonatomic) CGFloat menuElementRight;
 @end
 
 @implementation MVOverlayMenuController
@@ -53,11 +56,12 @@ static NSString *textCellId = @"MVBarButtonMenuTextCell";
     
     self.blurView.effect = nil;
     self.blurAnimator = [[UIViewPropertyAnimator alloc] initWithDuration:0.6 curve:UIViewAnimationCurveLinear animations:^{
-        self.blurView.effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+        self.blurView.effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleProminent];
     }];
     
     self.menuTableView.tableFooterView = [UIView new];
     self.menuTableView.allowsSelection = NO;
+    self.menuElementRight = 45;
 }
 
 #pragma mark - MVForceTouchControllerProtocol
@@ -70,12 +74,16 @@ static NSString *textCellId = @"MVBarButtonMenuTextCell";
 - (void)finilizeAppearance {
     self.finalized = YES;
     [self.blurAnimator startAnimation];
+    [self.view layoutIfNeeded];
     [UIView animateWithDuration:0.4 animations:^{
         self.cancelButton.alpha = 1;
         self.titleLabel.alpha = 1;
+        [self.cancelButtonRight setActive:NO];
+        [self.cancelButtonTop setActive:NO];
+        [self.view layoutIfNeeded];
     }];
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self showCells:self.menuTableView.visibleCells withStartCompletion:^{
             self.allowCancel = YES;
         }];
@@ -85,7 +93,7 @@ static NSString *textCellId = @"MVBarButtonMenuTextCell";
 #pragma mark - Cells animation
 - (void)showCells:(NSArray *)cells withStartCompletion:(void (^)())completion {
     CGFloat startValue = - [UIScreen mainScreen].bounds.size.width - 1;
-    CGFloat endValue = 50;
+    CGFloat endValue = self.menuElementRight;
     CGFloat path = ABS(startValue - endValue);
     
     CGFloat duration = 0.7;
@@ -108,7 +116,7 @@ static NSString *textCellId = @"MVBarButtonMenuTextCell";
 }
 
 - (void)dismissCells:(NSArray *)cells withCompletion:(void (^)())completion {
-    CGFloat startValue = 50;
+    CGFloat startValue = self.menuElementRight;
     CGFloat endValue = [UIScreen mainScreen].bounds.size.width + 1;
     CGFloat path = ABS(startValue - endValue);
     
@@ -169,10 +177,13 @@ static NSString *textCellId = @"MVBarButtonMenuTextCell";
 #pragma mark - Helpers
 - (void)dismissWithCompletion:(void (^)())completion {
     [self dismissCells:[self.menuTableView.visibleCells reverseObjectEnumerator].allObjects withCompletion:^{
-        [UIView animateWithDuration:0.2 animations:^{
+        [UIView animateWithDuration:0.3 animations:^{
             self.blurView.effect = nil;
             self.cancelButton.alpha = 0;
             self.titleLabel.alpha = 0;
+            [self.cancelButtonRight setActive:YES];
+            [self.cancelButtonTop setActive:YES];
+            [self.view layoutIfNeeded];
         } completion:^(BOOL finished) {
             [self dismissViewControllerAnimated:NO completion:^{
                 if (completion) {
@@ -180,6 +191,7 @@ static NSString *textCellId = @"MVBarButtonMenuTextCell";
                 }
             }];
         }];
+        
     }];
 }
 @end

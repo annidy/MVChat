@@ -18,11 +18,12 @@
     self.contentView.backgroundColor = [UIColor clearColor];
     self.backgroundColor = [UIColor clearColor];
     
-    self.button.layer.masksToBounds = YES;
+    self.button.layer.masksToBounds = NO;
     self.button.layer.cornerRadius = 16;
-    self.button.backgroundColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:1];
-    self.button.contentEdgeInsets = UIEdgeInsetsMake(7, 25, 7, 25);
-    self.button.tintColor = [UIColor darkGrayColor];
+    self.button.layer.shadowColor = [UIColor darkTextColor].CGColor;
+    self.button.layer.shadowOffset = CGSizeMake(1, 1);
+    self.button.layer.shadowOpacity = 0.2f;
+    self.button.layer.shadowRadius = 0.8f;
     self.rightButtonConstraint.constant = - [UIScreen mainScreen].bounds.size.width - 1;
 }
 
