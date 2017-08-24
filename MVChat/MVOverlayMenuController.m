@@ -27,6 +27,8 @@ static NSString *textCellId = @"MVBarButtonMenuTextCell";
 @property (strong, nonatomic) IBOutlet UIButton *cancelButton;
 @property (strong, nonatomic) IBOutlet NSLayoutConstraint *cancelButtonTop;
 @property (strong, nonatomic) IBOutlet NSLayoutConstraint *cancelButtonRight;
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *cancelButtonHeight;
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *cancelButtonWidth;
 @property (strong, nonatomic) IBOutlet UITableView *menuTableView;
 @property (strong, nonatomic) UIViewPropertyAnimator *blurAnimator;
 @property (assign, nonatomic) BOOL finalized;
@@ -62,6 +64,12 @@ static NSString *textCellId = @"MVBarButtonMenuTextCell";
     self.menuTableView.tableFooterView = [UIView new];
     self.menuTableView.allowsSelection = NO;
     self.menuElementRight = 45;
+    
+    self.cancelButton.layer.masksToBounds = NO;
+    self.cancelButton.layer.shadowColor = [UIColor darkTextColor].CGColor;
+    self.cancelButton.layer.shadowOffset = CGSizeMake(1, 1);
+    self.cancelButton.layer.shadowOpacity = 0.2f;
+    self.cancelButton.layer.shadowRadius = 0.8f;
 }
 
 #pragma mark - MVForceTouchControllerProtocol
@@ -80,6 +88,8 @@ static NSString *textCellId = @"MVBarButtonMenuTextCell";
         self.titleLabel.alpha = 1;
         [self.cancelButtonRight setActive:NO];
         [self.cancelButtonTop setActive:NO];
+        self.cancelButtonWidth.constant = 50;
+        self.cancelButtonHeight.constant = 50;
         [self.view layoutIfNeeded];
     }];
     
@@ -183,6 +193,8 @@ static NSString *textCellId = @"MVBarButtonMenuTextCell";
             self.titleLabel.alpha = 0;
             [self.cancelButtonRight setActive:YES];
             [self.cancelButtonTop setActive:YES];
+            self.cancelButtonWidth.constant = 40;
+            self.cancelButtonHeight.constant = 40;
             [self.view layoutIfNeeded];
         } completion:^(BOOL finished) {
             [self dismissViewControllerAnimated:NO completion:^{

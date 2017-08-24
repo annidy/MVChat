@@ -24,7 +24,6 @@
     self.button.layer.shadowOffset = CGSizeMake(1, 1);
     self.button.layer.shadowOpacity = 0.2f;
     self.button.layer.shadowRadius = 0.8f;
-    self.rightButtonConstraint.constant = - [UIScreen mainScreen].bounds.size.width - 1;
 }
 
 - (IBAction)buttonTapped:(id)sender {

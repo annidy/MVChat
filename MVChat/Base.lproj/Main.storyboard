@@ -1107,7 +1107,7 @@
                                             </connections>
                                         </button>
                                         <label opaque="NO" userInteractionEnabled="NO" alpha="0.0" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Select Action" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dPl-26-qnH">
-                                            <rect key="frame" x="106" y="40" width="164" height="33.5"/>
+                                            <rect key="frame" x="106" y="45" width="164" height="33.5"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="28"/>
                                             <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
                                             <nil key="highlightedColor"/>
@@ -1120,7 +1120,7 @@
                                         <constraint firstItem="zYt-0J-VAP" firstAttribute="top" secondItem="E2p-fV-yiV" secondAttribute="top" constant="20" id="KQP-E3-jKr"/>
                                         <constraint firstItem="eAn-kg-8MS" firstAttribute="leading" secondItem="E2p-fV-yiV" secondAttribute="leading" id="Msq-Tw-g9B"/>
                                         <constraint firstAttribute="trailing" secondItem="zYt-0J-VAP" secondAttribute="trailing" priority="900" constant="40" id="ZR4-Uh-ZJC"/>
-                                        <constraint firstItem="dPl-26-qnH" firstAttribute="top" secondItem="E2p-fV-yiV" secondAttribute="top" constant="40" id="fIX-sL-KRp"/>
+                                        <constraint firstItem="dPl-26-qnH" firstAttribute="top" secondItem="E2p-fV-yiV" secondAttribute="top" constant="45" id="fIX-sL-KRp"/>
                                         <constraint firstItem="eAn-kg-8MS" firstAttribute="top" secondItem="E2p-fV-yiV" secondAttribute="topMargin" constant="85" id="k2K-r7-qUr"/>
                                         <constraint firstAttribute="trailing" secondItem="eAn-kg-8MS" secondAttribute="trailing" id="pXb-LY-dCK"/>
                                         <constraint firstAttribute="bottomMargin" secondItem="eAn-kg-8MS" secondAttribute="bottom" id="sd0-E4-Ks6"/>
@@ -1140,8 +1140,10 @@
                     <connections>
                         <outlet property="blurView" destination="PGR-ph-S1F" id="Rge-Pb-Ydc"/>
                         <outlet property="cancelButton" destination="zYt-0J-VAP" id="sPL-k7-MQO"/>
+                        <outlet property="cancelButtonHeight" destination="3yU-L9-yWc" id="igB-At-Sa0"/>
                         <outlet property="cancelButtonRight" destination="5LD-yf-4kC" id="kX1-PA-Hfe"/>
                         <outlet property="cancelButtonTop" destination="KQP-E3-jKr" id="IJu-2s-Kge"/>
+                        <outlet property="cancelButtonWidth" destination="rWa-XK-9Lp" id="TB3-qq-7Rt"/>
                         <outlet property="menuTableView" destination="eAn-kg-8MS" id="ZLz-nT-jo4"/>
                         <outlet property="titleLabel" destination="dPl-26-qnH" id="7gw-9T-d39"/>
                     </connections>
