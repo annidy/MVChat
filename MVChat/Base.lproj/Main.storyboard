@@ -1101,7 +1101,7 @@
                                                 <constraint firstAttribute="width" constant="40" id="rWa-XK-9Lp"/>
                                             </constraints>
                                             <inset key="contentEdgeInsets" minX="8" minY="8" maxX="8" maxY="8"/>
-                                            <state key="normal" title="Button" image="iconMenuCancel"/>
+                                            <state key="normal" title="Button" image="iconMenuCancel2"/>
                                             <connections>
                                                 <action selector="cancelButtonTapped:" destination="nkc-fg-bjW" eventType="touchUpInside" id="tmS-Ua-PBI"/>
                                             </connections>
@@ -1158,7 +1158,7 @@
         <image name="iconChatsSelect" width="31" height="26"/>
         <image name="iconContacts" width="24" height="23"/>
         <image name="iconContactsSelect" width="22" height="21"/>
-        <image name="iconMenuCancel" width="200" height="200"/>
+        <image name="iconMenuCancel2" width="200" height="200"/>
         <image name="iconSettings" width="22" height="22"/>
         <image name="iconSettingsSelect" width="22" height="22"/>
     </resources>
