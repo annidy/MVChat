@@ -19,7 +19,7 @@ typedef enum : NSUInteger {
     MessageUpdatePositionEnd
 } MessageUpdatePosition;
 
-static NSUInteger MVMessagesPageSize = 1000;
+static NSUInteger MVMessagesPageSize = 15;
 
 @protocol MessagesUpdatesListener <NSObject>
 - (void)handleNewMessage:(MVMessageUpdateModel *)messageUpdate;

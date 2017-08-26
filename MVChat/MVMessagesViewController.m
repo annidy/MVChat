@@ -15,17 +15,6 @@
 #import "MVDataAggregator.h"
 #import "MVSystemMessageCell.h"
 
-
-@implementation NSMutableIndexSet (Increment)
-- (void)increment {
-    if (self.count) {
-        [self addIndex:self.lastIndex + 1];
-    } else {
-        [self addIndex:0];
-    }
-}
-@end
-
 @interface MVMessagesViewController () <UITableViewDelegate, UITableViewDataSource, UIGestureRecognizerDelegate, MessagesUpdatesListener>
 @property (strong, nonatomic) IBOutlet UITableView *messagesTableView;
 @property (strong, nonatomic) NSArray <MVMessageModel *> *messageModels;
@@ -37,6 +26,7 @@
 @property (strong, nonatomic) UILabel *referenceLabel;
 @property (assign, nonatomic) NSUInteger loadedPageIndex;
 @property (assign, nonatomic) BOOL loadingNewPage;
+@property (assign, nonatomic) BOOL initialLoadComplete;
 @property (strong, nonatomic) NSCache *cellHeightCache;
 @end
 
@@ -84,6 +74,7 @@
     [[MVChatManager sharedInstance] loadMessagesForChatWithId:self.chatId withCallback:^(BOOL success) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self tryToLoadNextPage];
+            self.initialLoadComplete = YES;
         });
     }];
 }
@@ -110,12 +101,12 @@
     if (inset < 64) {
         inset = 64;
     }
-    if (inset == tableViewInsets.top) {
-        return;
+    
+    if (inset != tableViewInsets.top) {
+        tableViewInsets.top = inset;
+        self.messagesTableView.contentInset = tableViewInsets;
     }
     
-    tableViewInsets.top = inset;
-    self.messagesTableView.contentInset = tableViewInsets;
 }
 
 - (void)updateContentOffsetForOldContent:(CGSize)oldSize andNewContent:(CGSize)newSize {
@@ -129,17 +120,15 @@
         offset.y += newSize.height - oldSize.height;
     }
     
-    self.messagesTableView.contentOffset = offset;
+    if (offset.y != self.messagesTableView.contentOffset.y) {
+        self.messagesTableView.contentOffset = offset;
+    }
 }
 
 #pragma mark - Data handling
 - (void)handleNewMessages:(NSArray <MVMessageUpdateModel *> *)models {
     NSMutableArray *sections = [self.sections mutableCopy];
     NSMutableDictionary *messages = [self.messages mutableCopy];
-    
-    NSMutableIndexSet *startIndexSet = [NSMutableIndexSet new];
-    NSMutableIndexSet *endIndexSet = [NSMutableIndexSet new];
-    NSMutableIndexSet *reloadIndexSet = [NSMutableIndexSet new];
     
     for (MVMessageUpdateModel *messageUpdate in models) {
         NSString *key = [self headerTitleFromDate:messageUpdate.message.sendDate];
@@ -148,24 +137,9 @@
         if (!rows) {
             rows = [NSMutableArray new];
             if (messageUpdate.position == MessageUpdatePositionStart) {
-                [startIndexSet increment];
                 [sections insertObject:key atIndex:0];
             } else {
-                if (endIndexSet.count) {
-                    [endIndexSet increment];
-                } else {
-                    [endIndexSet addIndex:sections.count];
-                }
-                
                 [sections addObject:key];
-            }
-        } else {
-            if (self.messages[key]) {
-                if (messageUpdate.position == MessageUpdatePositionStart) {
-                    [reloadIndexSet addIndex:0];
-                } else {
-                    [reloadIndexSet addIndex:self.messages.count - 1];
-                }
             }
         }
         
@@ -178,56 +152,42 @@
         [messages setObject:rows forKey:key];
     }
     
-    [startIndexSet addIndexes:endIndexSet];
-    
     self.messages = [messages mutableCopy];
     self.sections = [sections mutableCopy];
-    
-    [UIView performWithoutAnimation:^{
-        [self.messagesTableView beginUpdates];
-        if (startIndexSet.count) {
-            [self.messagesTableView insertSections:startIndexSet withRowAnimation:UITableViewRowAnimationNone];
-        }
-        if (reloadIndexSet.count) {
-            [self.messagesTableView deleteSections:reloadIndexSet withRowAnimation:UITableViewRowAnimationNone];
-            [self.messagesTableView insertSections:reloadIndexSet withRowAnimation:UITableViewRowAnimationNone];
-            //[self.messagesTableView reloadSections:reloadIndexSet withRowAnimation:UITableViewRowAnimationNone];
-        }
-        [self.messagesTableView endUpdates];
-    }];
+    [self.messagesTableView reloadData];
 }
 
 - (void)handleNewMessage:(MVMessageUpdateModel *)messageUpdate {
     dispatch_async(dispatch_get_main_queue(), ^{
         [self handleNewMessages:@[messageUpdate]];
     });
-}
-
-- (void)addToSections:(MVMessageModel *)model {
-    NSString *key = [self headerTitleFromDate:model.sendDate];
-    NSMutableArray *rows = self.messages[key];
-    if (!rows) {
-        rows = [NSMutableArray new];
-        [self.sections addObject:key];
-    }
-    [rows addObject:model];
-    [self.messages setObject:rows forKey:key];
-}
-
-- (void)mapWithSections {
-    self.sections = [NSMutableArray new];
-    self.messages = [NSMutableDictionary new];
     
-    for (MVMessageModel *model in self.messageModels) {
-        NSString *key = [self headerTitleFromDate:model.sendDate];
-        NSMutableArray *rows = self.messages[key];
+    //Animate new message!
+}
+
+- (void)handleNewMessagesBlock:(NSArray <MVMessageModel *> *)messageModels {
+    NSMutableArray *sections = [self.sections mutableCopy];
+    NSMutableDictionary *messages = [self.messages mutableCopy];
+    
+    for (MVMessageModel *message in messageModels) {
+        NSString *key = [self headerTitleFromDate:message.sendDate];
+        NSMutableArray *rows = messages[key];
         if (!rows) {
             rows = [NSMutableArray new];
-            [self.sections addObject:key];
+            [sections insertObject:key atIndex:0];
+            [messages setObject:rows forKey:key];
         }
-        [rows addObject:model];
-        [self.messages setObject:rows forKey:key];
+        [rows insertObject:message atIndex:0];
     }
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.sections = [sections mutableCopy];
+        self.messages = [messages mutableCopy];
+        [self.messagesTableView reloadData];
+        @synchronized (self) {
+            self.loadingNewPage = NO;
+        }
+    });
 }
 
 - (void)tryToLoadNextPage {
@@ -241,17 +201,9 @@
     
     if ([[MVChatManager sharedInstance] numberOfPagesInChatWithId:self.chatId] > self.loadedPageIndex + 1) {
         [[MVChatManager sharedInstance] messagesPage:self.loadedPageIndex + 1 forChatWithId:self.chatId withCallback:^(NSArray<MVMessageModel *> *messages) {
-            NSMutableArray *updates = [NSMutableArray new];
-            
-            for (MVMessageModel *message in messages) {
-                [updates addObject:[MVMessageUpdateModel updateModelWithMessage:message andPosition:MessageUpdatePositionStart]];
-            }
-            
-            self.loadedPageIndex++;
-            
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self handleNewMessages:updates];
-                
+                self.loadedPageIndex++;
+                [self handleNewMessagesBlock:messages];
                 @synchronized (self) {
                     self.loadingNewPage = NO;
                 }
@@ -274,18 +226,23 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSNumber *cachedHeight = [self.cellHeightCache objectForKey:indexPath];
+    NSString *section = self.sections[indexPath.section];
+    MVMessageModel *model;
+    
+    if (indexPath.row != 0) {
+        model = self.messages[section][indexPath.row - 1];
+    }
+    
+    NSString *cacheKey = [NSString stringWithFormat:@"%@_%@", section, model.id];
+    NSNumber *cachedHeight = [self.cellHeightCache objectForKey:cacheKey];
     if (cachedHeight) {
         return [cachedHeight floatValue];
     }
-    
-    NSString *section = self.sections[indexPath.section];
     
     CGFloat height;
     if (indexPath.row == 0) {
         height = [MVMessageHeader heightWithText:section];
     } else {
-        MVMessageModel *model = self.messages[section][indexPath.row - 1];
         if (model.type == MVMessageTypeSystem) {
             height = [MVSystemMessageCell heightWithText:model.text];
         } else {
@@ -294,7 +251,7 @@
         }
     }
     
-    [self.cellHeightCache setObject:@(height) forKey:indexPath];
+    [self.cellHeightCache setObject:@(height) forKey:cacheKey];
     
     return height;
 }
@@ -414,7 +371,7 @@
         self.autoscrollEnabled = NO;
     }
     
-    if(self.messagesTableView.contentOffset.y <= 200) {
+    if(self.initialLoadComplete && self.messagesTableView.contentOffset.y <= 200) {
         [self tryToLoadNextPage];
     }
 }

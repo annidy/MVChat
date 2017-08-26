@@ -69,6 +69,9 @@ static MVChatManager *sharedManager;
     dispatch_async(self.managerQueue, ^{
         @synchronized (self.chatsMessages) {
             if ([self.chatsMessages objectForKey:chatId]) {
+                if (callback) {
+                    callback(YES);
+                }
                 return;
             }
         }
@@ -355,29 +358,31 @@ static MVChatManager *sharedManager;
 }
 
 - (void)messagesPage:(NSUInteger)pageIndex forChatWithId:(NSString *)chatId withCallback:(void (^)(NSArray <MVMessageModel *> *))callback {
-    NSMutableArray *messages;
-    @synchronized (self.chatsMessages) {
-        messages = [self.chatsMessages objectForKey:chatId];
-    }
-    
-    messages = [[[messages reverseObjectEnumerator] allObjects] mutableCopy];
-    NSArray *pagedMessages;
-    
-    if (!messages) {
-        [self loadMessagesForChatWithId:chatId withCallback:^(BOOL success) {
-            [self messagesPage:pageIndex forChatWithId:chatId withCallback:callback];
-        }];
-    } else {
-        NSUInteger startIndex = MVMessagesPageSize * pageIndex;
-        NSUInteger length = MVMessagesPageSize;
-        
-        if (MVMessagesPageSize * pageIndex + MVMessagesPageSize > messages.count) {
-            length = messages.count - MVMessagesPageSize * pageIndex;
+    dispatch_async(self.managerQueue, ^{
+        NSMutableArray *messages;
+        @synchronized (self.chatsMessages) {
+            messages = [self.chatsMessages objectForKey:chatId];
         }
         
-        pagedMessages = [messages subarrayWithRange:NSMakeRange(startIndex, length)];
-        callback(pagedMessages);
-    }
+        messages = [[[messages reverseObjectEnumerator] allObjects] mutableCopy];
+        NSArray *pagedMessages;
+        
+        if (!messages) {
+            [self loadMessagesForChatWithId:chatId withCallback:^(BOOL success) {
+                [self messagesPage:pageIndex forChatWithId:chatId withCallback:callback];
+            }];
+        } else {
+            NSUInteger startIndex = MVMessagesPageSize * pageIndex;
+            NSUInteger length = MVMessagesPageSize;
+            
+            if (MVMessagesPageSize * pageIndex + MVMessagesPageSize > messages.count) {
+                length = messages.count - MVMessagesPageSize * pageIndex;
+            }
+            
+            pagedMessages = [messages subarrayWithRange:NSMakeRange(startIndex, length)];
+            callback(pagedMessages);
+        }
+    });
 }
 
 - (NSUInteger)numberOfPagesInChatWithId:(NSString *)chatId {
