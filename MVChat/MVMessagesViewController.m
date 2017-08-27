@@ -28,6 +28,7 @@
 @property (assign, nonatomic) BOOL loadingNewPage;
 @property (assign, nonatomic) BOOL initialLoadComplete;
 @property (strong, nonatomic) NSCache *cellHeightCache;
+@property (assign, nonatomic) BOOL keyboardShown;
 @end
 
 @implementation MVMessagesViewController
@@ -49,6 +50,7 @@
 
 - (void)dealloc {
     [self.messagesTableView removeObserver:self forKeyPath:@"contentSize"];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - View lifecycle
@@ -77,6 +79,49 @@
             self.initialLoadComplete = YES;
         });
     }];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+    
+    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(messagesTapped)];
+    [self.messagesTableView addGestureRecognizer:tapGesture];
+}
+
+- (void)messagesTapped {
+    [self.view.superview.superview endEditing:YES];
+}
+
+- (void)keyboardWillShow:(NSNotification *)notification {
+    if (!self.keyboardShown) {
+        [self adjustContentOffsetDuringKeyboardAppear:YES withNotification:notification];
+        self.keyboardShown = YES;
+    }
+}
+
+- (void)keyboardWillHide:(NSNotification *)notification {
+    if (self.keyboardShown) {
+        [self adjustContentOffsetDuringKeyboardAppear:NO withNotification:notification];
+        self.keyboardShown = NO;
+    }
+}
+
+- (void)adjustContentOffsetDuringKeyboardAppear:(BOOL)appear withNotification:(NSNotification *)notification {
+    NSTimeInterval duration = [notification.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    UIViewAnimationCurve curve = [notification.userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue];
+    
+    CGRect keyboardEndFrame = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    CGFloat keyboardHeight = CGRectGetHeight(keyboardEndFrame);
+    
+    CGPoint offset = self.messagesTableView.contentOffset;
+    if (appear) {
+        offset.y += keyboardHeight;
+    } else {
+        offset.y -= keyboardHeight;
+    }
+    
+    [UIView animateWithDuration:duration delay:0 options:UIViewAnimationOptionBeginFromCurrentState | curve animations:^{
+        self.messagesTableView.contentOffset = offset;
+    } completion:nil];
 }
 
 #pragma mark - KVO

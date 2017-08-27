@@ -24,6 +24,7 @@
 @property (weak, nonatomic) MVFooterViewController *FooterController;
 @property (strong, nonatomic) UILabel *navigationItemTitleLabel;
 @property (strong, nonatomic) UIImageView *avatarImageView;
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *inputPanelBottom;
 @end
 
 @implementation MVChatViewController
@@ -41,9 +42,37 @@
 }
 
 #pragma mark - Lifecycle
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setupNavigationBar];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+}
+
+- (void)keyboardWillShow:(NSNotification *)notification {
+    [self adjustInputPanelPositionDuringKeyabordAppear:YES withNotification:notification];
+}
+
+- (void)keyboardWillHide:(NSNotification *)notification {
+    [self adjustInputPanelPositionDuringKeyabordAppear:NO withNotification:notification];
+}
+
+- (void)adjustInputPanelPositionDuringKeyabordAppear:(BOOL)appear withNotification:(NSNotification *)notification {
+    NSTimeInterval duration = [notification.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    UIViewAnimationCurve curve = [notification.userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue];
+    CGRect keyboardFrameEnd = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    CGFloat keyboardHeight = CGRectGetHeight(keyboardFrameEnd);
+    
+    self.inputPanelBottom.constant = appear? keyboardHeight : 0;
+    
+    [UIView animateWithDuration:duration delay:0 options:UIViewAnimationOptionBeginFromCurrentState | curve animations:^{
+        [self.view layoutIfNeeded];
+    } completion:nil];
 }
 
 - (void)setupNavigationBar {
