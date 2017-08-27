@@ -17,7 +17,7 @@ typedef enum : NSUInteger {
 } MVMessageCellTailType;
 
 @protocol MVMessageCellComplexProtocol <NSObject>
-+ (CGFloat)heightWithTailType:(MVMessageCellTailType)tailType direction:(MessageDirection)direction andText:(NSString *)text;
++ (CGFloat)heightWithTailType:(MVMessageCellTailType)tailType direction:(MessageDirection)direction andModel:(MVMessageModel *)model;
 - (void)fillWithModel:(MVMessageModel *)messageModel;
 @end
 

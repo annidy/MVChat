@@ -59,8 +59,8 @@
 
 + (BOOL)writeData:(NSData *)data toFileWithName:(NSString *)name extenssion:(NSString *)extenssion {
     NSString *path = [self pathToFile:name extenssion:extenssion];
+    [[NSFileManager defaultManager] createDirectoryAtPath:[path stringByDeletingLastPathComponent] withIntermediateDirectories:YES attributes:nil error:nil];
     NSError *error;
-    
     return [data writeToFile:path options:NSDataWritingAtomic error:&error];
 }
 
@@ -70,6 +70,7 @@
 }
 
 + (NSURL *)urlToFileWithName:(NSString *)filename extenssion:(NSString *)extenssion {
-    return [NSURL URLWithString:[self pathToFile:filename extenssion:extenssion]];
+    //return [NSURL URLWithString:[self pathToFile:filename extenssion:extenssion]];
+    return [NSURL fileURLWithPath:[self pathToFile:filename extenssion:extenssion]];
 }
 @end

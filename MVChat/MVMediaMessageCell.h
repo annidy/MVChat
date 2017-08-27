@@ -1,8 +1,8 @@
 //
-//  MVMessageCell.h
+//  MVMediaMessageCell.h
 //  MVChat
 //
-//  Created by Mark Vasiv on 01/05/2017.
+//  Created by Mark Vasiv on 27/08/2017.
 //  Copyright © 2017 Mark Vasiv. All rights reserved.
 //
 
@@ -10,5 +10,6 @@
 #import "MVSlidingCell.h"
 #import "MVMessageCellProtocol.h"
 
-@interface MVTextMessageCell : UITableViewCell <MVSlidingCell, MVMessageCellComplexProtocol>
+@interface MVMediaMessageCell : UITableViewCell <MVSlidingCell, MVMessageCellComplexProtocol>
+
 @end

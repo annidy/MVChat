@@ -200,27 +200,36 @@ static MVChatManager *sharedManager;
 - (void)sendTextMessage:(NSString *)text toChatWithId:(NSString *)chatId{
     MVMessageModel *message = [MVMessageModel new];
     message.type = MVMessageTypeText;
-    message.chatId = chatId;
     message.text = text;
-    message.direction = MessageDirectionOutgoing;
-    message.sendDate = [NSDate new];
     [self sendMessage:message toChatWithId:chatId];
 }
 
 - (void)sendSystemMessageWithText:(NSString *)text toChatWithId:(NSString *)chatId {
     MVMessageModel *message = [MVMessageModel new];
     message.type = MVMessageTypeSystem;
-    message.chatId = chatId;
     message.text = text;
-    message.direction = MessageDirectionOutgoing;
-    message.sendDate = [NSDate new];
     [self sendMessage:message toChatWithId:chatId];
+}
+
+- (void)sendMediaMessageWithAttachment:(DBAttachment *)attachment toChatWithId:(NSString *)chatId {
+    MVMessageModel *message = [MVMessageModel new];
+    message.type = MVMessageTypeMedia;
+    message.id = [[MVDatabaseManager sharedInstance] incrementId:[MVDatabaseManager sharedInstance].lastMessageId];
+    message.chatId = chatId;
+    [[MVFileManager sharedInstance] saveAttachment:attachment asMessage:message completion:^{
+        [self sendMessage:message toChatWithId:chatId];
+    }];
 }
 
 - (void)sendMessage:(MVMessageModel *)message toChatWithId:(NSString *)chatId {
     MVDatabaseManager *db = [MVDatabaseManager sharedInstance];
-    message.id = [db incrementId:db.lastMessageId];
+    if (!message.id) {
+        message.id = [db incrementId:db.lastMessageId];
+    }
     message.contact = [db myContact];
+    message.direction = MessageDirectionOutgoing;
+    message.chatId = chatId;
+    message.sendDate = [NSDate new];
     [db insertMessages:@[message] withCompletion:nil];
     [self handleNewMessages:@[message]];
 }
@@ -398,6 +407,16 @@ static MVChatManager *sharedManager;
 
 - (void)loadAvatarThumbnailForChat:(MVChatModel *)chat completion:(void (^)(UIImage *))callback {
     [[MVFileManager sharedInstance] loadAvatarAttachmentForChat:chat completion:^(DBAttachment *attachment) {
+        [attachment loadOriginalImageWithCompletion:^(UIImage *resultImage) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                callback(resultImage);
+            });
+        }];
+    }];
+}
+
+- (void)loadAttachmentForMessage:(MVMessageModel *)message completion:(void (^)(UIImage *))callback {
+    [[MVFileManager sharedInstance] loadAttachmentForMessage:message completion:^(DBAttachment *attachment) {
         [attachment loadOriginalImageWithCompletion:^(UIImage *resultImage) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 callback(resultImage);

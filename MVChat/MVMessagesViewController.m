@@ -14,6 +14,7 @@
 #import "MVContactManager.h"
 #import "MVDataAggregator.h"
 #import "MVSystemMessageCell.h"
+#import "MVMediaMessageCell.h"
 
 @interface MVMessagesViewController () <UITableViewDelegate, UITableViewDataSource, UIGestureRecognizerDelegate, MessagesUpdatesListener>
 @property (strong, nonatomic) IBOutlet UITableView *messagesTableView;
@@ -59,14 +60,16 @@
     
     [self.messagesTableView registerClass:[MVMessageHeader class] forCellReuseIdentifier:@"MVMessageHeader"];
     [self.messagesTableView registerClass:[MVSystemMessageCell class] forCellReuseIdentifier:@"MVMessageCellSystem"];
-    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellIncomingTailTypeDefault"];
-    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellIncomingTailTypeTailess"];
-    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellIncomingTailTypeLastTailess"];
-    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellIncomingTailTypeFirstTailess"];
-    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellOutgoingTailTypeDefault"];
-    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellOutgoingTailTypeTailess"];
-    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellOutgoingTailTypeLastTailess"];
-    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellOutgoingTailTypeFirstTailess"];
+    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeDefaultIncoming"];
+    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeTailessIncoming"];
+    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeLastTailessIncoming"];
+    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeFirstTailessIncoming"];
+    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeDefaultOutgoing"];
+    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeTailessOutgoing"];
+    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeLastTailessOutgoing"];
+    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeFirstTailessOutgoing"];
+    [self.messagesTableView registerClass:[MVMediaMessageCell class] forCellReuseIdentifier:@"MVMessageCellMediaOutgoing"];
+    [self.messagesTableView registerClass:[MVMediaMessageCell class] forCellReuseIdentifier:@"MVMessageCellMediaIncoming"];
     self.messagesTableView.tableFooterView = [UIView new];
     self.messagesTableView.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
     
@@ -290,9 +293,11 @@
     } else {
         if (model.type == MVMessageTypeSystem) {
             height = [MVSystemMessageCell heightWithText:model.text];
-        } else {
+        } else if (model.type == MVMessageTypeText){
             MVMessageCellTailType tailType = [self messageCellTailTypeAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row - 1 inSection:indexPath.section]];
-            height = [MVTextMessageCell heightWithTailType:tailType direction:model.direction andText:model.text];
+            height = [MVTextMessageCell heightWithTailType:tailType direction:model.direction andModel:model];
+        } else {
+            height = [MVMediaMessageCell heightWithTailType:0 direction:model.direction andModel:model];
         }
     }
     
@@ -435,40 +440,46 @@ static NSDateFormatter *dateFormatter;
 }
 
 - (NSString *)cellIdForIndexPath:(NSIndexPath *)indexPath {
+    
+    NSMutableString *cellId = [NSMutableString new];
+    
     if (indexPath.row == 0) {
-        return @"MVMessageHeader";
-    }
-    
-    NSString *section = self.sections[indexPath.section];
-    MVMessageModel *model = self.messages[section][indexPath.row - 1];
-    
-    if (model.type == MVMessageTypeSystem) {
-        return @"MVMessageCellSystem";
-    }
-    
-    NSMutableString *cellId = [NSMutableString stringWithString:@"MVMessageCell"];
-    if (model.direction == MessageDirectionOutgoing) {
-        [cellId appendString:@"Outgoing"];
+        [cellId setString:@"MVMessageHeader"];
     } else {
-        [cellId appendString:@"Incoming"];
-    }
-    
-    MVMessageCellTailType tailType = [self messageCellTailTypeAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row - 1 inSection:indexPath.section]];
-    switch (tailType) {
-        case MVMessageCellTailTypeDefault:
-            [cellId appendString:@"TailTypeDefault"];
-            break;
-        case MVMessageCellTailTypeTailess:
-            [cellId appendString:@"TailTypeTailess"];
-            break;
-        case MVMessageCellTailTypeLastTailess:
-            [cellId appendString:@"TailTypeLastTailess"];
-            break;
-        case MVMessageCellTailTypeFirstTailess:
-            [cellId appendString:@"TailTypeFirstTailess"];
-            break;
-        default:
-            break;
+        NSString *section = self.sections[indexPath.section];
+        MVMessageModel *model = self.messages[section][indexPath.row - 1];
+        
+        if (model.type == MVMessageTypeSystem) {
+            [cellId setString:@"MVMessageCellSystem"];
+        } else {
+            if(model.type == MVMessageTypeMedia) {
+                [cellId setString:@"MVMessageCellMedia"];
+            } else {
+                [cellId setString:@"MVMessageCellText"];
+                MVMessageCellTailType tailType = [self messageCellTailTypeAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row - 1 inSection:indexPath.section]];
+                switch (tailType) {
+                    case MVMessageCellTailTypeDefault:
+                        [cellId appendString:@"TailTypeDefault"];
+                        break;
+                    case MVMessageCellTailTypeTailess:
+                        [cellId appendString:@"TailTypeTailess"];
+                        break;
+                    case MVMessageCellTailTypeLastTailess:
+                        [cellId appendString:@"TailTypeLastTailess"];
+                        break;
+                    case MVMessageCellTailTypeFirstTailess:
+                        [cellId appendString:@"TailTypeFirstTailess"];
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (model.direction == MessageDirectionOutgoing) {
+                [cellId appendString:@"Outgoing"];
+            } else {
+                [cellId appendString:@"Incoming"];
+            }
+        }
     }
     
     return [cellId copy];

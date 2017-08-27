@@ -16,6 +16,8 @@
 #import <CoreText/CoreText.h>
 
 #import "MVRandomGenerator.h"
+#import "MVMessageModel.h"
+#import <ImageIO/ImageIO.h>
 
 @interface MVFileManager()
 @property (strong, nonatomic) dispatch_queue_t managerQueue;
@@ -44,25 +46,39 @@ static MVFileManager *instance;
 }
 
 #pragma mark - Saving images
-- (void)saveAttachment:(DBAttachment *)attachment withFileName:(NSString *)fileName {
+- (void)saveAttachment:(DBAttachment *)attachment withFileName:(NSString *)fileName directory:(NSString *)directory completion:(void (^)(void))completion {
     dispatch_async(self.managerQueue, ^{
+        NSString *fullPath;
+        if (directory) {
+            fullPath = [directory stringByAppendingPathComponent:fileName];
+        } else {
+            fullPath = fileName;
+        }
         [attachment loadOriginalImageWithCompletion:^(UIImage *resultImage) {
-            [MVJsonHelper writeData:UIImagePNGRepresentation(resultImage) toFileWithName:fileName extenssion:@"png"];
+            [MVJsonHelper writeData:UIImagePNGRepresentation(resultImage) toFileWithName:fullPath extenssion:@"png"];
+            [self.imagesCache setObject:attachment forKey:fileName];
+            if (completion) {
+                completion();
+            }
         }];
-        [self.imagesCache setObject:attachment forKey:fileName];
+        
     });
 }
 
 - (void)saveAttachment:(DBAttachment *)attachment asChatAvatar:(MVChatModel *)chat {
-    [self saveAttachment:attachment withFileName:[@"chat" stringByAppendingString:chat.id]];
+    [self saveAttachment:attachment withFileName:[@"chat" stringByAppendingString:chat.id] directory:nil completion:nil];
     NSNotification *notification = [[NSNotification alloc] initWithName:@"ChatAvatarUpdate" object:nil userInfo:@{@"Id" : chat.id, @"Image" : [attachment loadOriginalImageSync]}];
     [[NSNotificationCenter defaultCenter] postNotification:notification];
 }
 
 - (void)saveAttachment:(DBAttachment *)attachment asContactAvatar:(MVContactModel *)contact {
-    [self saveAttachment:attachment withFileName:[@"contact" stringByAppendingString:contact.id]];
+    [self saveAttachment:attachment withFileName:[@"contact" stringByAppendingString:contact.id] directory:nil completion:nil];
     NSNotification *notification = [[NSNotification alloc] initWithName:@"ContactAvatarUpdate" object:nil userInfo:@{@"Id" : contact.id, @"Image" : [attachment loadOriginalImageSync]}];
     [[NSNotificationCenter defaultCenter] postNotification:notification];
+}
+
+- (void)saveAttachment:(DBAttachment *)attachment asMessage:(MVMessageModel *)message completion:(void (^)(void))completion {
+    [self saveAttachment:attachment withFileName:message.id directory:message.chatId completion:completion];
 }
 
 #pragma mark - Loading images
@@ -87,6 +103,39 @@ static MVFileManager *instance;
 - (void)loadAvatarAttachmentForContact:(MVContactModel *)contact completion:(void (^)(DBAttachment *attachment))completion {
     NSString *fileName = [@"contact" stringByAppendingString:contact.id];
     [self loadAttachmentForFileNamed:fileName completion:completion];
+}
+
+- (void)loadAttachmentForMessage:(MVMessageModel *)message completion:(void (^)(DBAttachment *attachment))completion {
+    NSString *fileName = [message.chatId stringByAppendingPathComponent:message.id];
+    [self loadAttachmentForFileNamed:fileName completion:completion];
+}
+
+
+- (CGSize)sizeOfAttachmentForMessage:(MVMessageModel *)message {
+    NSString *fileName = [message.chatId stringByAppendingPathComponent:message.id];
+    NSURL *url = [MVJsonHelper urlToFileWithName:fileName extenssion:@"png"];
+    return [self sizeOfImageAtURL:url];
+}
+
+- (CGSize)sizeOfImageAtURL:(NSURL *)imageURL {
+    CGSize imageSize = CGSizeZero;
+    CGImageSourceRef source = CGImageSourceCreateWithURL((CFURLRef)imageURL, NULL);
+    if (source) {
+        NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:NO] forKey:(NSString *)kCGImageSourceShouldCache];
+        CFDictionaryRef properties = CGImageSourceCopyPropertiesAtIndex(source, 0, (CFDictionaryRef)options);
+        
+        if (properties) {
+            NSDictionary *pr = (__bridge NSDictionary *)properties;
+            NSNumber *width = [pr objectForKey:(NSString *)kCGImagePropertyPixelWidth];
+            NSNumber *height = [pr objectForKey:(NSString *)kCGImagePropertyPixelHeight];
+            if ((width != nil) && (height != nil))
+                imageSize = CGSizeMake(width.floatValue, height.floatValue);
+            CFRelease(properties);
+        }
+        CFRelease(source);
+    }
+    
+    return imageSize;
 }
 
 #pragma mark - Generating images

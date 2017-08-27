@@ -16,7 +16,8 @@ typedef enum : NSUInteger {
 
 typedef enum : NSUInteger {
     MVMessageTypeText,
-    MVMessageTypeSystem
+    MVMessageTypeSystem,
+    MVMessageTypeMedia
 } MVMessageType;
 
 @interface MVMessageModel : NSObject

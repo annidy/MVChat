@@ -13,6 +13,7 @@
 @class MVChatModel;
 @class MVContactModel;
 @class UIImage;
+@class DBAttachment;
 
 typedef enum : NSUInteger {
     MessageUpdatePositionStart,
@@ -48,6 +49,7 @@ static NSUInteger MVMessagesPageSize = 15;
 - (NSArray <MVMessageModel *> *)messagesForChatWithId:(NSString *)chatId;
 - (void)generateMessageForChatWithId:(NSString *)chatId;
 - (void)sendTextMessage:(NSString *)text toChatWithId:(NSString *)chatId;
+- (void)sendMediaMessageWithAttachment:(DBAttachment *)attachment toChatWithId:(NSString *)chatId;
 - (void)loadAllChats;
 - (void)messagesPage:(NSUInteger)pageIndex forChatWithId:(NSString *)chatId withCallback:(void (^)(NSArray <MVMessageModel *> *))callback;
 - (NSUInteger)numberOfPagesInChatWithId:(NSString *)chatId;
@@ -56,7 +58,7 @@ static NSUInteger MVMessagesPageSize = 15;
 - (void)updateChat:(MVChatModel *)chat;
 - (void)exitAndDeleteChat:(MVChatModel *)chat;
 - (void)loadAvatarThumbnailForChat:(MVChatModel *)chat completion:(void (^)(UIImage *))callback;
-
+- (void)loadAttachmentForMessage:(MVMessageModel *)message completion:(void (^)(UIImage *))callback;
 - (NSString *)timeFromDate:(NSDate *)date;
 - (void)loadMessagesForChatWithId:(NSString *)chatId withCallback:(void (^)(BOOL))callback;
 @end
