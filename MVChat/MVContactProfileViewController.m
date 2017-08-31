@@ -12,6 +12,7 @@
 #import "MVContactManager.h"
 #import "MVChatViewController.h"
 #import "MVChatManager.h"
+#import "MVChatSharedMediaListController.h"
 
 @interface MVContactProfileViewController () <UITableViewDataSource, UITableViewDelegate>
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
@@ -160,6 +161,12 @@ static NSString *ChatCellId = @"MVContactProfileChatCell";
 }
 
 - (void)showAllSharedMedia {
+    [[MVChatManager sharedInstance] chatWithContact:self.contact andCompeltion:^(MVChatModel *chat) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            MVChatSharedMediaListController *vc = [MVChatSharedMediaListController loadFromStoryboardWithChatId:chat.id];
+            [self.navigationController pushViewController:vc animated:YES];
+        });
+    }];
     
 }
 

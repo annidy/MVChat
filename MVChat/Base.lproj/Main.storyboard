@@ -416,7 +416,7 @@
         <!--Chats-->
         <scene sceneID="eYF-01-euX">
             <objects>
-                <viewController automaticallyAdjustsScrollViewInsets="NO" id="Oy1-wc-JZB" customClass="MVChatsListViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MVChatsListViewController" automaticallyAdjustsScrollViewInsets="NO" id="Oy1-wc-JZB" customClass="MVChatsListViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3Z-Vf-Brj"/>
                         <viewControllerLayoutGuide type="bottom" id="a13-x5-PJE"/>
@@ -542,7 +542,7 @@
         <!--Chat View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController storyboardIdentifier="ChatViewController" id="BYZ-38-t0r" customClass="MVChatViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MVChatViewController" id="BYZ-38-t0r" customClass="MVChatViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -590,7 +590,7 @@
         <!--Footer View Controller-->
         <scene sceneID="hDp-Km-xFt">
             <objects>
-                <viewController id="xyr-sn-PIh" customClass="MVFooterViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MVFooterViewController" id="xyr-sn-PIh" customClass="MVFooterViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Ndm-lc-Ltl"/>
                         <viewControllerLayoutGuide type="bottom" id="BVj-7p-20I"/>
@@ -660,10 +660,77 @@
             </objects>
             <point key="canvasLocation" x="56.799999999999997" y="480.35982008995506"/>
         </scene>
+        <!--Chat Shared Media List Controller-->
+        <scene sceneID="942-N1-sqf">
+            <objects>
+                <viewController storyboardIdentifier="MVChatSharedMediaListController" automaticallyAdjustsScrollViewInsets="NO" id="yuJ-Ob-yy8" customClass="MVChatSharedMediaListController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Emi-bu-z8V"/>
+                        <viewControllerLayoutGuide type="bottom" id="JAL-9z-BxQ"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="z90-wm-erC">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="vsm-bk-9Ng">
+                                <rect key="frame" x="0.0" y="20" width="375" height="647"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="5" minimumInteritemSpacing="5" id="lWu-Ti-kFF">
+                                    <size key="itemSize" width="50" height="50"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="MVChatSharedMediaListCell" id="lWg-2Q-i4Y" customClass="MVChatSharedMediaListCell">
+                                        <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                            <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="gmg-f2-DZl">
+                                                    <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                                </imageView>
+                                            </subviews>
+                                        </view>
+                                        <constraints>
+                                            <constraint firstAttribute="bottom" secondItem="gmg-f2-DZl" secondAttribute="bottom" id="9zO-kV-ogH"/>
+                                            <constraint firstItem="gmg-f2-DZl" firstAttribute="leading" secondItem="lWg-2Q-i4Y" secondAttribute="leading" id="eKJ-YL-co6"/>
+                                            <constraint firstItem="gmg-f2-DZl" firstAttribute="top" secondItem="lWg-2Q-i4Y" secondAttribute="top" id="oko-zm-7IC"/>
+                                            <constraint firstAttribute="trailing" secondItem="gmg-f2-DZl" secondAttribute="trailing" id="xdx-LC-E0U"/>
+                                        </constraints>
+                                        <connections>
+                                            <outlet property="imageView" destination="gmg-f2-DZl" id="hrN-1e-du7"/>
+                                        </connections>
+                                    </collectionViewCell>
+                                </cells>
+                                <connections>
+                                    <outlet property="dataSource" destination="yuJ-Ob-yy8" id="2SJ-To-Q3I"/>
+                                    <outlet property="delegate" destination="yuJ-Ob-yy8" id="ovY-jC-Qe6"/>
+                                </connections>
+                            </collectionView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="vsm-bk-9Ng" secondAttribute="trailing" id="DEZ-fL-elA"/>
+                            <constraint firstItem="vsm-bk-9Ng" firstAttribute="leading" secondItem="z90-wm-erC" secondAttribute="leading" id="g7g-Y9-GUn"/>
+                            <constraint firstItem="JAL-9z-BxQ" firstAttribute="top" secondItem="vsm-bk-9Ng" secondAttribute="bottom" id="mx5-nX-fPu"/>
+                            <constraint firstItem="vsm-bk-9Ng" firstAttribute="top" secondItem="Emi-bu-z8V" secondAttribute="bottom" id="tBY-xm-LeT"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="collectionView" destination="vsm-bk-9Ng" id="bs1-iY-c0e"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="nGs-qi-AsZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1709" y="660"/>
+        </scene>
         <!--Messages View Controller-->
         <scene sceneID="zRc-v6-Mai">
             <objects>
-                <viewController id="e0v-Ll-oyT" customClass="MVMessagesViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MVMessagesViewController" id="e0v-Ll-oyT" customClass="MVMessagesViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="VwF-g9-z6T"/>
                         <viewControllerLayoutGuide type="bottom" id="g1W-ar-IzZ"/>
@@ -1167,6 +1234,73 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="n4j-BT-ai4" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2976.8000000000002" y="-413.3433283358321"/>
+        </scene>
+        <!--Image Viewer Controller-->
+        <scene sceneID="PsU-kb-8Tf">
+            <objects>
+                <viewController storyboardIdentifier="MVImageViewerController" id="y4i-FC-K6G" customClass="MVImageViewerController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="hOb-NH-uv2"/>
+                        <viewControllerLayoutGuide type="bottom" id="yxU-Ef-ES8"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="8gX-Tx-p6k">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" maximumZoomScale="6" translatesAutoresizingMaskIntoConstraints="NO" id="l5U-qZ-lJK">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <subviews>
+                                    <imageView contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="UaZ-wl-KMV">
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                    </imageView>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="UaZ-wl-KMV" firstAttribute="top" secondItem="l5U-qZ-lJK" secondAttribute="top" id="1eq-hA-zBM"/>
+                                    <constraint firstItem="UaZ-wl-KMV" firstAttribute="leading" secondItem="l5U-qZ-lJK" secondAttribute="leading" id="dzf-Jd-ma3"/>
+                                    <constraint firstAttribute="bottom" secondItem="UaZ-wl-KMV" secondAttribute="bottom" id="nx7-7g-N3I"/>
+                                    <constraint firstAttribute="trailing" secondItem="UaZ-wl-KMV" secondAttribute="trailing" id="tOs-Ld-Vfo"/>
+                                </constraints>
+                                <connections>
+                                    <outlet property="delegate" destination="y4i-FC-K6G" id="BVY-ug-ewd"/>
+                                </connections>
+                            </scrollView>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="UaZ-wl-KMV" firstAttribute="height" secondItem="8gX-Tx-p6k" secondAttribute="height" id="AX7-hp-Mjw"/>
+                            <constraint firstItem="l5U-qZ-lJK" firstAttribute="top" secondItem="8gX-Tx-p6k" secondAttribute="top" id="DAc-ao-jWy"/>
+                            <constraint firstItem="UaZ-wl-KMV" firstAttribute="width" secondItem="8gX-Tx-p6k" secondAttribute="width" id="HvV-1n-lWn"/>
+                            <constraint firstAttribute="trailing" secondItem="l5U-qZ-lJK" secondAttribute="trailing" id="SOU-Rr-7qM"/>
+                            <constraint firstItem="l5U-qZ-lJK" firstAttribute="leading" secondItem="8gX-Tx-p6k" secondAttribute="leading" id="hxf-Hz-Js3"/>
+                            <constraint firstAttribute="bottom" secondItem="l5U-qZ-lJK" secondAttribute="bottom" id="jP0-ur-otS"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="imageView" destination="UaZ-wl-KMV" id="fUy-G7-hql"/>
+                        <outlet property="scrollView" destination="l5U-qZ-lJK" id="vd5-Kh-Iit"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="6jc-V5-GYI" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3048.8000000000002" y="287.40629685157421"/>
+        </scene>
+        <!--Chat Shared Media Page Controller-->
+        <scene sceneID="P4x-k7-qZa">
+            <objects>
+                <viewController storyboardIdentifier="MVChatSharedMediaPageController" id="5zj-me-1nn" customClass="MVChatSharedMediaPageController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="94N-29-4Ka"/>
+                        <viewControllerLayoutGuide type="bottom" id="cgY-CX-SZ7"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="ygC-w2-nOi">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="e62-hm-qTl" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4873" y="323"/>
         </scene>
     </scenes>
     <resources>
