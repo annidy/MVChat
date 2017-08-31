@@ -15,8 +15,10 @@
 #import "MVImageViewerViewModel.h"
 
 static NSString *cellId = @"MVChatSharedMediaListCell";
+static CGFloat numberOfItemsPerRow = 6;
+static CGFloat spacing = 5;
 
-@interface MVChatSharedMediaListController () <UICollectionViewDataSource, UICollectionViewDelegate>
+@interface MVChatSharedMediaListController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 @property (strong, nonatomic) IBOutlet UICollectionView *collectionView;
 @property (strong, nonatomic) NSString *chatId;
 @property (strong, nonatomic) NSArray <DBAttachment *> *attachments;
@@ -49,14 +51,17 @@ static NSString *cellId = @"MVChatSharedMediaListCell";
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     MVChatSharedMediaListCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:cellId forIndexPath:indexPath];
-    DBAttachment *attachment = [self.attachments objectAtIndex:indexPath.row];
     self.viewModels[indexPath.row].sourceImageView = cell.imageView;
-    [attachment thumbnailImageWithMaxWidth:100 completion:^(UIImage *resultImage) {
-        cell.imageView.image = resultImage;
-    }];
-    
     
     return cell;
+}
+
+- (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
+    MVChatSharedMediaListCell *mediaCell = (MVChatSharedMediaListCell *)cell;
+    DBAttachment *attachment = [self.attachments objectAtIndex:indexPath.row];
+    [attachment thumbnailImageWithMaxWidth:50 completion:^(UIImage *resultImage) {
+        mediaCell.imageView.image = resultImage;
+    }];
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -64,4 +69,8 @@ static NSString *cellId = @"MVChatSharedMediaListCell";
     [self presentViewController:pageController animated:YES completion:nil];
 }
 
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+    CGFloat sideLength = collectionView.frame.size.width / numberOfItemsPerRow - spacing;
+    return CGSizeMake(sideLength, sideLength);
+}
 @end

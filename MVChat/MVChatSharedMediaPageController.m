@@ -52,8 +52,10 @@
 
 #pragma mark - Setup
 - (void)setupPageController {
-    UIPageViewController *pageController = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:nil];
+    NSDictionary *options = @{UIPageViewControllerOptionInterPageSpacingKey:@20};
+    UIPageViewController *pageController = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:options];
     pageController.view.frame = self.view.bounds;
+    
     [self addChildViewController:pageController];
     [self.view addSubview:pageController.view];
     [pageController didMoveToParentViewController:self];
