@@ -9,6 +9,64 @@
 #import "MVAnimatableImageView.h"
 #import <QuartzCore/QuartzCore.h>
 #import <AVFoundation/AVFoundation.h>
+#import <objc/objc-runtime.h>
+
+@interface MVAction : NSObject <CAAction>
+@property (strong, nonatomic) CABasicAnimation *pendingAnimation;
+@property (assign, nonatomic) CGFloat priorCornerRadius;
+@end
+
+@implementation MVAction
+- (void)runActionForKey:(NSString *)event object:(id)anObject arguments:(NSDictionary *)dict {
+    CALayer *layer = (CALayer *)anObject;
+    
+    if (self.pendingAnimation.isAdditive) {
+        self.pendingAnimation.fromValue = @(self.priorCornerRadius - layer.cornerRadius);
+        self.pendingAnimation.toValue = @(0);
+    } else {
+        self.pendingAnimation.fromValue = @(self.priorCornerRadius);
+        self.pendingAnimation.toValue = @(layer.cornerRadius);
+    }
+    
+    [layer addAnimation:self.pendingAnimation forKey:@"cornerRadius"];
+}
+@end
+
+@implementation UIImageView (CornerRadiusAnimation)
++ (void)load {
+    Class class = [self class];
+    
+    SEL originalSelector = @selector(actionForLayer:forKey:);
+    SEL swizzledSelector = @selector(custom_actionForLayer:forKey:);
+    
+    Method originalMethod = class_getInstanceMethod(class, originalSelector);
+    Method swizzledMethod = class_getInstanceMethod(class, swizzledSelector);
+    
+    class_addMethod(class, originalSelector,
+                    method_getImplementation(swizzledMethod),
+                    method_getTypeEncoding(swizzledMethod));
+    
+    class_replaceMethod(class, swizzledSelector,
+                        method_getImplementation(originalMethod),
+                        method_getTypeEncoding(originalMethod));
+}
+- (id<CAAction>)custom_actionForLayer:(CALayer *)layer forKey:(NSString *)event {
+    if ([event isEqualToString:@"cornerRadius"]) {
+        CAAnimation *boundsAnimation = [layer animationForKey:@"bounds.size"];
+        if (boundsAnimation) {
+            CABasicAnimation *animation = (CABasicAnimation *)[boundsAnimation copy];
+            animation.keyPath = @"cornerRadius";
+            MVAction *action = [MVAction new];
+            action.pendingAnimation = animation;
+            action.priorCornerRadius = layer.cornerRadius;
+            return action;
+        }
+    }
+    
+    return [self custom_actionForLayer:layer forKey:event];
+}
+@end
+
 
 @interface MVAnimatableImageView ()
 @property (strong, nonatomic) UIImageView *imageView;
@@ -24,6 +82,13 @@
     }
     
     return self;
+}
+
+- (void)setCornerRadius:(CGFloat)cornerRadius {
+    _cornerRadius = cornerRadius;
+    self.imageView.layer.cornerRadius = cornerRadius;
+    self.imageView.layer.masksToBounds = YES;
+    [self update];
 }
 
 - (void)setContentMode:(UIViewContentMode)contentMode {
@@ -103,8 +168,8 @@
             break;
     }
 }
-
 @end
+
 
 @implementation MVImageViewUtilities
 

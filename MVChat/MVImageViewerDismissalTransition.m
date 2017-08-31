@@ -24,6 +24,7 @@ typedef enum : NSUInteger {
 
 @property (assign, nonatomic) CGAffineTransform translationTransform;
 @property (assign, nonatomic) CGAffineTransform scaleTransform;
+@property (assign, nonatomic) CGFloat cornerRadius;
 
 @end
 
@@ -58,6 +59,7 @@ typedef enum : NSUInteger {
 - (void)updatePercentage:(CGFloat)percentage {
     CGFloat invertedPercentage = 1.0 - percentage;
     self.fadeView.alpha = invertedPercentage;
+    self.cornerRadius = self.toImageView.layer.cornerRadius * percentage;
     self.scaleTransform = CGAffineTransformScale(CGAffineTransformIdentity, invertedPercentage, invertedPercentage);
 }
 
@@ -124,6 +126,7 @@ typedef enum : NSUInteger {
 
 - (void)updateTransform {
     self.animatableImageview.transform = CGAffineTransformConcat(self.scaleTransform, self.translationTransform);
+    self.animatableImageview.cornerRadius = self.cornerRadius;
 }
 
 - (void)applyState:(TransitionState)state {
@@ -132,12 +135,14 @@ typedef enum : NSUInteger {
             self.animatableImageview.contentMode = UIViewContentModeScaleAspectFit;
             self.animatableImageview.transform = CGAffineTransformIdentity;
             self.animatableImageview.frame = self.fromImageView.frame;
+            self.animatableImageview.cornerRadius = 0;
             self.fadeView.alpha = 1.0;
             break;
         case TransitionStateEnd:
             self.animatableImageview.contentMode = self.toImageView.contentMode;
             self.animatableImageview.transform = CGAffineTransformIdentity;
             self.animatableImageview.frame = [self.toImageView.superview convertRect:self.toImageView.frame toView:nil];
+            self.animatableImageview.cornerRadius = self.toImageView.layer.cornerRadius;
             self.fadeView.alpha = 0.0;
             break;
     }

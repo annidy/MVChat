@@ -35,6 +35,7 @@
     img.image = self.fromImageView.image;
     img.frame =  [fromParentView convertRect:self.fromImageView.frame toView:nil];
     img.contentMode = self.fromImageView.contentMode;
+    img.cornerRadius = self.fromImageView.layer.cornerRadius;
     
     UIView *fadeView = [[UIView alloc] initWithFrame:containerView.bounds];
     fadeView.backgroundColor = [UIColor blackColor];
@@ -57,6 +58,7 @@
                          img.contentMode = UIViewContentModeScaleAspectFit;
                          img.frame = containerView.bounds;
                          fadeView.alpha = 1.0;
+                         img.cornerRadius = 0;
                      }
                      completion:^(BOOL finished) {
                          toView.hidden = NO;

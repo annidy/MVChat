@@ -10,6 +10,7 @@
 
 @interface MVAnimatableImageView : UIView
 @property (strong, nonatomic) UIImage *image;
+@property (assign, nonatomic) CGFloat cornerRadius;
 @end
 
 @interface MVImageViewUtilities : NSObject
