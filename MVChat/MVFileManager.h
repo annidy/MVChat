@@ -24,4 +24,5 @@
 - (void)generateImagesForChats:(NSArray <MVChatModel *> *)chats;
 - (void)generateImagesForContacts:(NSArray <MVContactModel *> *)contacts;
 - (CGSize)sizeOfAttachmentForMessage:(MVMessageModel *)message;
+- (NSArray <DBAttachment *> *)attachmentsForChatWithId:(NSString *)chatId;
 @end

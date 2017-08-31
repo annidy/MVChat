@@ -18,10 +18,12 @@
 #import "MVRandomGenerator.h"
 #import "MVMessageModel.h"
 #import <ImageIO/ImageIO.h>
+#import "MVChatManager.h"
 
 @interface MVFileManager()
 @property (strong, nonatomic) dispatch_queue_t managerQueue;
 @property (strong, nonatomic) NSCache *imagesCache;
+@property (strong, nonatomic) NSMutableDictionary *messageAttachments;
 @end
 
 @implementation MVFileManager
@@ -40,12 +42,15 @@ static MVFileManager *instance;
     if (self = [super init]) {
         _managerQueue = dispatch_queue_create("com.markvasiv.fileManager", DISPATCH_QUEUE_SERIAL);
         _imagesCache = [NSCache new];
+        _messageAttachments = [NSMutableDictionary new];
+        [self cacheMessageAttachments];
     }
     
     return self;
 }
 
 #pragma mark - Saving images
+//TODO: IMPROVE CAHCE (cache url attachments)
 - (void)saveAttachment:(DBAttachment *)attachment withFileName:(NSString *)fileName directory:(NSString *)directory completion:(void (^)(void))completion {
     dispatch_async(self.managerQueue, ^{
         NSString *fullPath;
@@ -56,12 +61,12 @@ static MVFileManager *instance;
         }
         [attachment loadOriginalImageWithCompletion:^(UIImage *resultImage) {
             [MVJsonHelper writeData:UIImagePNGRepresentation(resultImage) toFileWithName:fullPath extenssion:@"png"];
-            [self.imagesCache setObject:attachment forKey:fileName];
             if (completion) {
                 completion();
             }
         }];
         
+        [self.imagesCache setObject:attachment forKey:fileName];
     });
 }
 
@@ -79,6 +84,14 @@ static MVFileManager *instance;
 
 - (void)saveAttachment:(DBAttachment *)attachment asMessage:(MVMessageModel *)message completion:(void (^)(void))completion {
     [self saveAttachment:attachment withFileName:message.id directory:message.chatId completion:completion];
+    @synchronized (self.messageAttachments) {
+        NSMutableArray *attachments = [self.messageAttachments objectForKey:message.chatId];
+        if (!attachments) {
+            attachments = [NSMutableArray new];
+            [self.messageAttachments setObject:attachments forKey:message.chatId];
+        }
+        [attachments addObject:attachment];
+    }
 }
 
 #pragma mark - Loading images
@@ -215,5 +228,37 @@ static MVFileManager *instance;
     //CFRelease(line);
     
     return [UIImage imageWithCGImage:cgImage];
+}
+
+- (void)cacheMessageAttachments {
+    dispatch_async(self.managerQueue, ^{
+        NSArray *chats = [[MVChatManager sharedInstance] chatsList];
+        NSString *documentsPath = [MVJsonHelper documentsPath];
+        for (MVChatModel *chat in chats) {
+            NSString *chatFolder = [documentsPath stringByAppendingPathComponent:chat.id];
+            NSFileManager *fm = [NSFileManager defaultManager];
+            if ([fm fileExistsAtPath:chatFolder]) {
+                NSArray *files = [fm contentsOfDirectoryAtPath:chatFolder error:nil];
+                @synchronized (self.messageAttachments) {
+                    NSMutableArray *paths = [self.messageAttachments objectForKey:chat.id];
+                    if (!paths) {
+                        paths = [NSMutableArray new];
+                        [self.messageAttachments setObject:paths forKey:chat.id];
+                    }
+                    for (NSString *file in files) {
+                        NSString *fullFilePath = [chatFolder stringByAppendingPathComponent:file];
+                        DBAttachment *attachment = [DBAttachment attachmentFromDocumentURL:[NSURL fileURLWithPath:fullFilePath]];
+                        [paths addObject:attachment];
+                    }
+                }
+            }
+        }
+    });
+}
+
+- (NSArray <DBAttachment *> *)attachmentsForChatWithId:(NSString *)chatId {
+    @synchronized (self.messageAttachments) {
+        return [self.messageAttachments objectForKey:chatId];
+    }
 }
 @end
