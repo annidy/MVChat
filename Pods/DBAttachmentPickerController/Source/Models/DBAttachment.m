@@ -37,12 +37,19 @@
 @property (strong, nonatomic) UIImage *image;
 @property (strong, nonatomic) UIImage *thumbmailImage;
 @property (strong, nonatomic) NSString *originalFilePath;
-
-@property (strong, nonatomic) NSString *restorationIdentifier;
+@property (strong, nonatomic) NSCache *imagesCache;
 
 @end
 
 @implementation DBAttachment
+
+- (instancetype)init {
+    if (self = [super init]) {
+        _imagesCache = [NSCache new];
+    }
+    
+    return self;
+}
 
 + (instancetype)attachmentFromPHAsset:(PHAsset *)asset {
     DBAttachment *model = [[[self class] alloc] init];
@@ -86,72 +93,191 @@
     DBAttachment *model = [[[self class] alloc] init];
     model.sourceType = DBAttachmentSourceTypeDocumentURL;
     
-    NSString *fileTmpPath = [url path];
-    model.originalFilePath = fileTmpPath;
+    NSString *filePath = [url path];
     
-    if ( [[NSFileManager defaultManager] fileExistsAtPath:fileTmpPath] ) {
-        model.fileName = [fileTmpPath lastPathComponent];
-  //      NSString *cacheFolderPath = [[model cacheFolderPath] stringByAppendingPathComponent:model.restorationIdentifier];
-//        NSError *error;
-//        if ( ![[NSFileManager defaultManager] fileExistsAtPath:cacheFolderPath] ) {
-//            [[NSFileManager defaultManager] createDirectoryAtPath:cacheFolderPath withIntermediateDirectories:YES attributes:nil error:&error];
-//        }
+    if ([[NSFileManager defaultManager] fileExistsAtPath:filePath] ) {
+        model.originalFilePath = filePath;
+        model.fileName = [filePath lastPathComponent];
         
-        NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:fileTmpPath error:nil];
-        model.creationDate = attributes[NSFileCreationDate];
-        model.fileSize = [attributes[NSFileSize] integerValue];
-        
-        //model.originalFilePath = [cacheFolderPath stringByAppendingPathComponent:model.fileName];
-        //[[NSFileManager defaultManager] copyItemAtPath:fileTmpPath toPath:model.originalFilePath error:&error];
+        NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
+        if (attributes) {
+            model.creationDate = attributes[NSFileCreationDate];
+            model.fileSize = [attributes[NSFileSize] integerValue];
+        }
     }
     
     NSString *fileExt = [[[url absoluteString] pathExtension] lowercaseString];
-    if ( [fileExt isEqualToString:@"png"] || [fileExt isEqualToString:@"jpeg"] || [fileExt isEqualToString:@"jpg"] || [fileExt isEqualToString:@"gif"] || [fileExt isEqualToString:@"tiff"]) {
+    if ([fileExt isEqualToString:@"png"] || [fileExt isEqualToString:@"jpeg"] || [fileExt isEqualToString:@"jpg"] || [fileExt isEqualToString:@"gif"] || [fileExt isEqualToString:@"tiff"]) {
         model.mediaType = DBAttachmentMediaTypeImage;
-        model.thumbmailImage = [UIImage imageWithContentsOfFile:model.originalFilePath];
-    } else if ( [fileExt isEqualToString:@"mov"] || [fileExt isEqualToString:@"avi"]) {
+        //model.thumbmailImage = [UIImage imageWithContentsOfFile:model.originalFilePath];
+    } else if ([fileExt isEqualToString:@"mov"] || [fileExt isEqualToString:@"avi"]) {
         model.mediaType = DBAttachmentMediaTypeVideo;
-        model.thumbmailImage = [model generateThumbnailImageFromURL:url];
+        //model.thumbmailImage = [model generateThumbnailImageFromURL:url];
     } else {
         model.mediaType = DBAttachmentMediaTypeOther;
-        model.thumbmailImage = [UIImage imageOfFileIconWithExtensionText:[fileExt uppercaseString]];
+        //model.thumbmailImage = [UIImage imageOfFileIconWithExtensionText:[fileExt uppercaseString]];
     }
+    
     return model;
 }
 
-#pragma mark Helpers
 
-- (NSString *)cacheFolderPath {
-    NSString *documentsDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
-    return [documentsDirectory stringByAppendingPathComponent:@"DBAttachmentPickerControllerCache"];
-}
-
-#pragma mark - Lifecycle
-
-- (instancetype)init {
-    self = [super init];
-    if (self) {
-        self.restorationIdentifier = [NSUUID UUID].UUIDString;
-    }
-    return self;
-}
-
-- (void)dealloc {
-    NSString *cacheFolderPath = [[self cacheFolderPath] stringByAppendingPathComponent:self.restorationIdentifier];
-    if ( [[NSFileManager defaultManager] fileExistsAtPath:cacheFolderPath] ) {
-        NSError *error;
-        [[NSFileManager defaultManager] removeItemAtPath:cacheFolderPath error:&error];
-    }
-}
 
 #pragma mark - Accessors
-
 - (NSString *)fileSizeStr {
     if (self.fileSize == 0) return nil;
     return [NSByteCountFormatter stringFromByteCount:self.fileSize countStyle:NSByteCountFormatterCountStyleFile];
 }
 
 #pragma mark -
+- (CGSize)sizeOfImageAtURL:(NSURL *)imageURL {
+    CGSize imageSize = CGSizeZero;
+    CGImageSourceRef source = CGImageSourceCreateWithURL((CFURLRef)imageURL, NULL);
+    if (source) {
+        NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:NO] forKey:(NSString *)kCGImageSourceShouldCache];
+        CFDictionaryRef properties = CGImageSourceCopyPropertiesAtIndex(source, 0, (CFDictionaryRef)options);
+        
+        if (properties) {
+            NSDictionary *pr = (__bridge NSDictionary *)properties;
+            NSNumber *width = [pr objectForKey:(NSString *)kCGImagePropertyPixelWidth];
+            NSNumber *height = [pr objectForKey:(NSString *)kCGImagePropertyPixelHeight];
+            if ((width != nil) && (height != nil))
+                imageSize = CGSizeMake(width.floatValue, height.floatValue);
+            CFRelease(properties);
+        }
+        CFRelease(source);
+    }
+    
+    return imageSize;
+}
+
+- (CGSize)sizeOfImageWithData:(NSData *)data {
+    CGSize imageSize = CGSizeZero;
+    CGImageSourceRef source = CGImageSourceCreateWithData((CFDataRef)data, NULL);
+    if (source) {
+        NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:NO] forKey:(NSString *)kCGImageSourceShouldCache];
+        CFDictionaryRef properties = CGImageSourceCopyPropertiesAtIndex(source, 0, (CFDictionaryRef)options);
+        
+        if (properties) {
+            NSDictionary *pr = (__bridge NSDictionary *)properties;
+            NSNumber *width = [pr objectForKey:(NSString *)kCGImagePropertyPixelWidth];
+            NSNumber *height = [pr objectForKey:(NSString *)kCGImagePropertyPixelHeight];
+            if ((width != nil) && (height != nil))
+                imageSize = CGSizeMake(width.floatValue, height.floatValue);
+            CFRelease(properties);
+        }
+        CFRelease(source);
+    }
+    
+    return imageSize;
+}
+
+- (void)thumbnailImageWithMaxWidth:(CGFloat)maxWidth completion:(void(^)(UIImage *resultImage))completion {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
+        UIImage *image;
+        NSNumber *cachesKey = @(ceil(maxWidth));
+        
+        @synchronized (self.imagesCache) {
+            image = [self.imagesCache objectForKey:cachesKey];
+        }
+        
+        if (image && completion) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                completion(image);
+            });
+            return;
+        }
+        
+        __block CGImageSourceRef imageSource;
+        PHImageRequestOptions *requestOptions = [PHImageRequestOptions new];
+        requestOptions.synchronous = YES;
+
+        switch (self.sourceType) {
+            case DBAttachmentSourceTypePHAsset:
+                [[PHImageManager defaultManager] requestImageDataForAsset:self.photoAsset
+                                                                  options:requestOptions
+                                                            resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
+                                                               imageSource = CGImageSourceCreateWithData((CFDataRef)imageData, NULL);
+                                                            }];
+                break;
+            case DBAttachmentSourceTypeDocumentURL:
+                imageSource = CGImageSourceCreateWithURL((CFURLRef)[NSURL fileURLWithPath:self.originalFilePath], nil);
+                break;
+            default:
+                imageSource = CGImageSourceCreateWithData((CFDataRef)UIImagePNGRepresentation(self.image), NULL);
+                break;
+        }
+        
+        CGFloat scale = UIScreen.mainScreen.scale;
+        CGFloat width = maxWidth * scale;
+        
+        NSDictionary *dict = @{(id)kCGImageSourceShouldAllowFloat:@YES, (id)kCGImageSourceCreateThumbnailWithTransform:@YES, (id)kCGImageSourceCreateThumbnailFromImageAlways:@YES, (id)kCGImageSourceThumbnailMaxPixelSize:@(width)};
+        CGImageRef imageRef = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, (CFDictionaryRef)dict);
+        image = [UIImage imageWithCGImage:imageRef scale:scale orientation:UIImageOrientationUp];
+        
+        @synchronized (self.imagesCache) {
+            [self.imagesCache setObject:image forKey:cachesKey];
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (completion) {
+                completion(image);
+            }
+        });
+    });
+}
+
+- (void)originalImageWithCompletion:(void(^)(UIImage *resultImage))completion {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
+        PHImageRequestOptions *requestOptions = [PHImageRequestOptions new];
+        requestOptions.synchronous = YES;
+        __block UIImage *image;
+        
+        NSNumber *cachesKey = @(0);
+        @synchronized (self.imagesCache) {
+            image = [self.imagesCache objectForKey:cachesKey];
+        }
+        
+        if (image && completion) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                completion(image);
+            });
+            return;
+        }
+        
+        switch (self.sourceType) {
+            case DBAttachmentSourceTypePHAsset:
+                [[PHImageManager defaultManager] requestImageForAsset:self.photoAsset
+                                                           targetSize:PHImageManagerMaximumSize
+                                                          contentMode:PHImageContentModeDefault
+                                                              options:requestOptions
+                                                        resultHandler:^(UIImage *result, NSDictionary *info) {
+                                                            image = result;
+                                                        }];
+                break;
+            case DBAttachmentSourceTypeImage:
+                image = self.image;
+                break;
+            case DBAttachmentSourceTypeDocumentURL:
+                image = [UIImage imageWithContentsOfFile:self.originalFilePath];
+                break;
+            default:
+                break;
+        }
+        
+        @synchronized (self.imagesCache) {
+            [self.imagesCache setObject:image forKey:cachesKey];
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (completion) {
+                completion(image);
+            }
+        });
+    });
+}
 
 - (void)loadThumbnailImageWithTargetSize:(CGSize)targetSize completion:(void(^)(UIImage *resultImage))completion {
     switch (self.sourceType) {
@@ -272,7 +398,6 @@
 }
 
 #pragma mark Helpers
-
 - (UIImage *)generateThumbnailImageFromURL:(NSURL *)url {
     AVAsset *asset = [AVAsset assetWithURL:url];
     AVAssetImageGenerator *imageGenerator = [[AVAssetImageGenerator alloc] initWithAsset:asset];

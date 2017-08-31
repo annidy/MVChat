@@ -101,7 +101,10 @@ NS_ASSUME_NONNULL_BEGIN
  @param targetSize The desired image size
  @param completion result block
  */
+
 - (void)loadThumbnailImageWithTargetSize:(CGSize)targetSize completion:(void(^)(UIImage * _Nullable resultImage))completion;
+- (void)thumbnailImageWithMaxWidth:(CGFloat)maxWidth completion:(void(^)(UIImage *resultImage))completion;
+- (void)originalImageWithCompletion:(void(^)(UIImage *resultImage))completion;
 
 /*!
  @brief Load original image
