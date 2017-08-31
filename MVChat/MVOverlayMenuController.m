@@ -39,11 +39,6 @@ static NSString *textCellId = @"MVBarButtonMenuTextCell";
 
 @implementation MVOverlayMenuController
 #pragma mark - Initiaization
-+ (instancetype)loadFromStoryboard {
-    UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    return [sb instantiateViewControllerWithIdentifier:@"MVOverlayMenuController"];
-}
-
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
     if (self = [super initWithCoder:aDecoder]) {
         _showAnimationIds = [NSMutableArray new];

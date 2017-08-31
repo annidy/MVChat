@@ -28,13 +28,8 @@ static NSString *ChatCellId = @"MVContactProfileChatCell";
 
 @implementation MVContactProfileViewController
 #pragma mark - Initialization
-+ (instancetype)loadFromStoryboard {
-    UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    return [sb instantiateViewControllerWithIdentifier:@"MVContactProfileViewController"];
-}
-
 + (instancetype)loadFromStoryboardWithContact:(MVContactModel *)contact {
-    MVContactProfileViewController *instance = [self loadFromStoryboard];
+    MVContactProfileViewController *instance = [super loadFromStoryboard];
     instance.contact = contact;
     
     return instance;

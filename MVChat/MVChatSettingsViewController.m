@@ -53,13 +53,8 @@ static NSString *DeleteContactCellId = @"MVChatSettingsDeleteCell";
     return self;
 }
 
-+ (instancetype)loadFromStoryboard {
-    UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    return [sb instantiateViewControllerWithIdentifier:@"MVChatSettingsViewController"];
-}
-
 + (instancetype)loadFromStoryboardWithContacts:(NSArray <MVContactModel *> *)contacts andDoneAction:(void (^)(NSArray <MVContactModel *> *, NSString *, DBAttachment *))doneAction {
-    MVChatSettingsViewController *instance = [self loadFromStoryboard];
+    MVChatSettingsViewController *instance = [super loadFromStoryboard];
     instance.contacts = [contacts mutableCopy];
     instance.doneAction = doneAction;
     instance.mode = MVChatSettingsModeNew;
@@ -68,7 +63,7 @@ static NSString *DeleteContactCellId = @"MVChatSettingsDeleteCell";
 }
 
 + (instancetype)loadFromStoryboardWithChat:(MVChatModel *)chat andDoneAction:(void (^)(NSArray <MVContactModel *> *, NSString *, DBAttachment *))doneAction {
-    MVChatSettingsViewController *instance = [self loadFromStoryboard];
+    MVChatSettingsViewController *instance = [super loadFromStoryboard];
     instance.chat = chat;
     instance.doneAction = doneAction;
     instance.mode = MVChatSettingsModeSettings;

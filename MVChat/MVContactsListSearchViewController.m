@@ -16,13 +16,8 @@
 @end
 
 @implementation MVContactsListSearchViewController
-+ (instancetype)loadFromStoryboard {
-    UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    return [sb instantiateViewControllerWithIdentifier:@"MVContactsListSearchViewController"];
-}
-
 + (instancetype)loadFromStoryboardWithDelegate:(id <MVSearchProviderDelegate>)delegate {
-    MVContactsListSearchViewController *instance = [self loadFromStoryboard];
+    MVContactsListSearchViewController *instance = [super loadFromStoryboard];
     instance.delegate = delegate;
     return instance;
 }

@@ -29,13 +29,8 @@
 
 @implementation MVChatViewController
 #pragma mark - Initialization
-+ (instancetype)loadFromStoryboard {
-    UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    return [sb instantiateViewControllerWithIdentifier:@"ChatViewController"];
-}
-
 + (instancetype)loadFromStoryboardWithChat:(MVChatModel *)chat {
-    MVChatViewController *instance = [self loadFromStoryboard];
+    MVChatViewController *instance = [super loadFromStoryboard];
     instance.chat = chat;
     
     return instance;

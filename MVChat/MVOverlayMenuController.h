@@ -15,7 +15,6 @@
 + (instancetype)elementWithTitle:(NSString *)title action:(void (^)())action;
 @end
 
-@interface MVOverlayMenuController : UIViewController <MVForceTouchControllerProtocol>
+@interface MVOverlayMenuController : MVViewController <MVForceTouchControllerProtocol>
 @property (strong, nonatomic) NSArray <MVOverlayMenuElement *> *menuElements;
-+ (instancetype)loadFromStoryboard;
 @end

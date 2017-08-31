@@ -28,17 +28,12 @@
 
 @implementation MVContactsListController
 #pragma mark - Initialization
-+ (instancetype)loadFromStoryboard {
-    UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    return [sb instantiateViewControllerWithIdentifier:@"MVContactsListController"];
-}
-
 + (instancetype)loadFromStoryboardWithMode:(MVContactsListControllerMode)mode andDoneAction:(void (^)(NSArray <MVContactModel *> *))doneAction {
     return [self loadFromStoryboardWithMode:mode andDoneAction:doneAction excludingContacts:nil];
 }
 
 + (instancetype)loadFromStoryboardWithMode:(MVContactsListControllerMode)mode andDoneAction:(void (^)(NSArray <MVContactModel *> *))doneAction excludingContacts:(NSArray <MVContactModel *> *)excludingContacts {
-    MVContactsListController *instance = [self loadFromStoryboard];
+    MVContactsListController *instance = [super loadFromStoryboard];
     instance.mode = mode;
     instance.doneAction = doneAction;
     instance.excludingContacts = excludingContacts;

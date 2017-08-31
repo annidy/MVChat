@@ -7,12 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "MVViewController.h"
 @class MVChatModel;
 @class MVContactModel;
 @class DBAttachment;
 
-@interface MVChatSettingsViewController : UIViewController
-+ (instancetype)loadFromStoryboard;
+@interface MVChatSettingsViewController : MVViewController
 + (instancetype)loadFromStoryboardWithContacts:(NSArray <MVContactModel *> *)contacts andDoneAction:(void (^)(NSArray <MVContactModel *> *, NSString *, DBAttachment *))doneAction;
 + (instancetype)loadFromStoryboardWithChat:(MVChatModel *)chat andDoneAction:(void (^)(NSArray <MVContactModel *> *, NSString *, DBAttachment *))doneAction;
 @end

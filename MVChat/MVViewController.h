@@ -19,6 +19,7 @@
 @end
 
 @interface MVViewController : UIViewController
++ (instancetype)loadFromStoryboard;
 - (NSString *)registerForceTouchControllerWithDelegate:(id <MVForceTouchPresentaionDelegate>)delegate andSourceView:(UIView *)sourceView;
 - (void)unregisterForceTouchControllerWithContext:(NSString *)context;
 @end

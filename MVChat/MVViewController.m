@@ -87,6 +87,11 @@
 @end
 
 @implementation MVViewController : UIViewController
++ (instancetype)loadFromStoryboard {
+    UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    return [sb instantiateViewControllerWithIdentifier:NSStringFromClass([self class])];
+}
+
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
     if (self = [super initWithCoder:aDecoder]) {
         self.providesPresentationContextTransitionStyle = YES;

@@ -25,13 +25,8 @@
 
 @implementation MVChatsListSearchViewController
 #pragma mark - Initialization
-+ (instancetype)loadFromStoryboard {
-    UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    return [sb instantiateViewControllerWithIdentifier:@"MVChatsListSearchViewController"];
-}
-
 + (instancetype)loadFromStoryboardWithDelegate:(id <MVSearchProviderDelegate>)delegate {
-    MVChatsListSearchViewController *instance = [self loadFromStoryboard];
+    MVChatsListSearchViewController *instance = [super loadFromStoryboard];
     instance.delegate = delegate;
     return instance;
 }
