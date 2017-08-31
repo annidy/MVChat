@@ -15,8 +15,12 @@
 #import "MVDataAggregator.h"
 #import "MVSystemMessageCell.h"
 #import "MVMediaMessageCell.h"
+#import "MVMessageCellDelegate.h"
+#import "MVChatSharedMediaPageController.h"
+#import "MVImageViewerViewModel.h"
+#import "MVFileManager.h"
 
-@interface MVMessagesViewController () <UITableViewDelegate, UITableViewDataSource, UIGestureRecognizerDelegate, MessagesUpdatesListener>
+@interface MVMessagesViewController () <UITableViewDelegate, UITableViewDataSource, UIGestureRecognizerDelegate, MessagesUpdatesListener, MVMessageCellDelegate>
 @property (strong, nonatomic) IBOutlet UITableView *messagesTableView;
 @property (strong, nonatomic) NSArray <MVMessageModel *> *messageModels;
 
@@ -30,6 +34,7 @@
 @property (assign, nonatomic) BOOL initialLoadComplete;
 @property (strong, nonatomic) NSCache *cellHeightCache;
 @property (assign, nonatomic) BOOL keyboardShown;
+@property (strong, nonatomic) NSMutableArray *mediaViewModels;
 @end
 
 @implementation MVMessagesViewController
@@ -74,6 +79,8 @@
     self.messagesTableView.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
     
     [self.messagesTableView addObserver:self forKeyPath:@"contentSize" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:nil];
+    
+    self.mediaViewModels = [NSMutableArray new];
 
     [MVChatManager sharedInstance].messagesListener = self;
     [[MVChatManager sharedInstance] loadMessagesForChatWithId:self.chatId withCallback:^(BOOL success) {
@@ -88,6 +95,8 @@
     
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(messagesTapped)];
     [self.messagesTableView addGestureRecognizer:tapGesture];
+    
+    
 }
 
 - (void)messagesTapped {
@@ -323,6 +332,12 @@
         } else {
             id <MVMessageCellComplexProtocol> complexCell = (id <MVMessageCellComplexProtocol>) cell;
             [complexCell fillWithModel:model];
+            
+            if ([complexCell isKindOfClass:[MVMediaMessageCell class]]) {
+                MVMediaMessageCell *mediaClass = (MVMediaMessageCell *)complexCell;
+                mediaClass.indexPath = [NSIndexPath indexPathForRow:indexPath.row - 1 inSection:indexPath.section];
+                mediaClass.delegate = self;
+            }
         }
     }
     
@@ -342,6 +357,22 @@
     }
     
     [slidingCell.contentView layoutIfNeeded];
+}
+
+- (void)cellTapped:(id<MVMessageCellComplexProtocol>)cell {
+    if ([cell isKindOfClass:[MVMediaMessageCell class]]) {
+        MVMediaMessageCell *mediaCell = (MVMediaMessageCell *)cell;
+        NSIndexPath *indexPath = mediaCell.indexPath;
+        NSString *section = self.sections[indexPath.section];
+        MVMessageModel *model = self.messages[section][indexPath.row];
+        [[MVFileManager sharedInstance] loadAttachmentForMessage:model completion:^(DBAttachment *attachment) {
+            MVImageViewerViewModel *viewModel = [[MVImageViewerViewModel alloc] initWithSourceImageView:mediaCell.mediaImageView attachment:attachment andIndex:0];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                MVChatSharedMediaPageController *imageController = [MVChatSharedMediaPageController loadFromStoryboardWithViewModels:@[viewModel] andStartIndex:0];
+                [self presentViewController:imageController animated:YES completion:nil];
+            });
+        }];
+    }
 }
 
 #pragma mark - Gesture recognizers

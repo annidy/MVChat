@@ -160,6 +160,7 @@
 		CD75F6871F571F51004119A3 /* MVChatSharedMediaPageController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVChatSharedMediaPageController.m; sourceTree = "<group>"; };
 		CD75F6891F5726B1004119A3 /* MVImageViewerViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVImageViewerViewModel.h; sourceTree = "<group>"; };
 		CD75F68A1F5726B1004119A3 /* MVImageViewerViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVImageViewerViewModel.m; sourceTree = "<group>"; };
+		CD75F68F1F584E0F004119A3 /* MVMessageCellDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVMessageCellDelegate.h; sourceTree = "<group>"; };
 		CDAB09821E7DE2D800A142DC /* MVChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MVChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CDAB09861E7DE2D800A142DC /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		CDAB09911E7DE2D800A142DC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -448,6 +449,7 @@
 				CDF479B31EB68980003B3C8E /* MVMessagesViewController.m */,
 				CDF479B51EB68AAF003B3C8E /* MVFooterViewController.h */,
 				CDF479B61EB68AAF003B3C8E /* MVFooterViewController.m */,
+				CD75F68F1F584E0F004119A3 /* MVMessageCellDelegate.h */,
 			);
 			name = Chat;
 			sourceTree = "<group>";

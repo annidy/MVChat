@@ -11,6 +11,7 @@
 #import "MVChatManager.h"
 #import "MVMessageModel.h"
 #import "MVFileManager.h"
+#import <DBAttachment.h>
 
 static CGFloat MVBubbleWidthMultiplierOutgoing = 0.8;
 static CGFloat MVBubbleWidthMultiplierIncoming = 0.7;
@@ -28,7 +29,6 @@ static CGFloat MVAvatarImageOffset = 5;
 @property (assign, nonatomic) MessageDirection direction;
 @property (strong, nonatomic) UIImageView *avatarImage;
 @property (strong, nonatomic) UIImageView *bubbleImageView;
-@property (strong, nonatomic) UIImageView *mediaImageView;
 @property (strong, nonatomic) UILabel *timeLabel;
 @end
 @implementation MVMediaMessageCell
@@ -39,6 +39,7 @@ static CGFloat MVAvatarImageOffset = 5;
         _direction = [MVMediaMessageCell directionForReuseIdentifier:reuseIdentifier];
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         [self buildViewHierarchy];
+        [self buildTapRecognizers];
     }
     
     return self;
@@ -54,6 +55,12 @@ static CGFloat MVAvatarImageOffset = 5;
 }
 
 #pragma mark - Build views
+- (void)buildTapRecognizers {
+    UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(bubbleTapped:)];
+    self.mediaImageView.userInteractionEnabled = YES;
+    [self.mediaImageView addGestureRecognizer:tapRecognizer];
+}
+
 - (void)buildViewHierarchy {
     self.bubbleImageView = [self buildBubbleImageView];
     self.mediaImageView = [self buildMediaImageView];
@@ -195,11 +202,19 @@ static CGFloat MVAvatarImageOffset = 5;
     CGFloat height = [cell bubbleTopOffset] + [cell bubbleBottomOffset] + 4;
     CGFloat maxContentWidth = UIScreen.mainScreen.bounds.size.width * [cell bubbleWidthMultiplier] - 4;
     
-    CGSize size = [[MVFileManager sharedInstance] sizeOfAttachmentForMessage:model];
+    CGSize actualSize = [[MVFileManager sharedInstance] sizeOfAttachmentForMessage:model];
+    CGSize scaledSize;
+    if (maxContentWidth > actualSize.width) {
+        scaledSize.width = actualSize.width;
+        scaledSize.height = actualSize.height;
+    } else {
+        CGFloat scale = maxContentWidth/actualSize.width;
+        scaledSize.width = maxContentWidth;
+        scaledSize.height = actualSize.height * scale;
+    }
     
-    CGFloat width = size.width;
-    CGFloat scale = maxContentWidth/width;
-    CGFloat imageHeight = size.height * scale;
+    
+    CGFloat imageHeight = scaledSize.height;
     height += imageHeight;
     
     return height;
@@ -207,10 +222,17 @@ static CGFloat MVAvatarImageOffset = 5;
 
 - (void)fillWithModel:(MVMessageModel *)messageModel {
     self.timeLabel.text = [[MVChatManager sharedInstance] timeFromDate:messageModel.sendDate];
-    [[MVChatManager sharedInstance] loadAttachmentForMessage:messageModel completion:^(UIImage *image) {
-        self.mediaImageView.image = image;
+    CGFloat maxContentWidth = UIScreen.mainScreen.bounds.size.width * [self bubbleWidthMultiplier] - 4;
+    
+    [[MVFileManager sharedInstance] loadAttachmentForMessage:messageModel completion:^(DBAttachment *attachment) {
+        [attachment thumbnailImageWithMaxWidth:maxContentWidth completion:^(UIImage *image) {
+            self.mediaImageView.image = image;
+        }];
     }];
 }
 
+- (void)bubbleTapped:(UITapGestureRecognizer *)recognizer {
+    [self.delegate cellTapped:self];
+}
 
 @end
