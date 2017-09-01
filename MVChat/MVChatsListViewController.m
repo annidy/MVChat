@@ -20,7 +20,7 @@
 #import "MVOverlayMenuController.h"
 
 
-@interface MVChatsListViewController () <UITableViewDelegate, UITableViewDataSource, ChatsUpdatesListener, UISearchResultsUpdating, MVSearchProviderDelegate, MVForceTouchPresentaionDelegate>
+@interface MVChatsListViewController () <UITableViewDelegate, UITableViewDataSource, MVChatsUpdatesListener, UISearchResultsUpdating, MVSearchProviderDelegate, MVForceTouchPresentaionDelegate>
 @property (strong, nonatomic) IBOutlet UITableView *chatsList;
 @property (strong, nonatomic) NSArray <MVChatModel *> *chats;
 @property (strong, nonatomic) MVChatsListSearchViewController *searchResultsController;

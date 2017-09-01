@@ -8,12 +8,9 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import "MVContactsListener.h"
 
 @class MVContactModel;
-
-@protocol MVContactsUpdatesListener <NSObject>
-- (void)handleContactsUpdate;
-@end
 
 @interface MVContactManager : NSObject
 @property (weak, nonatomic) id <MVContactsUpdatesListener> updatesListener;

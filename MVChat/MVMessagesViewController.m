@@ -19,7 +19,7 @@
 #import "MVImageViewerViewModel.h"
 #import "MVFileManager.h"
 
-@interface MVMessagesViewController () <UITableViewDelegate, UITableViewDataSource, UIGestureRecognizerDelegate, MessagesUpdatesListener, MVMessageCellDelegate>
+@interface MVMessagesViewController () <UITableViewDelegate, UITableViewDataSource, UIGestureRecognizerDelegate, MVMessagesUpdatesListener, MVMessageCellDelegate>
 @property (strong, nonatomic) IBOutlet UITableView *messagesTableView;
 @property (strong, nonatomic) NSArray <MVMessageModel *> *messageModels;
 

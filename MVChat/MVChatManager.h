@@ -20,8 +20,8 @@ static NSUInteger MVMessagesPageSize = 15;
 
 @interface MVChatManager : NSObject
 #pragma mark - Listeners
-@property (weak, nonatomic) id <MessagesUpdatesListener> messagesListener;
-@property (weak, nonatomic) id <ChatsUpdatesListener> chatsListener;
+@property (weak, nonatomic) id <MVMessagesUpdatesListener> messagesListener;
+@property (weak, nonatomic) id <MVChatsUpdatesListener> chatsListener;
 
 #pragma mark - Initialization
 + (instancetype) sharedInstance;

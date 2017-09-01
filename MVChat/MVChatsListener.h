@@ -10,12 +10,12 @@
 @class MVChatModel;
 @class MVMessageModel;
 
-@protocol MessagesUpdatesListener <NSObject>
+@protocol MVMessagesUpdatesListener <NSObject>
 - (void)insertNewMessage:(MVMessageModel *)message;
 - (NSString *)chatId;
 @end
 
-@protocol ChatsUpdatesListener <NSObject>
+@protocol MVChatsUpdatesListener <NSObject>
 - (void)updateChats;
 - (void)insertNewChat:(MVChatModel *)chat;
 @end

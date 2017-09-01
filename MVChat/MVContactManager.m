@@ -45,7 +45,7 @@
             self.contacts = allContacts;
         }
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.updatesListener handleContactsUpdate];
+            [self.updatesListener updateContacts];
         });
     }];
 }

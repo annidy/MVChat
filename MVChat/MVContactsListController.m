@@ -99,11 +99,9 @@
 }
 
 #pragma mark - Data Handling
-- (void)handleContactsUpdate {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self mapWithSections:[[MVContactManager sharedInstance] getAllContacts]];
-        [self.contactsList reloadData];
-    });
+- (void)updateContacts {
+    [self mapWithSections:[[MVContactManager sharedInstance] getAllContacts]];
+    [self.contactsList reloadData];
 }
 
 - (void)mapWithSections:(NSArray *)contacts {

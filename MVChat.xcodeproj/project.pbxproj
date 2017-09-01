@@ -161,6 +161,7 @@
 		CD9BF8811F59657100FDA378 /* NSString+Helpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Helpers.h"; sourceTree = "<group>"; };
 		CD9BF8821F59657100FDA378 /* NSString+Helpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Helpers.m"; sourceTree = "<group>"; };
 		CD9BF8841F59950200FDA378 /* MVChatsListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVChatsListener.h; sourceTree = "<group>"; };
+		CD9BF8851F59969C00FDA378 /* MVContactsListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVContactsListener.h; sourceTree = "<group>"; };
 		CDAB09821E7DE2D800A142DC /* MVChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MVChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CDAB09861E7DE2D800A142DC /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		CDAB09911E7DE2D800A142DC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -411,6 +412,7 @@
 		CDEA5CBD1EC746AF004C7433 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				CD9BF8851F59969C00FDA378 /* MVContactsListener.h */,
 				CD9BF8841F59950200FDA378 /* MVChatsListener.h */,
 				CD28B3941EBCA72E00BFFCAA /* MVContactManager.h */,
 				CD28B3951EBCA72E00BFFCAA /* MVContactManager.m */,
