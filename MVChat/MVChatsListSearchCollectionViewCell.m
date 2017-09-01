@@ -38,16 +38,9 @@
 - (void)fillWithChat:(MVChatModel *)chat {
     self.avatarImageView.image = nil;
     
-    if (chat.isPeerToPeer) {
-        [[MVFileManager sharedInstance] loadThumbnailAvatarForContact:chat.getPeer maxWidth:50 completion:^(UIImage *image) {
-            self.avatarImageView.image = image;
-        }];
-    } else {
-        [[MVFileManager sharedInstance] loadThumbnailAvatarForChat:chat maxWidth:50 completion:^(UIImage *image) {
-            self.avatarImageView.image = image;
-        }];
-    }
-    
+    [[MVFileManager sharedInstance] loadThumbnailAvatarForChat:chat maxWidth:50 completion:^(UIImage *image) {
+        self.avatarImageView.image = image;
+    }];
     
     self.titleLabel.text = chat.title;
 }

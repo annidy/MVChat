@@ -199,17 +199,24 @@ static MVChatManager *sharedManager;
                 callback(existingChat);
             });
         } else {
-            [self createChatWithContacts:@[contact] title:contact.name andCompeltion:callback];
+            [self createChatWithContacts:@[contact] title:contact.name isPeerToPeer:YES andCompletion:callback];
         }
     });
 }
 
-- (void)createChatWithContacts:(NSArray <MVContactModel *> *)contacts title:(NSString *)title andCompeltion:(void (^)(MVChatModel *))callback {
+- (void)createChatWithContacts:(NSArray <MVContactModel *> *)contacts title:(NSString *)title andCompletion:(void (^)(MVChatModel *))callback {
+    [self createChatWithContacts:contacts title:title isPeerToPeer:NO andCompletion:callback];
+}
+
+- (void)createChatWithContacts:(NSArray <MVContactModel *> *)contacts title:(NSString *)title isPeerToPeer:(BOOL)peerToPeer andCompletion:(void (^)(MVChatModel *))callback {
     dispatch_async(self.managerQueue, ^{
         MVChatModel *chat = [[MVChatModel alloc] initWithId:[NSUUID UUID].UUIDString andTitle:title];
         chat.participants = [contacts arrayByAddingObject:MVContactManager.myContact];
         chat.lastUpdateDate = [NSDate new];
-        [[MVFileManager sharedInstance] generateAvatarsForChats:@[chat]];
+        chat.isPeerToPeer = peerToPeer;
+        if (!peerToPeer) {
+            [[MVFileManager sharedInstance] generateAvatarsForChats:@[chat]];
+        }
         [self addChat:chat];
         @synchronized (self.chatsMessages) {
             [self.chatsMessages setObject:[NSMutableArray new] forKey:chat.id];

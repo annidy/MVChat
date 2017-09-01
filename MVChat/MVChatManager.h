@@ -37,7 +37,7 @@ static NSUInteger MVMessagesPageSize = 15;
 
 #pragma mark - Handle Chats
 - (void)chatWithContact:(MVContactModel *)contact andCompeltion:(void (^)(MVChatModel *))callback;
-- (void)createChatWithContacts:(NSArray <MVContactModel *> *)contacts title:(NSString *)title andCompeltion:(void (^)(MVChatModel *))callback;
+- (void)createChatWithContacts:(NSArray <MVContactModel *> *)contacts title:(NSString *)title andCompletion:(void (^)(MVChatModel *))callback;
 - (void)updateChat:(MVChatModel *)chat;
 - (void)exitAndDeleteChat:(MVChatModel *)chat;
 

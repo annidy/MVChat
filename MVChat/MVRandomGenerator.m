@@ -167,11 +167,7 @@ static MVRandomGenerator *singleton;
     }
     [chatContacts addObject:[MVContactManager myContact]];
     chat.participants = [chatContacts copy];
-    
-    if (chat.isPeerToPeer) {
-        chat.title = @"";
-    }
-    
+    chat.isPeerToPeer = NO;
     chat.id = [NSUUID UUID].UUIDString;
     
     return chat;

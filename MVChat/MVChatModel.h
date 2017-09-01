@@ -16,8 +16,8 @@
 @property (strong, nonatomic) NSArray <MVContactModel *> *participants;
 @property (strong, nonatomic) NSDate *lastUpdateDate;
 @property (strong, nonatomic) MVMessageModel *lastMessage;
+@property (assign, nonatomic) BOOL isPeerToPeer;
 - (instancetype)initWithId:(NSString *)id andTitle:(NSString *)title;
-- (BOOL)isPeerToPeer;
 - (MVContactModel *)getPeer;
 - (NSComparisonResult)compareChatByLastUpdateDate:(MVChatModel *)chat;
 + (NSComparator)comparatorByLastUpdateDate;

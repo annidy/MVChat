@@ -139,7 +139,11 @@ static MVFileManager *instance;
 }
 
 - (void)loadAvatarForChat:(MVChatModel *)chat completion:(void (^)(DBAttachment *attachment))completion {
-    [self loadAttachmentAtRelativePath:[self relativePathForChatAvatar:chat] completion:completion];
+    if (chat.isPeerToPeer) {
+        [self loadAttachmentAtRelativePath:[self relativePathForContactAvatar:chat.getPeer] completion:completion];
+    } else {
+        [self loadAttachmentAtRelativePath:[self relativePathForChatAvatar:chat] completion:completion];
+    }
 }
 
 - (void)loadAvatarForContact:(MVContactModel *)contact completion:(void (^)(DBAttachment *attachment))completion {

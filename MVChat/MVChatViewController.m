@@ -91,12 +91,12 @@
     UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithCustomView:imageView];
     self.navigationItem.rightBarButtonItem = item;
     self.avatarImageView = imageView;
+    
+    [[MVFileManager sharedInstance] loadThumbnailAvatarForChat:self.chat maxWidth:50 completion:^(UIImage *image) {
+        self.avatarImageView.image = image;
+    }];
+    
     if (self.chat.isPeerToPeer) {
-        
-        [[MVFileManager sharedInstance] loadThumbnailAvatarForContact:self.chat.getPeer maxWidth:50 completion:^(UIImage *image) {
-            self.avatarImageView.image = image;
-        }];
-        
         [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
             NSString *contactId = note.userInfo[@"Id"];
             UIImage *image = note.userInfo[@"Image"];
@@ -105,10 +105,6 @@
             }
         }];
     } else {
-        [[MVFileManager sharedInstance] loadThumbnailAvatarForChat:self.chat maxWidth:50 completion:^(UIImage *image) {
-            self.avatarImageView.image = image;
-        }];
-        
         [[NSNotificationCenter defaultCenter] addObserverForName:@"ChatAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
             NSString *chatId = note.userInfo[@"Id"];
             UIImage *image = note.userInfo[@"Image"];

@@ -147,7 +147,7 @@
     MVContactsListController *contactsList = [MVContactsListController loadFromStoryboardWithMode:MVContactsListControllerModeSelectable andDoneAction:^(NSArray<MVContactModel *> *selectedContacts) {
         MVChatSettingsViewController *settings = [MVChatSettingsViewController loadFromStoryboardWithContacts:selectedContacts andDoneAction:^(NSArray<MVContactModel *> *chatContacts, NSString *chatTitle, DBAttachment *avatarImage) {
             
-            [[MVChatManager sharedInstance] createChatWithContacts:chatContacts title:chatTitle andCompeltion:^(MVChatModel *chat) {
+            [[MVChatManager sharedInstance] createChatWithContacts:chatContacts title:chatTitle andCompletion:^(MVChatModel *chat) {
                 if (avatarImage) {
                     [[MVFileManager sharedInstance] saveChatAvatar:chat attachment:avatarImage];
                     dispatch_async(dispatch_get_main_queue(), ^{

@@ -20,14 +20,6 @@
     return self;
 }
 
-- (BOOL)isPeerToPeer {
-    if (self.participants.count == 2) {
-        return YES;
-    } else {
-        return NO;
-    }
-}
-
 - (MVContactModel *)getPeer {
     for (MVContactModel *contact in self.participants) {
         if (!contact.iam) {
@@ -37,6 +29,7 @@
     
     return nil;
 }
+
 - (id)copyWithZone:(NSZone *)zone {
     MVChatModel *copy = [[MVChatModel allocWithZone:zone] init];
     copy.id = [self.id copy];
@@ -44,6 +37,7 @@
     copy.participants = [self.participants copy];
     copy.lastUpdateDate = [self.lastUpdateDate copy];
     copy.lastMessage = [self.lastMessage copy];
+    copy.isPeerToPeer = self.isPeerToPeer;
     
     return copy;
 }
@@ -55,6 +49,7 @@
         _participants = [decoder decodeObjectForKey:@"participants"];
         _lastUpdateDate = [decoder decodeObjectForKey:@"lastUpdateDate"];
         _lastMessage = [decoder decodeObjectForKey:@"lastMessage"];
+        _isPeerToPeer = [decoder decodeBoolForKey:@"isPeerToPeer"];
     }
     
     return self;
@@ -66,6 +61,7 @@
     [encoder encodeObject:_participants forKey:@"participants"];
     [encoder encodeObject:_lastUpdateDate forKey:@"lastUpdateDate"];
     [encoder encodeObject:_lastMessage forKey:@"lastMessage"];
+    [encoder encodeBool:_isPeerToPeer forKey:@"isPeerToPeer"];
 }
 
 - (NSComparisonResult)compareChatByLastUpdateDate:(MVChatModel *)chat {
