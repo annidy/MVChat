@@ -142,6 +142,7 @@ static MVRandomGenerator *singleton;
     }
     contact.phoneNumbers = [phoneNumbers copy];
     contact.lastSeenDate = [self randomLastSeenDate];
+    contact.id = [NSUUID UUID].UUIDString;
     
     return contact;
 }
@@ -170,6 +171,8 @@ static MVRandomGenerator *singleton;
     if (chat.isPeerToPeer) {
         chat.title = @"";
     }
+    
+    chat.id = [NSUUID UUID].UUIDString;
     
     return chat;
 }
@@ -227,6 +230,7 @@ static MVRandomGenerator *singleton;
     message.text = [[self textGenerator] sentences:[self randomUIntegerWithMin:1 andMax:5]];
     message.contact = sender;
     message.type = MVMessageTypeText;
+    message.id = [NSUUID UUID].UUIDString;
     
     if ([sender.id isEqualToString:[[MVDatabaseManager new] myContact].id]) {
         message.direction = MessageDirectionOutgoing;
@@ -270,6 +274,7 @@ static MVRandomGenerator *singleton;
     NSDate *lastMessageDate = [[NSDate new] dateByAddingTimeInterval:-10000000];
     for (int i = 0; i < [self randomUIntegerWithMin:minMessagesCount andMax:maxMessagesCount]; i++) {
         MVMessageModel *message = [self randomMessageWithChat:chat];
+        message.chatId = chat.id;
         lastMessageDate = message.sendDate;
         [messages addObject:message];
     }

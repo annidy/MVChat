@@ -14,15 +14,20 @@
 #import "MVRandomGenerator.h"
 #import "MVFileManager.h"
 
-static NSString *contactsFile = @"contacts";
-static NSString *chatsFile = @"chats";
-static NSString *messagesFile = @"messages";
+#import <YapDatabase.h>
+#import <YapDatabaseViewTypes.h>
+#import <YapDatabaseAutoView.h>
+
+static NSString *contactsCollection = @"contacts";
+static NSString *chatsCollection = @"chats";
+static NSString *messagesCollection = @"messages";
 
 @interface MVDatabaseManager()
-@property (strong, nonatomic) NSString *lastContactId;
-@property (strong, nonatomic) NSString *lastChatId;
-@property (strong, nonatomic) NSString *lastMessageId;
 @property (strong, nonatomic) dispatch_queue_t managerQueue;
+@property (strong, nonatomic) YapDatabase *db;
+@property (strong, nonatomic) YapDatabaseConnection *contactsConnection;
+@property (strong, nonatomic) YapDatabaseConnection *chatsConnection;
+@property (strong, nonatomic) YapDatabaseConnection *messagesConnection;
 @end
 
 @implementation MVDatabaseManager
@@ -37,321 +42,235 @@ static MVDatabaseManager *instance;
     return instance;
 }
 
--(instancetype)init {
+- (instancetype)init {
     if (self = [super init]) {
         _managerQueue = dispatch_queue_create("com.markvasiv.databaseManager", DISPATCH_QUEUE_SERIAL);
+        _db = [[YapDatabase alloc] initWithPath:[[MVJsonHelper documentsPath] stringByAppendingPathComponent:@"yap"]];
+        _contactsConnection = [_db newConnection];
+        _chatsConnection = [_db newConnection];
+        _messagesConnection = [_db newConnection];
+        [self setupDatabase];
     }
     
     return self;
 }
 
-#pragma mark - Ids
-- (NSString *)lastContactId {
-    if (!_lastContactId) _lastContactId = [[[self allContactsSync] lastObject] id];
+- (void)setupDatabase {
+    //secondary index
+//    YapDatabaseSecondaryIndexSetup *messagesSecondaryIndexSetup = [[YapDatabaseSecondaryIndexSetup alloc] init];
+//    [messagesSecondaryIndexSetup addColumn:@"messageChatId" withType:YapDatabaseSecondaryIndexTypeText];
+//    [messagesSecondaryIndexSetup addColumn:@"messageType" withType:YapDatabaseSecondaryIndexTypeInteger];
+//    
+//    YapDatabaseSecondaryIndexHandler *messagesSecondaryIndexHandler = [YapDatabaseSecondaryIndexHandler withObjectBlock:^(YapDatabaseReadTransaction *transaction, NSMutableDictionary *dict, NSString *collection, NSString *key, id object) {
+//        if ([collection isEqualToString:@"messages"]) {
+//            MVMessageModel *message = (MVMessageModel *)object;
+//            dict[@"messageChatId"] = message.chatId;
+//            dict[@"messageType"] = @(message.type);
+//        }
+//    }];
+//    
+//    YapDatabaseSecondaryIndex *messageSecondaryIndex = [[YapDatabaseSecondaryIndex alloc] initWithSetup:messagesSecondaryIndexSetup handler:messagesSecondaryIndexHandler];
+//    [self.db registerExtension:messageSecondaryIndex withName:@"secondaryIndex"];
     
-    return _lastContactId;
-}
-
-- (NSString *)lastChatId {
-    if (!_lastChatId) _lastChatId = [[[self allChatsSync] lastObject] id];
+    //views
+    YapDatabaseViewGrouping *messagesGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString * _Nullable(YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
+        if ([collection isEqualToString:messagesCollection]) {
+            MVMessageModel *message = (MVMessageModel *)object;
+            return message.chatId;
+        }
+        
+        return nil;
+    }];
     
-    return _lastChatId;
-}
-
-- (NSString *)lastMessageId {
-    if (!_lastMessageId) _lastMessageId = [[[self allMessagesSync] lastObject] id];
+    YapDatabaseViewSorting *messagesSorting = [YapDatabaseViewSorting withObjectBlock: ^NSComparisonResult (YapDatabaseReadTransaction *transaction, NSString *group, NSString *collection1, NSString *key1, id object1, NSString *collection2, NSString *key2, id object2) {
+        MVMessageModel *message = (MVMessageModel *)object1;
+        return [message compareMessageBySendDate:object2];
+    }];
+                                                                            
+    YapDatabaseAutoView *messagesView = [[YapDatabaseAutoView alloc] initWithGrouping:messagesGrouping sorting:messagesSorting];
+    [self.db registerExtension:messagesView withName:@"orderedMessages"];
     
-    return _lastMessageId;
-}
-
-- (NSString *)incrementId:(NSString *)oldId {
-    return [NSString stringWithFormat:@"%d", [oldId intValue] + 1];
+    
+    YapDatabaseViewGrouping *chatsGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString * _Nullable(YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
+        if ([collection isEqualToString:chatsCollection]) {
+            return @"chats";
+        }
+        
+        return nil;
+    }];
+    
+    YapDatabaseViewSorting *chatsSorting = [YapDatabaseViewSorting withObjectBlock: ^NSComparisonResult (YapDatabaseReadTransaction *transaction, NSString *group, NSString *collection1, NSString *key1, id object1, NSString *collection2, NSString *key2, id object2) {
+        MVChatModel *chat = (MVChatModel *)object1;
+        return [chat compareChatByLastUpdateDate:object2];
+    }];
+    
+    YapDatabaseAutoView *chatsView = [[YapDatabaseAutoView alloc] initWithGrouping:chatsGrouping sorting:chatsSorting];
+    [self.db registerExtension:chatsView withName:@"orderedChats"];
+    
+    
+//    YapDatabaseViewFiltering *filt = [YapDatabaseViewFiltering withObjectBlock:^BOOL(YapDatabaseReadTransaction *transaction, NSString *group, NSString *collection, NSString *key, id object) {
+//        return YES;
+//    }];
+    
+//    self.mesagesFilteredView = [[YapDatabaseFilteredView alloc] initWithParentViewName:@"orderedMessages" filtering:filt versionTag:@"0"];
+//    self.mesagesFilteredView.options.isPersistent = NO;
+//    
+//    [self.db registerExtension:self.mesagesFilteredView withName:@"filteredMessages"];
+    //[self.db unregisterExtensionWithName:@"orderedMessages"];
+    //[self.db unregisterExtensionWithName:@"orderedChats"];
 }
 
 #pragma mark - Select
-- (NSArray <MVContactModel *> *)allContactsSync {
-    NSArray *contacts = [MVJsonHelper parseEnitiesWithClass:[MVContactModel class] fromJson:[MVJsonHelper loadJsonFromFileWithName:contactsFile]];
-    if (!contacts) contacts = [NSArray new];
-    return contacts;
-}
-
-- (NSArray <MVChatModel *> *)allChatsSync {
-    NSArray *chats = [MVJsonHelper parseEnitiesWithClass:[MVChatModel class] fromJson:[MVJsonHelper loadJsonFromFileWithName:chatsFile]];
-    if (!chats) chats = [NSArray new];
-    return chats;
-}
-
-- (NSArray <MVMessageModel *> *)allMessagesSync {
-    NSArray *chats = [MVJsonHelper parseEnitiesWithClass:[MVMessageModel class] fromJson:[MVJsonHelper loadJsonFromFileWithName:messagesFile]];
-    if (!chats) chats = [NSArray new];
-    return chats;
-}
-
 - (void)allContacts:(void (^)(NSArray <MVContactModel *> *))completion {
     dispatch_async(self.managerQueue, ^{
-        completion([self allContactsSync]);
+        __block NSMutableArray *contacts = [NSMutableArray new];
+        [self.contactsConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            [transaction enumerateKeysAndObjectsInCollection:contactsCollection usingBlock:^(NSString *key, id object, BOOL *stop) {
+                [contacts addObject:object];
+            }];
+        }];
+        
+        completion([contacts copy]);
     });
 }
 
 - (void)allChats:(void (^)(NSArray <MVChatModel *> *))completion {
     dispatch_async(self.managerQueue, ^{
-        completion([self allChatsSync]);
-    });
-}
-
-#pragma mark - Select with condition
-- (void)contactWithId:(NSString *)id completion:(void (^)(MVContactModel *))completion {
-    dispatch_async(self.managerQueue, ^{
-        BOOL found = NO;
-        for (MVContactModel *contact in [self allContactsSync]) {
-            if ([contact.id isEqualToString:id]) {
-                found = YES;
-                completion(contact);
-            }
-        }
-        if (!found) {
-            completion(nil);
-        }
-    });
-}
-
-- (void)chatWithId:(NSString *)id completion:(void (^)(MVChatModel *))completion {
-    dispatch_async(self.managerQueue, ^{
-        BOOL found = NO;
-        for (MVChatModel *chat in [self allChatsSync]) {
-            if ([chat.id isEqualToString:id]) {
-                found = YES;
-                completion(chat);
-            }
-        }
-        if (!found) {
-            completion(nil);
-        }
-    });
-}
-
-- (void)messageWithId:(NSString *)id completion:(void (^)(MVMessageModel *))completion {
-    dispatch_async(self.managerQueue, ^{
-        BOOL found = NO;
-        for (MVMessageModel *message in [self allMessagesSync]) {
-            if ([message.id isEqualToString:id]) {
-                found = YES;
-                completion(message);
-            }
-        }
-        if (!found) {
-            completion(nil);
-        }
+        __block NSMutableArray *chats = [NSMutableArray new];
+        [self.chatsConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            [[transaction ext:@"orderedChats"] enumerateKeysAndObjectsInGroup:@"chats" usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
+                [chats addObject:object];
+            }];
+        }];
+        
+        completion([chats copy]);
     });
 }
 
 - (void)messagesFromChatWithId:(NSString *)chatId completion:(void (^)(NSArray <MVMessageModel *> *))completion {
     dispatch_async(self.managerQueue, ^{
-        NSMutableArray *messages = [NSMutableArray new];
-        for (MVMessageModel *message in [self allMessagesSync]) {
-            if ([message.chatId isEqualToString:chatId]) {
-                [messages addObject:message];
-            }
-            
-        }
+        __block NSMutableArray *messages = [NSMutableArray new];
+        
+        [self.messagesConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            [[transaction extension:@"orderedMessages"] enumerateKeysAndObjectsInGroup:chatId usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
+                [messages addObject:object];
+            }];
+        }];
+    
         completion([messages copy]);
     });
 }
 
+- (void)messagesFromChatWithId:(NSString *)chatId withType:(MVMessageType)type completion:(void (^)(NSArray <MVMessageModel *> *))completion {
+    dispatch_async(self.managerQueue, ^{
+        __block NSMutableArray *messages = [NSMutableArray new];
+        
+        [self.messagesConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            [[transaction extension:@"orderedMessages"] enumerateKeysAndObjectsInGroup:chatId usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
+                MVMessageModel *message = (MVMessageModel *)object;
+                if (message.type == type) {
+                    [messages addObject:message];
+                }
+            }];
+        }];
+        
+        completion([messages copy]);
+    });
+}
+
+//- (void)lastMessageFromChatWithId:(NSString *)chatId completion:(void (^)(MVMessageModel *))completion {
+//    dispatch_async(self.managerQueue, ^{
+//        __block MVMessageModel *lastMessage;
+//        [self.messagesConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
+//            NSUInteger count = [[transaction ext:@"orderedMessages"] numberOfItemsInGroup:chatId];
+//            lastMessage = [[transaction ext:@"orderedMessages"] objectAtIndex:count - 1 inGroup:chatId];
+//        }];
+//        
+//        completion(lastMessage);
+//    });
+//}
+
 #pragma mark - Insert
 - (void)insertContacts:(NSArray <MVContactModel *> *)contacts withCompletion:(void (^)(BOOL success))completion {
     dispatch_async(self.managerQueue, ^{
-        NSMutableArray *existingContacts = [[self allContactsSync] mutableCopy];
-        for (MVContactModel *contact in contacts) {
-            if (!contact.id) {
-                contact.id = [self incrementId:self.lastContactId];
+        [self.contactsConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            for (MVContactModel *contact in contacts) {
+                [transaction setObject:contact forKey:contact.id inCollection:contactsCollection];
             }
-            self.lastContactId = contact.id;
-            [existingContacts addObject:contact];
-        }
-        BOOL success = [MVJsonHelper writeData:[MVJsonHelper parseArrayToJson:existingContacts] toFileWithName:contactsFile extenssion:@"json"];
-        if (completion) {
-            completion(success);
-        }
+            if (completion) completion(YES);
+        }];
     });
 }
 
 - (void)insertChats:(NSArray <MVChatModel *> *)chats withCompletion:(void (^)(BOOL success))completion {
     dispatch_async(self.managerQueue, ^{
-        NSMutableArray *existingChats = [[self allChatsSync] mutableCopy];
-        for (MVChatModel *chat in chats) {
-            if (!chat.id) {
-                chat.id = [self incrementId:self.lastChatId];
+        [self.chatsConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            for (MVChatModel *chat in chats) {
+                [transaction setObject:chat forKey:chat.id inCollection:chatsCollection];
             }
-            self.lastChatId = chat.id;
-            [existingChats addObject:chat];
-        }
-        
-        BOOL success = [MVJsonHelper writeData:[MVJsonHelper parseArrayToJson:existingChats] toFileWithName:chatsFile extenssion:@"json"];
-        if (completion) {
-            completion(success);
-        }
-    });
-}
-
-- (void)updateChat:(MVChatModel *)chatModel withCompletion:(void (^)(BOOL success))completion {
-    dispatch_async(self.managerQueue, ^{
-        NSMutableArray *existingChats = [[self allChatsSync] mutableCopy];
-        NSUInteger index = 0;
-        for (MVChatModel *chat in existingChats) {
-            if ([chat.id isEqualToString:chatModel.id]) {
-                break;
-            }
-            index ++;
-        }
-        
-        [existingChats replaceObjectAtIndex:index withObject:chatModel];
-        
-        BOOL success = [MVJsonHelper writeData:[MVJsonHelper parseArrayToJson:existingChats] toFileWithName:chatsFile extenssion:@"json"];
-        if (completion) {
-            completion(success);
-        }
-    });
-}
-
-- (void)updateContacts:(NSArray <MVContactModel *> *)contacts withCompletion:(void (^)(BOOL success))completion {
-    dispatch_async(self.managerQueue, ^{
-        NSMutableArray *existingContacts = [[self allContactsSync] mutableCopy];
-        for (MVContactModel *contact in contacts) {
-            NSUInteger index = 0;
-            for (MVContactModel *oldContact in existingContacts) {
-                if ([oldContact.id isEqualToString:contact.id]) {
-                    break;
-                }
-                index ++;
-            }
-            
-            [existingContacts replaceObjectAtIndex:index withObject:contact];
-        }
-        
-        BOOL success = [MVJsonHelper writeData:[MVJsonHelper parseArrayToJson:existingContacts] toFileWithName:contactsFile extenssion:@"json"];
-        if (completion) {
-            completion(success);
-        }
+            if (completion) completion(YES);
+        }];
     });
 }
 
 - (void)insertMessages:(NSArray <MVMessageModel *> *)messages withCompletion:(void (^)(BOOL success))completion {
     dispatch_async(self.managerQueue, ^{
-        NSMutableArray *existingMessages = [[self allMessagesSync] mutableCopy];
-        for (MVMessageModel *message in messages) {
-            if (!message.id) {
-                message.id = [self incrementId:self.lastMessageId];
+        [self.messagesConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            for (MVMessageModel *message in messages) {
+                [transaction setObject:message forKey:message.id inCollection:messagesCollection];
+                MVChatModel *chat = [transaction objectForKey:message.chatId inCollection:chatsCollection];
+                chat.lastMessage = message;
+                chat.lastUpdateDate = message.sendDate;
+                [transaction setObject:chat forKey:chat.id inCollection:chatsCollection];
             }
-            [existingMessages addObject:message];
-            self.lastMessageId = message.id;
-        }
+        }];
         
-        BOOL success = [MVJsonHelper writeData:[MVJsonHelper parseArrayToJson:existingMessages] toFileWithName:messagesFile extenssion:@"json"];
-        if (completion) {
-            completion(success);
-        }
+        if (completion) completion(YES);
     });
 }
 
 - (void)deleteChat:(MVChatModel *)chatModel withCompletion:(void (^)(BOOL success))completion {
     dispatch_async(self.managerQueue, ^{
-        NSMutableArray *existingChats = [[self allChatsSync] mutableCopy];
-        NSUInteger index = 0;
-        for (MVChatModel *chat in existingChats) {
-            if ([chat.id isEqualToString:chatModel.id]) {
-                break;
-            }
-            index ++;
-        }
-        
-        [existingChats removeObjectAtIndex:index];
-        
-        BOOL success = [MVJsonHelper writeData:[MVJsonHelper parseArrayToJson:existingChats] toFileWithName:chatsFile extenssion:@"json"];
-        if (completion) {
-            completion(success);
-        }
+        [self.chatsConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [transaction removeObjectForKey:chatModel.id inCollection:chatsCollection];
+        }];
     });
 }
 
 #pragma mark - Helpers
--(MVContactModel *)myContact {
-    MVContactModel *me = [MVContactModel new];
-    me.id = @"0";
-    me.name = @"Mark";
-    me.iam = YES;
-    me.status = ContactStatusOnline;
-    return me;
+static MVContactModel *myContact;
+- (MVContactModel *)myContact {
+    if (!myContact) {
+        myContact = [MVContactModel new];
+        myContact.id = @"0";
+        myContact.name = @"Mark";
+        myContact.iam = YES;
+        myContact.status = ContactStatusOnline;
+    }
+    
+    return myContact;
 }
 
 //test
 - (void)generateData {
-    //Contacts
-    NSMutableArray *mutableContacts = [NSMutableArray new];
     NSArray <MVContactModel *> *contacts = [[MVRandomGenerator sharedInstance] generateContacts];
-    NSString *lastContactId = self.lastContactId;
-    NSUInteger contactIndex = 1;
-    for (MVContactModel *contact in contacts) {
-        if (contactIndex < 6) {
-            contact.avatarName = [NSString stringWithFormat:@"avatar0%lu", (unsigned long)contactIndex];
-            contactIndex++;
-        }
-        
-        lastContactId = [self incrementId:lastContactId];
-        contact.id = lastContactId;
-        [mutableContacts addObject:contact];
-    }
-    [self insertContacts:[mutableContacts copy] withCompletion:^(BOOL success) {
-        [[MVFileManager sharedInstance] generateImagesForContacts:mutableContacts];
+    [self insertContacts:contacts withCompletion:^(BOOL success) {
+        [[MVFileManager sharedInstance] generateImagesForContacts:contacts];
     }];
     
-    //Chats
-    NSMutableArray *mutableChats = [NSMutableArray new];
-    NSArray <MVChatModel *> *chats = [[MVRandomGenerator sharedInstance] generateChatsWithContacts:[mutableContacts copy]];
-    NSString *lastChatId = self.lastChatId;
+    NSArray <MVChatModel *> *chats = [[MVRandomGenerator sharedInstance] generateChatsWithContacts:contacts];
+    NSArray *allMessages = [NSArray new];
+    
     for (MVChatModel *chat in chats) {
-        lastChatId = [self incrementId:lastChatId];
-        chat.id = lastChatId;
-        [mutableChats addObject:chat];
-    }
-    
-    //Messages
-    NSMutableArray *allMessages = [NSMutableArray new];
-    NSString *lastMessageId = self.lastMessageId;
-    for (MVChatModel *chat in mutableChats) {
         NSArray <MVMessageModel *> *messages = [[MVRandomGenerator sharedInstance] generateMessagesForChat:chat];
-        messages = [self sortMessages:messages];
-        for (MVMessageModel *message in messages) {
-            lastMessageId = [self incrementId:lastMessageId];
-            message.id = lastMessageId;
-            message.chatId = chat.id;
-            [allMessages addObject:message];
-        }
-        chat.lastMessage = [messages lastObject];
-        chat.lastUpdateDate = [[messages lastObject] sendDate];
+        allMessages = [allMessages arrayByAddingObjectsFromArray:messages];
     }
     
-    [self insertChats:[mutableChats copy] withCompletion:^(BOOL success) {
-        [[MVFileManager sharedInstance] generateImagesForChats:mutableChats];
+    [self insertChats:chats withCompletion:^(BOOL success) {
+        [[MVFileManager sharedInstance] generateImagesForChats:chats];
     }];
-    [self insertMessages:[allMessages copy] withCompletion:nil];
     
-
-}
-
-- (NSArray <MVMessageModel *> *)sortMessages:(NSArray<MVMessageModel *> *)messages {
-    return [messages sortedArrayUsingComparator:^NSComparisonResult(MVMessageModel *obj1, MVMessageModel *obj2) {
-        NSTimeInterval first = obj1.sendDate.timeIntervalSinceReferenceDate;
-        NSTimeInterval second = obj2.sendDate.timeIntervalSinceReferenceDate;
-        
-        if (first == second) {
-            return NSOrderedSame;
-        } else if (first > second) {
-            return NSOrderedDescending;
-        } else {
-            return NSOrderedAscending;
-        }
-    }];
+    [self insertMessages:allMessages withCompletion:nil];
 }
 
 @end

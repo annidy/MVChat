@@ -146,7 +146,7 @@
         }
     }
     
-    [[MVDatabaseManager sharedInstance] updateContacts:changedContacts withCompletion:^(BOOL success) {
+    [[MVDatabaseManager sharedInstance] insertContacts:changedContacts withCompletion:^(BOOL success) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)([self getRandomDelay] * NSEC_PER_SEC)), self.managerQueue, ^{
             [self generateUserActivity];
         });
