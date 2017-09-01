@@ -87,4 +87,17 @@
         });
     }];
 }
+
+static MVContactModel *myContact;
++ (MVContactModel *)myContact {
+    if (!myContact) {
+        myContact = [MVContactModel new];
+        myContact.id = @"0";
+        myContact.name = @"Mark";
+        myContact.iam = YES;
+        myContact.status = ContactStatusOnline;
+    }
+    
+    return myContact;
+}
 @end

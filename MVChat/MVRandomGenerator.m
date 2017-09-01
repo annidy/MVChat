@@ -15,6 +15,7 @@
 #import "MVTextGenerator.h"
 #import "MVDatabaseManager.h"
 #import <UIKit/UIKit.h>
+#import "MVContactManager.h"
 
 static NSUInteger minContactsCount = 20;
 static NSUInteger maxContactsCount = 50;
@@ -165,7 +166,7 @@ static MVRandomGenerator *singleton;
         [indices addObject:@(index)];
         [chatContacts addObject:contacts[index]];
     }
-    [chatContacts addObject:[[MVDatabaseManager sharedInstance] myContact]];
+    [chatContacts addObject:[MVContactManager myContact]];
     chat.participants = [chatContacts copy];
     
     if (chat.isPeerToPeer) {
@@ -207,7 +208,7 @@ static MVRandomGenerator *singleton;
     NSMutableArray *otherParticipants = [chat.participants mutableCopy];
     MVContactModel *myContact;
     for (MVContactModel *contact in otherParticipants) {
-        if ([contact.id isEqualToString:[MVDatabaseManager sharedInstance].myContact.id]) {
+        if ([contact.id isEqualToString:MVContactManager.myContact.id]) {
             myContact = contact;
             break;
         }
@@ -232,7 +233,7 @@ static MVRandomGenerator *singleton;
     message.type = MVMessageTypeText;
     message.id = [NSUUID UUID].UUIDString;
     
-    if ([sender.id isEqualToString:[[MVDatabaseManager new] myContact].id]) {
+    if ([sender.id isEqualToString:[MVContactManager myContact].id]) {
         message.direction = MessageDirectionOutgoing;
     } else {
         message.direction = MessageDirectionIncoming;

@@ -9,6 +9,17 @@
 #import "MVMessageModel.h"
 
 @implementation MVMessageModel
+- (instancetype)initWithId:(NSString *)id chatId:(NSString *)chatId type:(MVMessageType)type text:(NSString *)text {
+    if (self = [super init]) {
+        _id = id;
+        _chatId = chatId;
+        _type = type;
+        _text = text;
+    }
+    
+    return self;
+}
+
 - (id)copyWithZone:(NSZone *)zone {
     MVMessageModel *copy = [[MVMessageModel allocWithZone:zone] init];
     copy.id = [self.id copy];

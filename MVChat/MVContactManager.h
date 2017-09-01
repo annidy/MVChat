@@ -20,4 +20,5 @@
 + (instancetype)sharedInstance;
 - (void)loadContacts;
 - (NSArray <MVContactModel *> *)getAllContacts;
++ (MVContactModel *)myContact;
 @end

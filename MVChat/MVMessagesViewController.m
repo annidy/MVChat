@@ -82,7 +82,7 @@
     self.mediaViewModels = [NSMutableArray new];
 
     [MVChatManager sharedInstance].messagesListener = self;
-    [[MVChatManager sharedInstance] loadMessagesForChatWithId:self.chatId withCallback:^(BOOL success) {
+    [[MVChatManager sharedInstance] loadMessagesForChatWithId:self.chatId withCallback:^() {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self tryToLoadNextPage];
             self.initialLoadComplete = YES;
@@ -182,29 +182,20 @@
 }
 
 #pragma mark - Data handling
-- (void)handleNewMessages:(NSArray <MVMessageUpdateModel *> *)models {
+- (void)handleNewMessages:(NSArray <MVMessageModel *> *)models {
     NSMutableArray *sections = [self.sections mutableCopy];
     NSMutableDictionary *messages = [self.messages mutableCopy];
     
-    for (MVMessageUpdateModel *messageUpdate in models) {
-        NSString *key = [self headerTitleFromDate:messageUpdate.message.sendDate];
+    for (MVMessageModel *message in models) {
+        NSString *key = [self headerTitleFromDate:message.sendDate];
         NSMutableArray *rows = messages[key];
         
         if (!rows) {
             rows = [NSMutableArray new];
-            if (messageUpdate.position == MessageUpdatePositionStart) {
-                [sections insertObject:key atIndex:0];
-            } else {
-                [sections addObject:key];
-            }
+            [sections addObject:key];
         }
         
-        if (messageUpdate.position == MessageUpdatePositionStart) {
-            [rows insertObject:messageUpdate.message atIndex:0];
-        } else {
-            [rows addObject:messageUpdate.message];
-        }
-        
+        [rows addObject:message];
         [messages setObject:rows forKey:key];
     }
     
@@ -213,9 +204,9 @@
     [self.messagesTableView reloadData];
 }
 
-- (void)handleNewMessage:(MVMessageUpdateModel *)messageUpdate {
+- (void)insertNewMessage:(MVMessageModel *)message {
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self handleNewMessages:@[messageUpdate]];
+        [self handleNewMessages:@[message]];
     });
     
     //Animate new message!

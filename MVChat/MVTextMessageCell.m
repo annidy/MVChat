@@ -11,6 +11,7 @@
 #import "MVChatManager.h"
 #import "MVFileManager.h"
 #import <DBAttachment.h>
+#import "NSString+Helpers.h"
 
 static CGFloat MVBubbleWidthMultiplierOutgoing = 0.8;
 static CGFloat MVBubbleWidthMultiplierIncoming = 0.7;
@@ -256,8 +257,7 @@ static UILabel *referenceMessageLabel;
 
 - (void)fillWithModel:(MVMessageModel *)messageModel {
     self.messageLabel.text = messageModel.text;
-    self.timeLabel.text = [[MVChatManager sharedInstance] timeFromDate:messageModel.sendDate];
-    
+    self.timeLabel.text = [NSString messageTimeFromDate:messageModel.sendDate];
     if (self.direction == MessageDirectionIncoming) {
         [[MVFileManager sharedInstance] loadAvatarAttachmentForContact:messageModel.contact completion:^(DBAttachment *attachment) {
             [attachment thumbnailImageWithMaxWidth:50 completion:^(UIImage *image) {

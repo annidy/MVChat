@@ -12,6 +12,7 @@
 #import "MVMessageModel.h"
 #import "MVFileManager.h"
 #import <DBAttachment.h>
+#import "NSString+Helpers.h"
 
 static CGFloat MVBubbleWidthMultiplierOutgoing = 0.8;
 static CGFloat MVBubbleWidthMultiplierIncoming = 0.7;
@@ -221,7 +222,7 @@ static CGFloat MVAvatarImageOffset = 5;
 }
 
 - (void)fillWithModel:(MVMessageModel *)messageModel {
-    self.timeLabel.text = [[MVChatManager sharedInstance] timeFromDate:messageModel.sendDate];
+    self.timeLabel.text = [NSString messageTimeFromDate:messageModel.sendDate];
     CGFloat maxContentWidth = UIScreen.mainScreen.bounds.size.width * [self bubbleWidthMultiplier] - 4;
     
     [[MVFileManager sharedInstance] loadAttachmentForMessage:messageModel completion:^(DBAttachment *attachment) {

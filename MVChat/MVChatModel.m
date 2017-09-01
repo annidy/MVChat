@@ -80,4 +80,10 @@
         return NSOrderedDescending;
     }
 }
+
++ (NSComparator)comparatorByLastUpdateDate {
+    return ^NSComparisonResult(MVChatModel *object1, MVChatModel *object2){
+        return [object1 compareChatByLastUpdateDate:object2];
+    };
+}
 @end

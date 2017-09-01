@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "MVChatsListener.h"
 
 @class MVMessageModel;
 @class MVMessageUpdateModel;
@@ -15,50 +16,35 @@
 @class UIImage;
 @class DBAttachment;
 
-typedef enum : NSUInteger {
-    MessageUpdatePositionStart,
-    MessageUpdatePositionEnd
-} MessageUpdatePosition;
-
 static NSUInteger MVMessagesPageSize = 15;
 
-@protocol MessagesUpdatesListener <NSObject>
-- (void)handleNewMessage:(MVMessageUpdateModel *)messageUpdate;
-- (NSString *)chatId;
-@end
-
-@protocol ChatsUpdatesListener <NSObject>
-- (void)handleChatsUpdate;
-@end
-
-@interface MVMessageUpdateModel : NSObject
-@property (strong, nonatomic) MVMessageModel *message;
-@property (assign, nonatomic) MessageUpdatePosition position;
-+ (instancetype)updateModelWithMessage:(MVMessageModel *)message andPosition:(MessageUpdatePosition)position;
-@end
-
 @interface MVChatManager : NSObject
+#pragma mark - Listeners
 @property (weak, nonatomic) id <MessagesUpdatesListener> messagesListener;
 @property (weak, nonatomic) id <ChatsUpdatesListener> chatsListener;
+
+#pragma mark - Initialization
 + (instancetype) sharedInstance;
 
-- (void)handleUpdatedChats:(NSArray<MVChatModel *> *)updatedChats removedChats:(NSArray<MVChatModel *> *)removedChats;
-- (void)handleNewMessages:(NSArray <MVMessageModel *> *)messages;
-- (NSArray <MVChatModel *> *)chatsList;
-- (MVChatModel *)chatWithId:(NSString *)chatId;
-- (NSArray <MVMessageModel *> *)messagesForChatWithId:(NSString *)chatId;
-- (void)generateMessageForChatWithId:(NSString *)chatId;
-- (void)sendTextMessage:(NSString *)text toChatWithId:(NSString *)chatId;
-- (void)sendMediaMessageWithAttachment:(DBAttachment *)attachment toChatWithId:(NSString *)chatId;
+#pragma mark - Caching
 - (void)loadAllChats;
+- (void)loadMessagesForChatWithId:(NSString *)chatId withCallback:(void (^)())callback;
+
+#pragma mark - Fetch
+- (NSArray <MVChatModel *> *)chatsList;
 - (void)messagesPage:(NSUInteger)pageIndex forChatWithId:(NSString *)chatId withCallback:(void (^)(NSArray <MVMessageModel *> *))callback;
 - (NSUInteger)numberOfPagesInChatWithId:(NSString *)chatId;
+
+#pragma mark - Handle Chats
 - (void)chatWithContact:(MVContactModel *)contact andCompeltion:(void (^)(MVChatModel *))callback;
 - (void)createChatWithContacts:(NSArray <MVContactModel *> *)contacts title:(NSString *)title andCompeltion:(void (^)(MVChatModel *))callback;
 - (void)updateChat:(MVChatModel *)chat;
 - (void)exitAndDeleteChat:(MVChatModel *)chat;
-- (void)loadAvatarThumbnailForChat:(MVChatModel *)chat completion:(void (^)(UIImage *))callback;
-- (void)loadAttachmentForMessage:(MVMessageModel *)message completion:(void (^)(UIImage *))callback;
-- (NSString *)timeFromDate:(NSDate *)date;
-- (void)loadMessagesForChatWithId:(NSString *)chatId withCallback:(void (^)(BOOL))callback;
+
+#pragma mark - Send Messages
+- (void)sendTextMessage:(NSString *)text toChatWithId:(NSString *)chatId;
+- (void)sendMediaMessageWithAttachment:(DBAttachment *)attachment toChatWithId:(NSString *)chatId;
+
+#pragma mark - Helpers
+- (void)generateMessageForChatWithId:(NSString *)chatId;
 @end

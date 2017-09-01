@@ -37,9 +37,21 @@
 
 - (void)fillWithChat:(MVChatModel *)chat {
     self.avatarImageView.image = nil;
-    [[MVChatManager sharedInstance] loadAvatarThumbnailForChat:chat completion:^(UIImage *image) {
-        self.avatarImageView.image = image;
-    }];
+    
+    if (chat.isPeerToPeer) {
+        [[MVFileManager sharedInstance] loadAvatarAttachmentForContact:chat.getPeer completion:^(DBAttachment *attachment) {
+            [attachment thumbnailImageWithMaxWidth:50 completion:^(UIImage *resultImage) {
+                self.avatarImageView.image = resultImage;
+            }];
+        }];
+    } else {
+        [[MVFileManager sharedInstance] loadAvatarAttachmentForChat:chat completion:^(DBAttachment *attachment) {
+            [attachment thumbnailImageWithMaxWidth:50 completion:^(UIImage *resultImage) {
+                self.avatarImageView.image = resultImage;
+            }];
+        }];
+    }
+    
     
     self.titleLabel.text = chat.title;
 }

@@ -29,12 +29,7 @@
 }
 
 - (BOOL)isEqualToContact:(MVContactModel *)contact {
-    return  (self.id == contact.id || [self.id isEqualToString:contact.id]) &&
-            (self.name == contact.name || [self.name isEqualToString:contact.name]) &&
-            self.status == contact.status &&
-            self.iam == contact.iam &&
-            (self.phoneNumbers == contact.phoneNumbers || [self.phoneNumbers isEqualToArray:contact.phoneNumbers]) &&
-            (self.lastSeenDate == contact.lastSeenDate || [self.lastSeenDate isEqualToDate:contact.lastSeenDate]);
+    return  (self.id == contact.id || [self.id isEqualToString:contact.id]);
 }
 
 -(NSUInteger)hash {

@@ -20,4 +20,5 @@
 - (BOOL)isPeerToPeer;
 - (MVContactModel *)getPeer;
 - (NSComparisonResult)compareChatByLastUpdateDate:(MVChatModel *)chat;
++ (NSComparator)comparatorByLastUpdateDate;
 @end

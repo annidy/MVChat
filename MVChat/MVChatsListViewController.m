@@ -75,11 +75,16 @@
 }
 
 #pragma mark - Data handling
--(void)handleChatsUpdate {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        self.chats = [[MVChatManager sharedInstance] chatsList];
-        [self.chatsList reloadData];
-    });
+- (void)insertNewChat:(MVChatModel *)chat {
+    NSMutableArray *chats = [self.chats mutableCopy];
+    [chats insertObject:chat atIndex:0];
+    self.chats = [chats copy];
+    [self.chatsList reloadData];
+}
+
+- (void)updateChats {
+    self.chats = [[MVChatManager sharedInstance] chatsList];
+    [self.chatsList reloadData];
 }
 
 #pragma mark - Table view

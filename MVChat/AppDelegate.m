@@ -21,7 +21,6 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    [MVRandomGenerator sharedInstance].updatesListener = self;
     
     //[[MVDatabaseManager sharedInstance] generateData];
     [[MVChatManager sharedInstance] loadAllChats];
@@ -31,11 +30,6 @@
 }
 
 -(void)updateWithType:(MVUpdateType)type andObjects:(NSArray *)objects {
-    if (type == MVUpdateTypeChats) {
-        [[MVChatManager sharedInstance] handleUpdatedChats:objects removedChats:nil];
-    } else if (type == MVUpdateTypeMessages) {
-        [[MVChatManager sharedInstance] handleNewMessages:objects];
-    }
 }
 
 

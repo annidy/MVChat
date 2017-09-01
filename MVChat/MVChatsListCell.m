@@ -74,8 +74,10 @@ static NSDateFormatter *todayDateFormatter;
             }];
         }];
     } else {
-        [[MVChatManager sharedInstance] loadAvatarThumbnailForChat:chat completion:^(UIImage *image) {
-            self.avatarImageView.image = image;
+        [[MVFileManager sharedInstance] loadAvatarAttachmentForChat:chat completion:^(DBAttachment *attachment) {
+            [attachment thumbnailImageWithMaxWidth:50 completion:^(UIImage *resultImage) {
+                self.avatarImageView.image = resultImage;
+            }];
         }];
     }
     

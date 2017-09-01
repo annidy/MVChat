@@ -27,6 +27,5 @@ typedef NS_ENUM(NSUInteger, MVMessageType);
 
 - (void)deleteChat:(MVChatModel *)chatModel withCompletion:(void (^)(BOOL success))completion;
 
-- (MVContactModel *)myContact;
 - (void)generateData;
 @end

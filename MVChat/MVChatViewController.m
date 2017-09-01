@@ -106,9 +106,12 @@
             }
         }];
     } else {
-        [[MVChatManager sharedInstance] loadAvatarThumbnailForChat:self.chat completion:^(UIImage *image) {
-            [self.avatarImageView setImage:image];
+        [[MVFileManager sharedInstance] loadAvatarAttachmentForChat:self.chat completion:^(DBAttachment *attachment) {
+            [attachment thumbnailImageWithMaxWidth:50 completion:^(UIImage *resultImage) {
+                self.avatarImageView.image = resultImage;
+            }];
         }];
+        
         [[NSNotificationCenter defaultCenter] addObserverForName:@"ChatAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
             NSString *chatId = note.userInfo[@"Id"];
             UIImage *image = note.userInfo[@"Image"];
@@ -153,7 +156,7 @@
 
 - (void)showChatSettings {
     MVChatSettingsViewController *settings = [MVChatSettingsViewController loadFromStoryboardWithChat:self.chat andDoneAction:^(NSArray<MVContactModel *> *contacts, NSString *title, DBAttachment *attachment) {
-        self.chat.participants = [contacts arrayByAddingObject:[MVDatabaseManager sharedInstance].myContact];
+        self.chat.participants = [contacts arrayByAddingObject:MVContactManager.myContact];
         self.chat.title = title;
         [[MVChatManager sharedInstance] updateChat:self.chat];
         self.navigationItemTitleLabel.text = title;

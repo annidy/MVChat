@@ -10,4 +10,8 @@
 
 @interface NSString (Helpers)
 + (NSString *)lastSeenTimeStringForDate:(NSDate *)lastSeenDate;
++ (NSString *)titleChangeStringForContactName:(NSString *)name andTitle:(NSString *)title;
++ (NSString *)addContactsStringForName:(NSString *)name oldContacts:(NSArray *)oldContacts newContacts:(NSArray *)newContacts;
++ (NSString *)removeContactsStringForName:(NSString *)name oldContacts:(NSArray *)oldContacts newContacts:(NSArray *)newContacts;
++ (NSString *)messageTimeFromDate:(NSDate *)date;
 @end
