@@ -194,7 +194,7 @@ static NSString *DeleteContactCellId = @"MVChatSettingsDeleteCell";
         if (indexPath.row == 0) {
             UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:AvatarTitleCellId];
             UIImageView *avatarImageView = [cell viewWithTag:1];
-            avatarImageView.backgroundColor = [UIColor lightGrayColor];
+            
             avatarImageView.layer.masksToBounds = YES;
             avatarImageView.layer.cornerRadius = 30;
             
@@ -205,7 +205,7 @@ static NSString *DeleteContactCellId = @"MVChatSettingsDeleteCell";
             if (self.avatarImage) {
                 avatarImageView.image = self.avatarImage;
             } else {
-                //set placeholder
+                avatarImageView.image = [UIImage imageNamed:@"avatarPlaceholder"];
             }
             
             self.avatarImageView = avatarImageView;
@@ -220,7 +220,10 @@ static NSString *DeleteContactCellId = @"MVChatSettingsDeleteCell";
         }
     } else if (indexPath.section == 1) {
         if (indexPath.row == 0) {
-            return [tableView dequeueReusableCellWithIdentifier:NewContactCellId];
+            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:NewContactCellId];
+            UIImageView *iconImageView = [cell viewWithTag:1];
+            iconImageView.image = [UIImage imageNamed:@"iconPlus"];
+            return cell;
         }
         
         MVContactModel *contact = self.contacts[indexPath.row - 1];
