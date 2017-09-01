@@ -87,11 +87,9 @@ static NSString *DeleteContactCellId = @"MVChatSettingsDeleteCell";
     
     if (self.mode == MVChatSettingsModeSettings) {
         self.chatTitle = self.chat.title;
-        [[MVFileManager sharedInstance] loadAvatarAttachmentForChat:self.chat completion:^(DBAttachment *attachment) {
-            [attachment thumbnailImageWithMaxWidth:50 completion:^(UIImage *resultImage) {
-                self.avatarImage = resultImage;
-                self.avatarImageView.image = resultImage;
-            }];
+        [[MVFileManager sharedInstance] loadThumbnailAvatarForChat:self.chat maxWidth:50 completion:^(UIImage *image) {
+            self.avatarImage = image;
+            self.avatarImageView.image = image;
         }];
         
         [[NSNotificationCenter defaultCenter] addObserverForName:@"ChatAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
@@ -233,10 +231,8 @@ static NSString *DeleteContactCellId = @"MVChatSettingsDeleteCell";
         
         contactNameLabel.text = contact.name;
         
-        [[MVFileManager sharedInstance] loadAvatarAttachmentForContact:contact completion:^(DBAttachment *attachment) {
-            [attachment thumbnailImageWithMaxWidth:50 completion:^(UIImage *image) {
-                contactAvatarImageView.image = image;
-            }];
+        [[MVFileManager sharedInstance] loadThumbnailAvatarForContact:contact maxWidth:50 completion:^(UIImage *image) {
+            contactAvatarImageView.image = image;
         }];
         
         [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {

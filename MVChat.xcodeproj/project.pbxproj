@@ -10,7 +10,6 @@
 		2BBFB902938026834DD2D326 /* libPods-MVChat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AEC3AB225764E67979931D23 /* libPods-MVChat.a */; };
 		CD0503621F27D20700A1C4D2 /* MVContactsListController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0503611F27D20700A1C4D2 /* MVContactsListController.m */; };
 		CD0503661F27D2F300A1C4D2 /* MVContactsListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0503651F27D2F300A1C4D2 /* MVContactsListCell.m */; };
-		CD0550851F0573E50076FB25 /* MVJsonHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0550841F0573E50076FB25 /* MVJsonHelper.m */; };
 		CD05508A1F06E8110076FB25 /* MVDatabaseManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0550891F06E8110076FB25 /* MVDatabaseManager.m */; };
 		CD0550901F0938D90076FB25 /* MVNameGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05508F1F0938D90076FB25 /* MVNameGenerator.m */; };
 		CD0550951F0939E60076FB25 /* name.csv in Resources */ = {isa = PBXBuildFile; fileRef = CD0550921F0939E60076FB25 /* name.csv */; };
@@ -72,8 +71,6 @@
 		CD0503611F27D20700A1C4D2 /* MVContactsListController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVContactsListController.m; sourceTree = "<group>"; };
 		CD0503641F27D2F300A1C4D2 /* MVContactsListCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVContactsListCell.h; sourceTree = "<group>"; };
 		CD0503651F27D2F300A1C4D2 /* MVContactsListCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVContactsListCell.m; sourceTree = "<group>"; };
-		CD0550831F0573E50076FB25 /* MVJsonHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVJsonHelper.h; sourceTree = "<group>"; };
-		CD0550841F0573E50076FB25 /* MVJsonHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVJsonHelper.m; sourceTree = "<group>"; };
 		CD0550881F06E8110076FB25 /* MVDatabaseManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVDatabaseManager.h; sourceTree = "<group>"; };
 		CD0550891F06E8110076FB25 /* MVDatabaseManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVDatabaseManager.m; sourceTree = "<group>"; };
 		CD05508E1F0938D90076FB25 /* MVNameGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVNameGenerator.h; sourceTree = "<group>"; };
@@ -286,8 +283,6 @@
 			children = (
 				CD6C2A3D1EC609F00007BA05 /* MVRandomGenerator.h */,
 				CD6C2A3E1EC609F00007BA05 /* MVRandomGenerator.m */,
-				CD0550831F0573E50076FB25 /* MVJsonHelper.h */,
-				CD0550841F0573E50076FB25 /* MVJsonHelper.m */,
 				CD0550911F0938DD0076FB25 /* Text generators */,
 				CD4059B81F4DAA7600808D3A /* MVForceTouchGestureRecogniser.h */,
 				CD4059B91F4DAA7600808D3A /* MVForceTouchGestureRecogniser.m */,
@@ -704,7 +699,6 @@
 				CD75F6741F56DC5C004119A3 /* MVImageViewerTransitioningHandler.m in Sources */,
 				CD75F6881F571F51004119A3 /* MVChatSharedMediaPageController.m in Sources */,
 				CD4059831F4B168D00808D3A /* MVSystemMessageCell.m in Sources */,
-				CD0550851F0573E50076FB25 /* MVJsonHelper.m in Sources */,
 				CD75F6771F56DDAA004119A3 /* MVImageViewerPresentationTransition.m in Sources */,
 				CD6C2A4E1EC61A640007BA05 /* MVChatsListViewController.m in Sources */,
 				CDF479B71EB68AAF003B3C8E /* MVFooterViewController.m in Sources */,

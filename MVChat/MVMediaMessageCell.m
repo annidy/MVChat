@@ -224,11 +224,8 @@ static CGFloat MVAvatarImageOffset = 5;
 - (void)fillWithModel:(MVMessageModel *)messageModel {
     self.timeLabel.text = [NSString messageTimeFromDate:messageModel.sendDate];
     CGFloat maxContentWidth = UIScreen.mainScreen.bounds.size.width * [self bubbleWidthMultiplier] - 4;
-    
-    [[MVFileManager sharedInstance] loadAttachmentForMessage:messageModel completion:^(DBAttachment *attachment) {
-        [attachment thumbnailImageWithMaxWidth:maxContentWidth completion:^(UIImage *image) {
-            self.mediaImageView.image = image;
-        }];
+    [[MVFileManager sharedInstance] loadThumbnailAttachmentForMessage:messageModel maxWidth:maxContentWidth completion:^(UIImage *image) {
+        self.mediaImageView.image = image;
     }];
 }
 

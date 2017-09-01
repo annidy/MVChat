@@ -92,10 +92,9 @@
     self.navigationItem.rightBarButtonItem = item;
     self.avatarImageView = imageView;
     if (self.chat.isPeerToPeer) {
-        [[MVFileManager sharedInstance] loadAvatarAttachmentForContact:self.chat.getPeer completion:^(DBAttachment *attachment) {
-            [attachment thumbnailImageWithMaxWidth:50 completion:^(UIImage *image) {
-                self.avatarImageView.image = image;
-            }];
+        
+        [[MVFileManager sharedInstance] loadThumbnailAvatarForContact:self.chat.getPeer maxWidth:50 completion:^(UIImage *image) {
+            self.avatarImageView.image = image;
         }];
         
         [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
@@ -106,10 +105,8 @@
             }
         }];
     } else {
-        [[MVFileManager sharedInstance] loadAvatarAttachmentForChat:self.chat completion:^(DBAttachment *attachment) {
-            [attachment thumbnailImageWithMaxWidth:50 completion:^(UIImage *resultImage) {
-                self.avatarImageView.image = resultImage;
-            }];
+        [[MVFileManager sharedInstance] loadThumbnailAvatarForChat:self.chat maxWidth:50 completion:^(UIImage *image) {
+            self.avatarImageView.image = image;
         }];
         
         [[NSNotificationCenter defaultCenter] addObserverForName:@"ChatAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
@@ -162,7 +159,7 @@
         self.navigationItemTitleLabel.text = title;
         [self.navigationController popViewControllerAnimated:YES];
         if (attachment) {
-            [[MVFileManager sharedInstance] saveAttachment:attachment asChatAvatar:self.chat];
+            [[MVFileManager sharedInstance] saveChatAvatar:self.chat attachment:attachment];
         }
     }];
     

@@ -68,16 +68,12 @@ static NSDateFormatter *todayDateFormatter;
     self.avatarImageView.image = nil;
     
     if (chat.isPeerToPeer) {
-        [[MVFileManager sharedInstance] loadAvatarAttachmentForContact:chat.getPeer completion:^(DBAttachment *attachment) {
-            [attachment thumbnailImageWithMaxWidth:50 completion:^(UIImage *image) {
-                self.avatarImageView.image = image;
-            }];
+        [[MVFileManager sharedInstance] loadThumbnailAvatarForContact:chat.getPeer maxWidth:50 completion:^(UIImage *image) {
+            self.avatarImageView.image = image;
         }];
     } else {
-        [[MVFileManager sharedInstance] loadAvatarAttachmentForChat:chat completion:^(DBAttachment *attachment) {
-            [attachment thumbnailImageWithMaxWidth:50 completion:^(UIImage *resultImage) {
-                self.avatarImageView.image = resultImage;
-            }];
+        [[MVFileManager sharedInstance] loadThumbnailAvatarForChat:chat maxWidth:50 completion:^(UIImage *image) {
+            self.avatarImageView.image = image;
         }];
     }
     

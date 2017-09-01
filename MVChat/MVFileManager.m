@@ -7,7 +7,6 @@
 //
 
 #import "MVFileManager.h"
-#import "MVJsonHelper.h"
 #import "MVContactModel.h"
 #import "MVChatModel.h"
 #import <DBAttachment.h>
@@ -19,6 +18,7 @@
 #import "MVMessageModel.h"
 #import <ImageIO/ImageIO.h>
 #import "MVChatManager.h"
+#import "MVDatabaseManager.h"
 
 @interface MVFileManager()
 @property (strong, nonatomic) dispatch_queue_t managerQueue;
@@ -27,7 +27,7 @@
 @end
 
 @implementation MVFileManager
-#pragma mark - Lifecycle
+#pragma mark - Initialization
 static MVFileManager *instance;
 + (instancetype)sharedInstance {
     static dispatch_once_t onceToken;
@@ -43,116 +43,139 @@ static MVFileManager *instance;
         _managerQueue = dispatch_queue_create("com.markvasiv.fileManager", DISPATCH_QUEUE_SERIAL);
         _imagesCache = [NSCache new];
         _messageAttachments = [NSMutableDictionary new];
-        [self cacheMessageAttachments];
+        [self cacheMediaMessages];
     }
     
     return self;
 }
 
-#pragma mark - Saving images
-//TODO: IMPROVE CAHCE (cache url attachments)
-- (void)saveAttachment:(DBAttachment *)attachment withFileName:(NSString *)fileName directory:(NSString *)directory completion:(void (^)(void))completion {
+#pragma mark - Caching
+- (void)cacheMediaMessages {
     dispatch_async(self.managerQueue, ^{
-        NSString *fullPath;
-        if (directory) {
-            fullPath = [directory stringByAppendingPathComponent:fileName];
-        } else {
-            fullPath = fileName;
-        }
-        [attachment loadOriginalImageWithCompletion:^(UIImage *resultImage) {
-            [MVJsonHelper writeData:UIImagePNGRepresentation(resultImage) toFileWithName:fullPath extenssion:@"png"];
-            if (completion) {
-                completion();
+        [[MVDatabaseManager sharedInstance] allChats:^(NSArray <MVChatModel *> *chats) {
+            for (MVChatModel *chat in chats) {
+                NSString *chatFolder = [self globalPathFromRelative:[self relativePathForMediaMessagesFolder:chat]];
+                
+                if ([[NSFileManager defaultManager] fileExistsAtPath:chatFolder]) {
+                    NSArray *files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:chatFolder error:nil];
+                    
+                    NSMutableArray *attachments = [self.messageAttachments objectForKey:chat.id];
+                    if (!attachments) {
+                        attachments = [NSMutableArray new];
+                        [self.messageAttachments setObject:attachments forKey:chat.id];
+                    }
+                    
+                    for (NSString *file in files) {
+                        NSString *fullFilePath = [chatFolder stringByAppendingPathComponent:file];
+                        DBAttachment *attachment = [DBAttachment attachmentFromDocumentURL:[NSURL fileURLWithPath:fullFilePath]];
+                        [attachments addObject:attachment];
+                    }
+                }
             }
         }];
-        
-        [self.imagesCache setObject:attachment forKey:fileName];
     });
 }
 
-- (void)saveAttachment:(DBAttachment *)attachment asChatAvatar:(MVChatModel *)chat {
-    [self saveAttachment:attachment withFileName:[@"chat" stringByAppendingString:chat.id] directory:nil completion:nil];
-    NSNotification *notification = [[NSNotification alloc] initWithName:@"ChatAvatarUpdate" object:nil userInfo:@{@"Id" : chat.id, @"Image" : [attachment loadOriginalImageSync]}];
-    [[NSNotificationCenter defaultCenter] postNotification:notification];
-}
-
-- (void)saveAttachment:(DBAttachment *)attachment asContactAvatar:(MVContactModel *)contact {
-    [self saveAttachment:attachment withFileName:[@"contact" stringByAppendingString:contact.id] directory:nil completion:nil];
-    NSNotification *notification = [[NSNotification alloc] initWithName:@"ContactAvatarUpdate" object:nil userInfo:@{@"Id" : contact.id, @"Image" : [attachment loadOriginalImageSync]}];
-    [[NSNotificationCenter defaultCenter] postNotification:notification];
-}
-
-- (void)saveAttachment:(DBAttachment *)attachment asMessage:(MVMessageModel *)message completion:(void (^)(void))completion {
-    [self saveAttachment:attachment withFileName:message.id directory:message.chatId completion:completion];
+- (NSArray <DBAttachment *> *)attachmentsForChatWithId:(NSString *)chatId {
     @synchronized (self.messageAttachments) {
+        return [self.messageAttachments objectForKey:chatId];
+    }
+}
+
+#pragma mark - Save Attachments
+- (void)saveAttachment:(DBAttachment *)attachment atRelativePath:(NSString *)relativePath completion:(void (^)(DBAttachment *urlAttachment))completion {
+    dispatch_async(self.managerQueue, ^{
+        [attachment loadOriginalImageWithCompletion:^(UIImage *resultImage) {
+            [self writeData:UIImagePNGRepresentation(resultImage) toFileAtRelativePath:relativePath];
+            DBAttachment *attachmentFromUrl = [DBAttachment attachmentFromDocumentURL:[self urlToFileAtRelativePath:relativePath]];
+            @synchronized (self.imagesCache) {
+                [self.imagesCache setObject:attachmentFromUrl forKey:relativePath];
+            }
+            if (completion) completion(attachmentFromUrl);
+        }];
+    });
+}
+
+- (void)saveChatAvatar:(MVChatModel *)chat attachment:(DBAttachment *)attachment {
+    [self saveAttachment:attachment atRelativePath:[self relativePathForChatAvatar:chat] completion:^(DBAttachment *urlAttachment) {
+        NSNotification *notification = [[NSNotification alloc] initWithName:@"ChatAvatarUpdate" object:nil userInfo:@{@"Id" : chat.id, @"Image" : [attachment loadOriginalImageSync]}];
+        [[NSNotificationCenter defaultCenter] postNotification:notification];
+    }];
+}
+
+- (void)saveContactAvatar:(MVContactModel *)contact attachment:(DBAttachment *)attachment {
+    [self saveAttachment:attachment atRelativePath:[self relativePathForContactAvatar:contact] completion:^(DBAttachment *urlAttachment) {
+        NSNotification *notification = [[NSNotification alloc] initWithName:@"ContactAvatarUpdate" object:nil userInfo:@{@"Id" : contact.id, @"Image" : [attachment loadOriginalImageSync]}];
+        [[NSNotificationCenter defaultCenter] postNotification:notification];
+    }];
+}
+
+- (void)saveMediaMesssage:(MVMessageModel *)message attachment:(DBAttachment *)attachment completion:(void (^)(void))completion {
+    [self saveAttachment:attachment atRelativePath:[self relativePathForMediaMessage:message] completion:^(DBAttachment *urlAttachment){
         NSMutableArray *attachments = [self.messageAttachments objectForKey:message.chatId];
         if (!attachments) {
             attachments = [NSMutableArray new];
             [self.messageAttachments setObject:attachments forKey:message.chatId];
         }
-        [attachments addObject:attachment];
-    }
+        [attachments addObject:urlAttachment];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if(completion) completion();
+        });
+    }];
 }
 
-#pragma mark - Loading images
-- (void)loadAttachmentForFileNamed:(NSString *)fileName completion:(void (^)(DBAttachment *attachment))completion {
+#pragma mark - Load Attachments
+- (void)loadAttachmentAtRelativePath:(NSString *)relativePath completion:(void (^)(DBAttachment *attachment))completion {
     dispatch_async(self.managerQueue, ^{
-        if ([self.imagesCache objectForKey:fileName]) {
-            completion([self.imagesCache objectForKey:fileName]);
-        } else {
-            NSURL *fileUrl = [MVJsonHelper urlToFileWithName:fileName extenssion:@"png"];
-            DBAttachment *attachment = [DBAttachment attachmentFromDocumentURL:fileUrl];
-            completion(attachment);
-            [self.imagesCache setObject:attachment forKey:fileName];
+        DBAttachment *attachment = [self.imagesCache objectForKey:relativePath];
+        if (!attachment) {
+            NSURL *fileUrl = [self urlToFileAtRelativePath:relativePath];
+            attachment = [DBAttachment attachmentFromDocumentURL:fileUrl];
+            [self.imagesCache setObject:attachment forKey:relativePath];
         }
+        completion(attachment);
     });
 }
 
-- (void)loadAvatarAttachmentForChat:(MVChatModel *)chat completion:(void (^)(DBAttachment *attachment))completion {
-    NSString *fileName = [@"chat" stringByAppendingString:chat.id];
-    [self loadAttachmentForFileNamed:fileName completion:completion];
+- (void)loadAvatarForChat:(MVChatModel *)chat completion:(void (^)(DBAttachment *attachment))completion {
+    [self loadAttachmentAtRelativePath:[self relativePathForChatAvatar:chat] completion:completion];
 }
 
-- (void)loadAvatarAttachmentForContact:(MVContactModel *)contact completion:(void (^)(DBAttachment *attachment))completion {
-    NSString *fileName = [@"contact" stringByAppendingString:contact.id];
-    [self loadAttachmentForFileNamed:fileName completion:completion];
+- (void)loadAvatarForContact:(MVContactModel *)contact completion:(void (^)(DBAttachment *attachment))completion {
+    [self loadAttachmentAtRelativePath:[self relativePathForContactAvatar:contact] completion:completion];
 }
 
 - (void)loadAttachmentForMessage:(MVMessageModel *)message completion:(void (^)(DBAttachment *attachment))completion {
-    NSString *fileName = [message.chatId stringByAppendingPathComponent:message.id];
-    [self loadAttachmentForFileNamed:fileName completion:completion];
+    [self loadAttachmentAtRelativePath:[self relativePathForMediaMessage:message] completion:completion];
 }
 
-
-- (CGSize)sizeOfAttachmentForMessage:(MVMessageModel *)message {
-    NSString *fileName = [message.chatId stringByAppendingPathComponent:message.id];
-    NSURL *url = [MVJsonHelper urlToFileWithName:fileName extenssion:@"png"];
-    return [self sizeOfImageAtURL:url];
+- (void)loadThumbnailAvatarForContact:(MVContactModel *)contact maxWidth:(CGFloat)maxWidth completion:(void (^)(UIImage *image))completion {
+    [self loadAvatarForContact:contact completion:^(DBAttachment *attachment) {
+        [attachment thumbnailImageWithMaxWidth:maxWidth completion:completion];
+    }];
 }
 
-- (CGSize)sizeOfImageAtURL:(NSURL *)imageURL {
-    CGSize imageSize = CGSizeZero;
-    CGImageSourceRef source = CGImageSourceCreateWithURL((CFURLRef)imageURL, NULL);
-    if (source) {
-        NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:NO] forKey:(NSString *)kCGImageSourceShouldCache];
-        CFDictionaryRef properties = CGImageSourceCopyPropertiesAtIndex(source, 0, (CFDictionaryRef)options);
-        
-        if (properties) {
-            NSDictionary *pr = (__bridge NSDictionary *)properties;
-            NSNumber *width = [pr objectForKey:(NSString *)kCGImagePropertyPixelWidth];
-            NSNumber *height = [pr objectForKey:(NSString *)kCGImagePropertyPixelHeight];
-            if ((width != nil) && (height != nil))
-                imageSize = CGSizeMake(width.floatValue, height.floatValue);
-            CFRelease(properties);
-        }
-        CFRelease(source);
-    }
-    
-    return imageSize;
+- (void)loadThumbnailAvatarForChat:(MVChatModel *)chat maxWidth:(CGFloat)maxWidth completion:(void (^)(UIImage *image))completion {
+    [self loadAvatarForChat:chat completion:^(DBAttachment *attachment) {
+        [attachment thumbnailImageWithMaxWidth:maxWidth completion:completion];
+    }];
+}
+
+- (void)loadThumbnailAttachmentForMessage:(MVMessageModel *)message maxWidth:(CGFloat)maxWidth completion:(void (^)(UIImage *image))completion {
+    [self loadAttachmentForMessage:message completion:^(DBAttachment *attachment) {
+        [attachment thumbnailImageWithMaxWidth:maxWidth completion:completion];
+    }];
+}
+
+- (void)loadOriginalAttachmentForMessage:(MVMessageModel *)message completion:(void (^)(UIImage *image))completion {
+    [self loadAttachmentForMessage:message completion:^(DBAttachment *attachment) {
+        [attachment originalImageWithCompletion:completion];
+    }];
 }
 
 #pragma mark - Generating images
-- (void)generateImagesForChats:(NSArray <MVChatModel *> *)chats {
+- (void)generateAvatarsForChats:(NSArray <MVChatModel *> *)chats {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         for (MVChatModel *chat in chats) {
             if (chat.isPeerToPeer) {
@@ -160,24 +183,23 @@ static MVFileManager *instance;
             }
             NSString *letter = [[chat.title substringToIndex:1] uppercaseString];
             UIImage *image = [self generateGradientImageForLetter:letter];
-            [MVJsonHelper writeData:UIImagePNGRepresentation(image) toFileWithName:[@"chat" stringByAppendingString:chat.id] extenssion:@"png"];
+            [self writeData:UIImagePNGRepresentation(image) toFileAtRelativePath:[self relativePathForChatAvatar:chat]];
         }
     });
 }
 
-- (void)generateImagesForContacts:(NSArray <MVContactModel *> *)contacts {
+- (void)generateAvatarsForContacts:(NSArray <MVContactModel *> *)contacts {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         for (MVContactModel *contact in contacts) {
             NSString *letter = [[contact.name substringToIndex:1] uppercaseString];
             UIImage *image = [self generateGradientImageForLetter:letter];
-            [MVJsonHelper writeData:UIImagePNGRepresentation(image) toFileWithName:[@"contact" stringByAppendingString:contact.id] extenssion:@"png"];
+            [self writeData:UIImagePNGRepresentation(image) toFileAtRelativePath:[self relativePathForContactAvatar:contact]];
         }
     });
 }
 
-//TODO: release
 - (UIImage *)generateGradientImageForLetter:(NSString *)letter {
-    CGFloat imageScale = (CGFloat)1.0;
+    CGFloat imageScale = 1;
     CGFloat width = (CGFloat)180.0;
     CGFloat height = (CGFloat)180.0;
     
@@ -186,10 +208,7 @@ static MVFileManager *instance;
     
     NSArray <UIColor *> *uiColors = [[MVRandomGenerator sharedInstance] randomGradientColors];
     NSArray *colors = @[(__bridge id)uiColors[0].CGColor, (__bridge id)uiColors[1].CGColor];
-    
-    
     CGFloat locations[] = {0.0, 0.7};
-    
     CGGradientRef gradient = CGGradientCreateWithColors(colorSpace, (__bridge CFArrayRef)colors, locations);
     
     CGColorSpaceRelease(colorSpace);
@@ -221,44 +240,74 @@ static MVFileManager *instance;
     CGImageRef cgImage = CGBitmapContextCreateImage(context);
     
     CGContextRelease(context);
-    //CFRelease(font);
-    //CFRelease(string);
-    //CFRelease(attributes);
-    //CFRelease(attrString);
-    //CFRelease(line);
+    CFRelease(font);
+    CFRelease(attributes);
+    CFRelease(attrString);
+    CFRelease(line);
     
-    return [UIImage imageWithCGImage:cgImage];
+    UIImage *image =  [UIImage imageWithCGImage:cgImage];
+    CGImageRelease(cgImage);
+    return image;
 }
 
-- (void)cacheMessageAttachments {
-    dispatch_async(self.managerQueue, ^{
-        NSArray *chats = [[MVChatManager sharedInstance] chatsList];
-        NSString *documentsPath = [MVJsonHelper documentsPath];
-        for (MVChatModel *chat in chats) {
-            NSString *chatFolder = [documentsPath stringByAppendingPathComponent:chat.id];
-            NSFileManager *fm = [NSFileManager defaultManager];
-            if ([fm fileExistsAtPath:chatFolder]) {
-                NSArray *files = [fm contentsOfDirectoryAtPath:chatFolder error:nil];
-                @synchronized (self.messageAttachments) {
-                    NSMutableArray *paths = [self.messageAttachments objectForKey:chat.id];
-                    if (!paths) {
-                        paths = [NSMutableArray new];
-                        [self.messageAttachments setObject:paths forKey:chat.id];
-                    }
-                    for (NSString *file in files) {
-                        NSString *fullFilePath = [chatFolder stringByAppendingPathComponent:file];
-                        DBAttachment *attachment = [DBAttachment attachmentFromDocumentURL:[NSURL fileURLWithPath:fullFilePath]];
-                        [paths addObject:attachment];
-                    }
-                }
+#pragma Heleprs
+- (CGSize)sizeOfAttachmentForMessage:(MVMessageModel *)message {
+    return [self sizeOfImageAtURL:[self urlToFileAtRelativePath:[self relativePathForMediaMessage:message]]];
+}
+
+- (CGSize)sizeOfImageAtURL:(NSURL *)imageURL {
+    CGSize imageSize = CGSizeZero;
+    CGImageSourceRef source = CGImageSourceCreateWithURL((CFURLRef)imageURL, NULL);
+    if (source) {
+        NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:NO] forKey:(NSString *)kCGImageSourceShouldCache];
+        CFDictionaryRef cfproperties = CGImageSourceCopyPropertiesAtIndex(source, 0, (CFDictionaryRef)options);
+        
+        if (cfproperties) {
+            NSDictionary *properties = (__bridge NSDictionary *)cfproperties;
+            NSNumber *width = [properties objectForKey:(NSString *)kCGImagePropertyPixelWidth];
+            NSNumber *height = [properties objectForKey:(NSString *)kCGImagePropertyPixelHeight];
+            if (width && height) {
+                imageSize = CGSizeMake(width.floatValue, height.floatValue);
             }
+            CFRelease(cfproperties);
         }
-    });
+        CFRelease(source);
+    }
+    
+    return imageSize;
+}
+- (NSString *)documentsPath {
+    return [[[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject] path];
 }
 
-- (NSArray <DBAttachment *> *)attachmentsForChatWithId:(NSString *)chatId {
-    @synchronized (self.messageAttachments) {
-        return [self.messageAttachments objectForKey:chatId];
-    }
+- (NSString *)relativePathForChatAvatar:(MVChatModel *)chat {
+    return [[@"chat" stringByAppendingString:chat.id] stringByAppendingPathExtension:@"png"];
 }
+
+- (NSString *)relativePathForContactAvatar:(MVContactModel *)contact {
+    return [[@"contact" stringByAppendingString:contact.id] stringByAppendingPathExtension:@"png"];
+}
+
+- (NSString *)relativePathForMediaMessage:(MVMessageModel *)message {
+    return [[message.chatId stringByAppendingPathComponent:message.id] stringByAppendingPathExtension:@"png"];
+}
+
+- (NSString *)relativePathForMediaMessagesFolder:(MVChatModel *)chat {
+    return chat.id;
+}
+
+- (BOOL)writeData:(NSData *)data toFileAtRelativePath:(NSString *)relativePath{
+    NSString *path = [self globalPathFromRelative:relativePath];
+    [[NSFileManager defaultManager] createDirectoryAtPath:[path stringByDeletingLastPathComponent] withIntermediateDirectories:YES attributes:nil error:nil];
+    return [data writeToFile:path options:NSDataWritingAtomic error:nil];
+}
+
+- (NSString *)globalPathFromRelative:(NSString *)relativePath {
+    return [[self documentsPath] stringByAppendingPathComponent:relativePath];
+}
+
+- (NSURL *)urlToFileAtRelativePath:(NSString *)relativePath {
+    return [NSURL fileURLWithPath:[self globalPathFromRelative:relativePath]];
+}
+
 @end

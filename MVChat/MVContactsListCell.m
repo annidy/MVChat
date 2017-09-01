@@ -25,10 +25,9 @@
     self.nameLabel.text = contact.name;
     self.avatarImageView.image = nil;
     
-    [[MVFileManager sharedInstance] loadAvatarAttachmentForContact:contact completion:^(DBAttachment *attachment) {
-        [attachment thumbnailImageWithMaxWidth:50 completion:^(UIImage *image) {
-            self.avatarImageView.image = image;
-        }];
+    
+    [[MVFileManager sharedInstance] loadThumbnailAvatarForContact:contact maxWidth:50 completion:^(UIImage *image) {
+        self.avatarImageView.image = image;
     }];
     
     self.lastSeenLabel.text = [NSString lastSeenTimeStringForDate:contact.lastSeenDate];

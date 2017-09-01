@@ -10,7 +10,6 @@
 #import "MVContactModel.h"
 #import "MVChatModel.h"
 #import "MVMessageModel.h"
-#import "MVJsonHelper.h"
 #import "MVRandomGenerator.h"
 #import "MVFileManager.h"
 
@@ -45,7 +44,7 @@ static MVDatabaseManager *instance;
 - (instancetype)init {
     if (self = [super init]) {
         _managerQueue = dispatch_queue_create("com.markvasiv.databaseManager", DISPATCH_QUEUE_SERIAL);
-        _db = [[YapDatabase alloc] initWithPath:[[MVJsonHelper documentsPath] stringByAppendingPathComponent:@"yap"]];
+        _db = [[YapDatabase alloc] initWithPath:[[[MVFileManager sharedInstance] documentsPath] stringByAppendingPathComponent:@"yap"]];
         _contactsConnection = [_db newConnection];
         _chatsConnection = [_db newConnection];
         _messagesConnection = [_db newConnection];
@@ -260,7 +259,7 @@ static MVDatabaseManager *instance;
 - (void)generateData {
     NSArray <MVContactModel *> *contacts = [[MVRandomGenerator sharedInstance] generateContacts];
     [self insertContacts:contacts withCompletion:^(BOOL success) {
-        [[MVFileManager sharedInstance] generateImagesForContacts:contacts];
+        [[MVFileManager sharedInstance] generateAvatarsForContacts:contacts];
     }];
     
     NSArray <MVChatModel *> *chats = [[MVRandomGenerator sharedInstance] generateChatsWithContacts:contacts];
@@ -272,7 +271,7 @@ static MVDatabaseManager *instance;
     }
     
     [self insertChats:chats withCompletion:^(BOOL success) {
-        [[MVFileManager sharedInstance] generateImagesForChats:chats];
+        [[MVFileManager sharedInstance] generateAvatarsForChats:chats];
     }];
     
     [self insertMessages:allMessages withCompletion:nil];

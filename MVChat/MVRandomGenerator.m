@@ -10,7 +10,6 @@
 #import "MVChatModel.h"
 #import "MVContactModel.h"
 #import "MVMessageModel.h"
-#import "MVJsonHelper.h"
 #import "MVNameGenerator.h"
 #import "MVTextGenerator.h"
 #import "MVDatabaseManager.h"

@@ -355,6 +355,7 @@
         NSIndexPath *indexPath = mediaCell.indexPath;
         NSString *section = self.sections[indexPath.section];
         MVMessageModel *model = self.messages[section][indexPath.row];
+        
         [[MVFileManager sharedInstance] loadAttachmentForMessage:model completion:^(DBAttachment *attachment) {
             MVImageViewerViewModel *viewModel = [[MVImageViewerViewModel alloc] initWithSourceImageView:mediaCell.mediaImageView attachment:attachment andIndex:0];
             dispatch_async(dispatch_get_main_queue(), ^{

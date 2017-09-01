@@ -259,10 +259,8 @@ static UILabel *referenceMessageLabel;
     self.messageLabel.text = messageModel.text;
     self.timeLabel.text = [NSString messageTimeFromDate:messageModel.sendDate];
     if (self.direction == MessageDirectionIncoming) {
-        [[MVFileManager sharedInstance] loadAvatarAttachmentForContact:messageModel.contact completion:^(DBAttachment *attachment) {
-            [attachment thumbnailImageWithMaxWidth:50 completion:^(UIImage *image) {
-                self.avatarImage.image = image;
-            }];
+        [[MVFileManager sharedInstance] loadThumbnailAvatarForContact:messageModel.contact maxWidth:50 completion:^(UIImage *image) {
+            self.avatarImage.image = image;
         }];
     }
     

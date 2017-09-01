@@ -54,13 +54,10 @@ static NSString *ChatCellId = @"MVContactProfileChatCell";
         }
     }];
     
-    [[MVFileManager sharedInstance] loadAvatarAttachmentForContact:self.contact completion:^(DBAttachment *attachment) {
-        [attachment thumbnailImageWithMaxWidth:50 completion:^(UIImage *image) {
-            self.avatarImage = image;
-            self.avatarImageView.image = image;
-        }];
+    [[MVFileManager sharedInstance] loadThumbnailAvatarForContact:self.contact maxWidth:50 completion:^(UIImage *image) {
+        self.avatarImage = image;
+        self.avatarImageView.image = image;
     }];
-    
     
     [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
         NSString *contactId = note.userInfo[@"Id"];

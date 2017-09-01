@@ -149,7 +149,7 @@
             
             [[MVChatManager sharedInstance] createChatWithContacts:chatContacts title:chatTitle andCompeltion:^(MVChatModel *chat) {
                 if (avatarImage) {
-                    [[MVFileManager sharedInstance] saveAttachment:avatarImage asChatAvatar:chat];
+                    [[MVFileManager sharedInstance] saveChatAvatar:chat attachment:avatarImage];
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [rootNavigationController popToRootViewControllerAnimated:YES];
                         [self showChatViewWithChat:chat];

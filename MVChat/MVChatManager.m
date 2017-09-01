@@ -209,7 +209,7 @@ static MVChatManager *sharedManager;
         MVChatModel *chat = [[MVChatModel alloc] initWithId:[NSUUID UUID].UUIDString andTitle:title];
         chat.participants = [contacts arrayByAddingObject:MVContactManager.myContact];
         chat.lastUpdateDate = [NSDate new];
-        [[MVFileManager sharedInstance] generateImagesForChats:@[chat]];
+        [[MVFileManager sharedInstance] generateAvatarsForChats:@[chat]];
         [self addChat:chat];
         @synchronized (self.chatsMessages) {
             [self.chatsMessages setObject:[NSMutableArray new] forKey:chat.id];
@@ -254,7 +254,7 @@ static MVChatManager *sharedManager;
 
 - (void)sendMediaMessageWithAttachment:(DBAttachment *)attachment toChatWithId:(NSString *)chatId {
     MVMessageModel *message = [[MVMessageModel alloc] initWithId:NSUUID.UUID.UUIDString chatId:chatId type:MVMessageTypeMedia text:nil];
-    [[MVFileManager sharedInstance] saveAttachment:attachment asMessage:message completion:^{
+    [[MVFileManager sharedInstance] saveMediaMesssage:message attachment:attachment completion:^{
         [self sendMessage:message toChatWithId:chatId];
     }];
 }
