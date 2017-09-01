@@ -11,6 +11,8 @@
 #import "MVMessageModel.h"
 #import "MVChatManager.h"
 #import "MVContactManager.h"
+#import "MVFileManager.h"
+#import <DBAttachment.h>
 
 static NSDateFormatter *defaultDateFormatter;
 static NSDateFormatter *todayDateFormatter;
@@ -66,8 +68,10 @@ static NSDateFormatter *todayDateFormatter;
     self.avatarImageView.image = nil;
     
     if (chat.isPeerToPeer) {
-        [[MVContactManager sharedInstance] loadAvatarThumbnailForContact:chat.getPeer completion:^(UIImage *image) {
-            self.avatarImageView.image = image;
+        [[MVFileManager sharedInstance] loadAvatarAttachmentForContact:chat.getPeer completion:^(DBAttachment *attachment) {
+            [attachment thumbnailImageWithMaxWidth:50 completion:^(UIImage *image) {
+                self.avatarImageView.image = image;
+            }];
         }];
     } else {
         [[MVChatManager sharedInstance] loadAvatarThumbnailForChat:chat completion:^(UIImage *image) {

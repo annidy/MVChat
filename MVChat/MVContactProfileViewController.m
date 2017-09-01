@@ -13,6 +13,9 @@
 #import "MVChatViewController.h"
 #import "MVChatManager.h"
 #import "MVChatSharedMediaListController.h"
+#import "MVFileManager.h"
+#import <DBAttachment.h>
+#import "NSString+Helpers.h"
 
 @interface MVContactProfileViewController () <UITableViewDataSource, UITableViewDelegate>
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
@@ -47,14 +50,17 @@ static NSString *ChatCellId = @"MVContactProfileChatCell";
         if ([contactId isEqualToString:self.contact.id]) {
             NSDate *lastSeenDate = note.userInfo[@"LastSeenTime"];
             self.contact.lastSeenDate = lastSeenDate;
-            self.statusLabel.text = [[MVContactManager sharedInstance] lastSeenTimeStringForDate:lastSeenDate];
+            self.statusLabel.text = [NSString lastSeenTimeStringForDate:lastSeenDate];
         }
     }];
     
-    [[MVContactManager sharedInstance] loadAvatarThumbnailForContact:self.contact completion:^(UIImage *image) {
-        self.avatarImage = image;
-        self.avatarImageView.image = image;
+    [[MVFileManager sharedInstance] loadAvatarAttachmentForContact:self.contact completion:^(DBAttachment *attachment) {
+        [attachment thumbnailImageWithMaxWidth:50 completion:^(UIImage *image) {
+            self.avatarImage = image;
+            self.avatarImageView.image = image;
+        }];
     }];
+    
     
     [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
         NSString *contactId = note.userInfo[@"Id"];
@@ -139,7 +145,7 @@ static NSString *ChatCellId = @"MVContactProfileChatCell";
     UILabel *statusLabel = [cell viewWithTag:3];
     
     nameLabel.text = self.contact.name;
-    statusLabel.text = [[MVContactManager sharedInstance] lastSeenTimeStringForDate:self.contact.lastSeenDate];
+    statusLabel.text = [NSString lastSeenTimeStringForDate:self.contact.lastSeenDate];
     self.statusLabel = statusLabel;
     avatarImageView.layer.cornerRadius = 30;
     avatarImageView.layer.masksToBounds = YES;

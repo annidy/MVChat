@@ -21,5 +21,6 @@ typedef enum : NSUInteger {
 @property (assign, nonatomic) ContactStatus status;
 @property (strong, nonatomic) NSArray <NSString *> *phoneNumbers;
 @property (strong, nonatomic) NSDate *lastSeenDate;
-- (instancetype) initWithId:(NSString *)id name:(NSString *)name iam:(BOOL)iam status:(ContactStatus)status andAvatarName:(NSString *)avatarName;
+- (instancetype)initWithId:(NSString *)id name:(NSString *)name iam:(BOOL)iam status:(ContactStatus)status andAvatarName:(NSString *)avatarName;
+- (NSComparisonResult)compareContactsByName:(MVContactModel *)contact;
 @end

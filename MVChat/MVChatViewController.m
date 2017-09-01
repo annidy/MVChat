@@ -18,6 +18,7 @@
 #import "MVContactModel.h"
 #import "MVContactManager.h"
 #import "MVOverlayMenuController.h"
+#import <DBAttachment.h>
 
 @interface MVChatViewController () <MVForceTouchPresentaionDelegate>
 @property (weak, nonatomic) MVMessagesViewController *MessagesController;
@@ -91,8 +92,10 @@
     self.navigationItem.rightBarButtonItem = item;
     self.avatarImageView = imageView;
     if (self.chat.isPeerToPeer) {
-        [[MVContactManager sharedInstance] loadAvatarThumbnailForContact:self.chat.getPeer completion:^(UIImage *image) {
-            [self.avatarImageView setImage:image];
+        [[MVFileManager sharedInstance] loadAvatarAttachmentForContact:self.chat.getPeer completion:^(DBAttachment *attachment) {
+            [attachment thumbnailImageWithMaxWidth:50 completion:^(UIImage *image) {
+                self.avatarImageView.image = image;
+            }];
         }];
         
         [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {

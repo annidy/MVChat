@@ -16,6 +16,7 @@
 #import <DBAttachment.h>
 #import "MVFileManager.h"
 #import "MVContactProfileViewController.h"
+#import "NSString+Helpers.h"
 
 typedef enum : NSUInteger {
     MVChatSettingsModeNew,
@@ -229,8 +230,11 @@ static NSString *DeleteContactCellId = @"MVChatSettingsDeleteCell";
         UILabel *lastSeenLabel = [cell viewWithTag:3];
         
         contactNameLabel.text = contact.name;
-        [[MVContactManager sharedInstance] loadAvatarThumbnailForContact:contact completion:^(UIImage *image) {
-            contactAvatarImageView.image = image;
+        
+        [[MVFileManager sharedInstance] loadAvatarAttachmentForContact:contact completion:^(DBAttachment *attachment) {
+            [attachment thumbnailImageWithMaxWidth:50 completion:^(UIImage *image) {
+                contactAvatarImageView.image = image;
+            }];
         }];
         
         [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
@@ -244,12 +248,12 @@ static NSString *DeleteContactCellId = @"MVChatSettingsDeleteCell";
         contactAvatarImageView.layer.masksToBounds = YES;
         contactAvatarImageView.layer.cornerRadius = 15;
         
-        lastSeenLabel.text = [[MVContactManager sharedInstance] lastSeenTimeStringForDate:contact.lastSeenDate];
+        lastSeenLabel.text = [NSString lastSeenTimeStringForDate:contact.lastSeenDate];
         [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactLastSeenTimeUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
             NSString *contactId = note.userInfo[@"Id"];
             if ([contactId isEqualToString:contact.id]) {
                 NSDate *lastSeenDate = note.userInfo[@"LastSeenTime"];
-                lastSeenLabel.text = [[MVContactManager sharedInstance] lastSeenTimeStringForDate:lastSeenDate];
+                lastSeenLabel.text = [NSString lastSeenTimeStringForDate:lastSeenDate];
                 contact.lastSeenDate = lastSeenDate;
             }
         }];

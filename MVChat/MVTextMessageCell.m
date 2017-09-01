@@ -9,6 +9,8 @@
 #import "MVTextMessageCell.h"
 #import "MVContactManager.h"
 #import "MVChatManager.h"
+#import "MVFileManager.h"
+#import <DBAttachment.h>
 
 static CGFloat MVBubbleWidthMultiplierOutgoing = 0.8;
 static CGFloat MVBubbleWidthMultiplierIncoming = 0.7;
@@ -255,9 +257,15 @@ static UILabel *referenceMessageLabel;
 - (void)fillWithModel:(MVMessageModel *)messageModel {
     self.messageLabel.text = messageModel.text;
     self.timeLabel.text = [[MVChatManager sharedInstance] timeFromDate:messageModel.sendDate];
-    [[MVContactManager sharedInstance] loadAvatarThumbnailForContact:messageModel.contact completion:^(UIImage *image) {
-        self.avatarImage.image = image;
-    }];
+    
+    if (self.direction == MessageDirectionIncoming) {
+        [[MVFileManager sharedInstance] loadAvatarAttachmentForContact:messageModel.contact completion:^(DBAttachment *attachment) {
+            [attachment thumbnailImageWithMaxWidth:50 completion:^(UIImage *image) {
+                self.avatarImage.image = image;
+            }];
+        }];
+    }
+    
     
     __weak MVTextMessageCell *weakCell = self;
     [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {

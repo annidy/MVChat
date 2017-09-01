@@ -108,6 +108,23 @@ static MVDatabaseManager *instance;
     [self.db registerExtension:chatsView withName:@"orderedChats"];
     
     
+    YapDatabaseViewGrouping *contactsGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString * _Nullable(YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
+        if ([collection isEqualToString:contactsCollection]) {
+            return @"contacts";
+        }
+        
+        return nil;
+    }];
+    
+    YapDatabaseViewSorting *contactsSorting = [YapDatabaseViewSorting withObjectBlock: ^NSComparisonResult (YapDatabaseReadTransaction *transaction, NSString *group, NSString *collection1, NSString *key1, id object1, NSString *collection2, NSString *key2, id object2) {
+        MVContactModel *chat = (MVContactModel *)object1;
+        return [chat compareContactsByName:object2];
+    }];
+    
+    YapDatabaseAutoView *contactsView = [[YapDatabaseAutoView alloc] initWithGrouping:contactsGrouping sorting:contactsSorting];
+    [self.db registerExtension:contactsView withName:@"orderedContacts"];
+    
+    
 //    YapDatabaseViewFiltering *filt = [YapDatabaseViewFiltering withObjectBlock:^BOOL(YapDatabaseReadTransaction *transaction, NSString *group, NSString *collection, NSString *key, id object) {
 //        return YES;
 //    }];
@@ -125,7 +142,7 @@ static MVDatabaseManager *instance;
     dispatch_async(self.managerQueue, ^{
         __block NSMutableArray *contacts = [NSMutableArray new];
         [self.contactsConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            [transaction enumerateKeysAndObjectsInCollection:contactsCollection usingBlock:^(NSString *key, id object, BOOL *stop) {
+            [[transaction ext:@"orderedContacts"] enumerateKeysAndObjectsInGroup:@"contacts" usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
                 [contacts addObject:object];
             }];
         }];

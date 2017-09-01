@@ -9,6 +9,9 @@
 #import "MVContactsListCell.h"
 #import "MVContactModel.h"
 #import "MVContactManager.h"
+#import "MVFileManager.h"
+#import <DBAttachment.h>
+#import "NSString+Helpers.h"
 
 @interface MVContactsListCell()
 @property (strong, nonatomic) IBOutlet UIImageView *avatarImageView;
@@ -21,16 +24,19 @@
 - (void)fillWithContact:(MVContactModel *)contact {
     self.nameLabel.text = contact.name;
     self.avatarImageView.image = nil;
-    [[MVContactManager sharedInstance] loadAvatarThumbnailForContact:contact completion:^(UIImage *image) {
-        self.avatarImageView.image = image;
+    
+    [[MVFileManager sharedInstance] loadAvatarAttachmentForContact:contact completion:^(DBAttachment *attachment) {
+        [attachment thumbnailImageWithMaxWidth:50 completion:^(UIImage *image) {
+            self.avatarImageView.image = image;
+        }];
     }];
     
-    self.lastSeenLabel.text = [[MVContactManager sharedInstance] lastSeenTimeStringForDate:contact.lastSeenDate];
+    self.lastSeenLabel.text = [NSString lastSeenTimeStringForDate:contact.lastSeenDate];
     [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactLastSeenTimeUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
         NSString *contactId = note.userInfo[@"Id"];
         if ([contactId isEqualToString:contact.id]) {
             NSDate *lastSeenDate = note.userInfo[@"LastSeenTime"];
-            self.lastSeenLabel.text = [[MVContactManager sharedInstance] lastSeenTimeStringForDate:lastSeenDate];
+            self.lastSeenLabel.text = [NSString lastSeenTimeStringForDate:lastSeenDate];
         }
     }];
     

@@ -74,4 +74,11 @@
     [encoder encodeObject:_phoneNumbers forKey:@"phoneNumbers"];
     [encoder encodeObject:_lastSeenDate forKey:@"lastSeenDate"];
 }
+
+- (NSComparisonResult)compareContactsByName:(MVContactModel *)contact {
+    NSString *first = [self.name uppercaseString];
+    NSString *second = [contact.name uppercaseString];
+    
+    return [first compare:second];
+}
 @end
