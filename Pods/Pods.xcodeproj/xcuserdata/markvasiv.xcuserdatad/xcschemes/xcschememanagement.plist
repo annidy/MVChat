@@ -4,6 +4,11 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>CocoaLumberjack.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>DBAttachmentPickerController-DBAttachmentPickerController.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -20,6 +25,11 @@
 			<false/>
 		</dict>
 		<key>Pods-MVChat.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>YapDatabase.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -42,7 +52,17 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>B7F02CAF930E12793FB30DCE46D6EB57</key>
+		<key>A677B8D69C9AE5B41FD9DF828D9232CE</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>A9D9DCCE5442795D0AD9E99D86389328</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>E52F0115F69B738CDC4AA7BF8F018121</key>
 		<dict>
 			<key>primary</key>
 			<true/>

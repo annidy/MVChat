@@ -8,4 +8,5 @@ target 'MVChat' do
   # Pods for MVChat
   pod 'DBAttachmentPickerController'
   pod 'INTUAnimationEngine'
+  pod 'YapDatabase'
 end
