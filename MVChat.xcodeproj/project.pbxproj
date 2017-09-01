@@ -12,7 +12,6 @@
 		CD0503661F27D2F300A1C4D2 /* MVContactsListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0503651F27D2F300A1C4D2 /* MVContactsListCell.m */; };
 		CD0550851F0573E50076FB25 /* MVJsonHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0550841F0573E50076FB25 /* MVJsonHelper.m */; };
 		CD05508A1F06E8110076FB25 /* MVDatabaseManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0550891F06E8110076FB25 /* MVDatabaseManager.m */; };
-		CD05508D1F07F67B0076FB25 /* NSObject+Serialization.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05508C1F07F67B0076FB25 /* NSObject+Serialization.m */; };
 		CD0550901F0938D90076FB25 /* MVNameGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05508F1F0938D90076FB25 /* MVNameGenerator.m */; };
 		CD0550951F0939E60076FB25 /* name.csv in Resources */ = {isa = PBXBuildFile; fileRef = CD0550921F0939E60076FB25 /* name.csv */; };
 		CD0550961F0939E60076FB25 /* syllable.csv in Resources */ = {isa = PBXBuildFile; fileRef = CD0550931F0939E60076FB25 /* syllable.csv */; };
@@ -58,7 +57,6 @@
 		CDAB09921E7DE2D800A142DC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CDAB09911E7DE2D800A142DC /* Assets.xcassets */; };
 		CDB89D3A1F2242DB0024BFDB /* MVChatsListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB89D391F2242DB0024BFDB /* MVChatsListCell.m */; };
 		CDB97CE01F43522800950F6A /* MVFileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB97CDF1F43522800950F6A /* MVFileManager.m */; };
-		CDE957951F1A7B64007AE7EA /* MVDataAggregator.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE957941F1A7B64007AE7EA /* MVDataAggregator.m */; };
 		CDF479AF1EB66C00003B3C8E /* MVChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF479AE1EB66C00003B3C8E /* MVChatViewController.m */; };
 		CDF479B41EB68980003B3C8E /* MVMessagesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF479B31EB68980003B3C8E /* MVMessagesViewController.m */; };
 		CDF479B71EB68AAF003B3C8E /* MVFooterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF479B61EB68AAF003B3C8E /* MVFooterViewController.m */; };
@@ -77,8 +75,6 @@
 		CD0550841F0573E50076FB25 /* MVJsonHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVJsonHelper.m; sourceTree = "<group>"; };
 		CD0550881F06E8110076FB25 /* MVDatabaseManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVDatabaseManager.h; sourceTree = "<group>"; };
 		CD0550891F06E8110076FB25 /* MVDatabaseManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVDatabaseManager.m; sourceTree = "<group>"; };
-		CD05508B1F07F67B0076FB25 /* NSObject+Serialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+Serialization.h"; sourceTree = "<group>"; };
-		CD05508C1F07F67B0076FB25 /* NSObject+Serialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+Serialization.m"; sourceTree = "<group>"; };
 		CD05508E1F0938D90076FB25 /* MVNameGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVNameGenerator.h; sourceTree = "<group>"; };
 		CD05508F1F0938D90076FB25 /* MVNameGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVNameGenerator.m; sourceTree = "<group>"; };
 		CD0550921F0939E60076FB25 /* name.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = name.csv; path = "../../../../Downloads/NameGen-master/name.csv"; sourceTree = "<group>"; };
@@ -169,8 +165,6 @@
 		CDB89D391F2242DB0024BFDB /* MVChatsListCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVChatsListCell.m; sourceTree = "<group>"; };
 		CDB97CDE1F43522800950F6A /* MVFileManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVFileManager.h; sourceTree = "<group>"; };
 		CDB97CDF1F43522800950F6A /* MVFileManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVFileManager.m; sourceTree = "<group>"; };
-		CDE957931F1A7B64007AE7EA /* MVDataAggregator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVDataAggregator.h; sourceTree = "<group>"; };
-		CDE957941F1A7B64007AE7EA /* MVDataAggregator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVDataAggregator.m; sourceTree = "<group>"; };
 		CDF479AD1EB66C00003B3C8E /* MVChatViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVChatViewController.h; sourceTree = "<group>"; };
 		CDF479AE1EB66C00003B3C8E /* MVChatViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVChatViewController.m; sourceTree = "<group>"; };
 		CDF479B21EB68980003B3C8E /* MVMessagesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVMessagesViewController.h; sourceTree = "<group>"; };
@@ -289,11 +283,7 @@
 				CD6C2A3E1EC609F00007BA05 /* MVRandomGenerator.m */,
 				CD0550831F0573E50076FB25 /* MVJsonHelper.h */,
 				CD0550841F0573E50076FB25 /* MVJsonHelper.m */,
-				CD05508B1F07F67B0076FB25 /* NSObject+Serialization.h */,
-				CD05508C1F07F67B0076FB25 /* NSObject+Serialization.m */,
 				CD0550911F0938DD0076FB25 /* Text generators */,
-				CDE957931F1A7B64007AE7EA /* MVDataAggregator.h */,
-				CDE957941F1A7B64007AE7EA /* MVDataAggregator.m */,
 				CD4059B81F4DAA7600808D3A /* MVForceTouchGestureRecogniser.h */,
 				CD4059B91F4DAA7600808D3A /* MVForceTouchGestureRecogniser.m */,
 				CD4059C11F4DAE9D00808D3A /* NSInvocation+Protocols.h */,
@@ -688,7 +678,6 @@
 				CD28B3611EB6A63300BFFCAA /* MVContactModel.m in Sources */,
 				CD28B3601EB6A63300BFFCAA /* MVChatManager.m in Sources */,
 				CD0550901F0938D90076FB25 /* MVNameGenerator.m in Sources */,
-				CDE957951F1A7B64007AE7EA /* MVDataAggregator.m in Sources */,
 				CD4059C61F4DC8E300808D3A /* MVOverlayMenuCell.m in Sources */,
 				CDF479AF1EB66C00003B3C8E /* MVChatViewController.m in Sources */,
 				CD5FF0DD1F53045D00A347EF /* MVMediaMessageCell.m in Sources */,
@@ -713,7 +702,6 @@
 				CD28B38F1EB7E1D100BFFCAA /* MVMessageHeader.m in Sources */,
 				CD6C2A3F1EC609F00007BA05 /* MVRandomGenerator.m in Sources */,
 				CD61CFA21F2E3A0000A5884D /* MVContactsListSearchViewController.m in Sources */,
-				CD05508D1F07F67B0076FB25 /* NSObject+Serialization.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

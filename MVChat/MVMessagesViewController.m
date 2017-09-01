@@ -12,7 +12,6 @@
 #import "MVTextMessageCell.h"
 #import "MVMessageHeader.h"
 #import "MVContactManager.h"
-#import "MVDataAggregator.h"
 #import "MVSystemMessageCell.h"
 #import "MVMediaMessageCell.h"
 #import "MVMessageCellDelegate.h"

@@ -9,7 +9,7 @@
 #import "MVJsonHelper.h"
 #import "MVContactModel.h"
 #import "MVChatModel.h"
-#import "NSObject+Serialization.h"
+
 
 @implementation MVJsonHelper
 + (NSString *)documentsPath {
@@ -36,26 +36,6 @@
     return arr;
 }
 
-+ (NSArray *)parseEnitiesWithClass:(Class)class fromJson:(NSArray *)jsonArray {
-    if (!jsonArray) return nil;
-    
-    NSMutableArray *enities = [NSMutableArray new];
-    for (NSDictionary *jsonEntity in jsonArray) {
-        [enities addObject:[[class new] fillWithData:jsonEntity]];
-    }
-    
-    return [enities copy];
-}
-
-+ (NSData *)parseArrayToJson:(NSArray *)array {
-    NSError *error;
-    NSMutableArray *dictArray = [NSMutableArray new];
-    for (id obj in array) {
-        [dictArray addObject:[obj serialize]];
-    }
-    
-    return [NSJSONSerialization dataWithJSONObject:dictArray options:NSJSONWritingPrettyPrinted error:&error];
-}
 
 + (BOOL)writeData:(NSData *)data toFileWithName:(NSString *)name extenssion:(NSString *)extenssion {
     NSString *path = [self pathToFile:name extenssion:extenssion];
