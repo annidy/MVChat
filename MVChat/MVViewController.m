@@ -94,7 +94,6 @@
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
     if (self = [super initWithCoder:aDecoder]) {
-        self.providesPresentationContextTransitionStyle = YES;
         self.definesPresentationContext = YES;
         _forceTouchListeners = [NSMutableArray new];
         _registrationContext = @"0";

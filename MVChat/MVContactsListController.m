@@ -215,7 +215,7 @@
     [self showChatViewWithContact:contact];
 }
 
-#pragma mark - Button press
+#pragma mark - Button tap
 - (void)nextButtonAction {
     self.doneAction([self.selectedContacts copy]);
 }
@@ -223,9 +223,7 @@
 #pragma mark - Helpers
 - (void)showChatViewWithContact:(MVContactModel *)contact {
     [[MVChatManager sharedInstance] chatWithContact:contact andCompeltion:^(MVChatModel *chat) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self showChatViewWithChat:chat];
-        });
+        [self showChatViewWithChat:chat];
     }];
 }
 

@@ -18,7 +18,7 @@
 #import "MVChatSettingsViewController.h"
 #import "MVFileManager.h"
 #import "MVOverlayMenuController.h"
-
+#import "MVUpdatesProvider.h"
 
 @interface MVChatsListViewController () <UITableViewDelegate, UITableViewDataSource, MVChatsUpdatesListener, UISearchResultsUpdating, MVSearchProviderDelegate, MVForceTouchPresentaionDelegate>
 @property (strong, nonatomic) IBOutlet UITableView *chatsList;
@@ -40,24 +40,13 @@
     
     [MVChatManager sharedInstance].chatsListener = self;
     self.chats = [[MVChatManager sharedInstance] chatsList];
-    
     self.chatsList.tableFooterView = [UIView new];
     self.chatsList.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
-    
-    self.searchResultsController = [MVChatsListSearchViewController loadFromStoryboardWithDelegate:self];
-    
-    self.searchController = [[UISearchController alloc] initWithSearchResultsController:self.searchResultsController];
-    self.searchController.searchResultsUpdater = self;
-    self.searchController.dimsBackgroundDuringPresentation = NO;
-    self.searchController.searchBar.searchBarStyle = UISearchBarStyleMinimal;
-    self.chatsList.tableHeaderView = self.searchController.searchBar;
-    self.definesPresentationContext = YES;
-    
     self.chatsList.delegate = self;
     self.chatsList.dataSource = self;
     
     [self setupNavigationBar];
-    
+    [self setupSearchController];
     [self registerForceTouchControllerWithDelegate:self andSourceView:self.createChatButton];
 }
 
@@ -72,6 +61,17 @@
     UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithCustomView:button];
     self.navigationItem.rightBarButtonItem = item;
     self.navigationItem.title = @"Chats";
+}
+
+- (void)setupSearchController {
+    self.searchResultsController = [MVChatsListSearchViewController loadFromStoryboardWithDelegate:self];
+    
+    self.searchController = [[UISearchController alloc] initWithSearchResultsController:self.searchResultsController];
+    self.searchController.searchResultsUpdater = self;
+    self.searchController.dimsBackgroundDuringPresentation = NO;
+    self.searchController.searchBar.searchBarStyle = UISearchBarStyleMinimal;
+    self.chatsList.tableHeaderView = self.searchController.searchBar;
+    self.definesPresentationContext = YES;
 }
 
 #pragma mark - Data handling
@@ -146,22 +146,12 @@
     UINavigationController *rootNavigationController = self.navigationController.navigationController;
     MVContactsListController *contactsList = [MVContactsListController loadFromStoryboardWithMode:MVContactsListControllerModeSelectable andDoneAction:^(NSArray<MVContactModel *> *selectedContacts) {
         MVChatSettingsViewController *settings = [MVChatSettingsViewController loadFromStoryboardWithContacts:selectedContacts andDoneAction:^(NSArray<MVContactModel *> *chatContacts, NSString *chatTitle, DBAttachment *avatarImage) {
-            
             [[MVChatManager sharedInstance] createChatWithContacts:chatContacts title:chatTitle andCompletion:^(MVChatModel *chat) {
                 if (avatarImage) {
                     [[MVFileManager sharedInstance] saveChatAvatar:chat attachment:avatarImage];
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [rootNavigationController popToRootViewControllerAnimated:YES];
-                        [self showChatViewWithChat:chat];
-                    });
                 }
-                else {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [rootNavigationController popToRootViewControllerAnimated:YES];
-                        [self showChatViewWithChat:chat];
-                    });
-                }
-                
+                [rootNavigationController popToRootViewControllerAnimated:YES];
+                [self showChatViewWithChat:chat];
             }];
         }];
         [rootNavigationController pushViewController:settings animated:YES];
@@ -177,16 +167,16 @@
         [self createNewChat];
     }]];
     [menuElements addObject:[MVOverlayMenuElement elementWithTitle:@"Avatars update" action:^{
-        
+        [[MVUpdatesProvider sharedInstance] performAvatarsUpdate];
     }]];
     [menuElements addObject:[MVOverlayMenuElement elementWithTitle:@"Last seen update" action:^{
-        
+        [[MVUpdatesProvider sharedInstance] performLastSeenUpdate];
     }]];
     [menuElements addObject:[MVOverlayMenuElement elementWithTitle:@"Messages update" action:^{
-        
+        [[MVUpdatesProvider sharedInstance] performMessagesUpdate];
     }]];
     [menuElements addObject:[MVOverlayMenuElement elementWithTitle:@"Chats update" action:^{
-        
+        [[MVUpdatesProvider sharedInstance] performChatsUpdate];
     }]];
     menu.menuElements = [menuElements copy];
     
