@@ -14,13 +14,18 @@ typedef enum : NSUInteger {
     MessageDirectionOutgoing
 } MessageDirection;
 
-typedef enum : NSUInteger {
+#ifndef MVMessageType_h
+#define MVMessageType_h
+
+typedef NS_ENUM(NSUInteger, MVMessageType) {
     MVMessageTypeText,
     MVMessageTypeSystem,
-    MVMessageTypeMedia
-} MVMessageType;
+    MVMessageTypeMedia,
+};
 
-@interface MVMessageModel : NSObject
+#endif /* MVMessageType_h */
+
+@interface MVMessageModel : NSObject <NSCoding>
 @property (strong, nonatomic) NSString *id;
 @property (strong, nonatomic) NSString *chatId;
 @property (strong, nonatomic) NSString *text;
@@ -28,4 +33,5 @@ typedef enum : NSUInteger {
 @property (assign, nonatomic) MVMessageType type;
 @property (strong, nonatomic) NSDate *sendDate;
 @property (strong, nonatomic) MVContactModel *contact;
+- (NSComparisonResult)compareMessageBySendDate:(MVMessageModel *)message;
 @end

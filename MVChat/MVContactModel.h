@@ -14,12 +14,11 @@ typedef enum : NSUInteger {
     ContactStatusDoNotDisturb
 } ContactStatus;
 
-@interface MVContactModel : NSObject <NSCopying>
+@interface MVContactModel : NSObject <NSCopying, NSCoding>
 @property (strong, nonatomic) NSString *id;
 @property (strong, nonatomic) NSString *name;
 @property (assign, nonatomic) BOOL iam;
 @property (assign, nonatomic) ContactStatus status;
-@property (strong, nonatomic) NSString *avatarName;
 @property (strong, nonatomic) NSArray <NSString *> *phoneNumbers;
 @property (strong, nonatomic) NSDate *lastSeenDate;
 - (instancetype) initWithId:(NSString *)id name:(NSString *)name iam:(BOOL)iam status:(ContactStatus)status andAvatarName:(NSString *)avatarName;

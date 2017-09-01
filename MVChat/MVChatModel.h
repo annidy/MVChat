@@ -10,7 +10,7 @@
 @class MVContactModel;
 @class MVMessageModel;
 
-@interface MVChatModel : NSObject <NSCopying>
+@interface MVChatModel : NSObject <NSCopying, NSCoding>
 @property (strong, nonatomic) NSString *id;
 @property (strong, nonatomic) NSString *title;
 @property (strong, nonatomic) NSArray <MVContactModel *> *participants;
@@ -19,4 +19,5 @@
 - (instancetype)initWithId:(NSString *)id andTitle:(NSString *)title;
 - (BOOL)isPeerToPeer;
 - (MVContactModel *)getPeer;
+- (NSComparisonResult)compareChatByLastUpdateDate:(MVChatModel *)chat;
 @end
