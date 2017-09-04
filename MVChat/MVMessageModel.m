@@ -29,6 +29,7 @@
     copy.type = self.type;
     copy.sendDate = [self.sendDate copy];
     copy.contact = [self.contact copy];
+    copy.read = self.read;
     
     return copy;
 }
@@ -42,6 +43,7 @@
         _type = [decoder decodeIntegerForKey:@"type"];
         _sendDate = [decoder decodeObjectForKey:@"sendDate"];
         _contact = [decoder decodeObjectForKey:@"contact"];
+        _read = [decoder decodeBoolForKey:@"read"];
     }
     
     return self;
@@ -55,6 +57,7 @@
     [encoder encodeInteger:_type forKey:@"type"];
     [encoder encodeObject:_sendDate forKey:@"sendDate"];
     [encoder encodeObject:_contact forKey:@"contact"];
+    [encoder encodeBool:_read forKey:@"read"];
 }
 
 - (NSComparisonResult)compareMessageBySendDate:(MVMessageModel *)message {

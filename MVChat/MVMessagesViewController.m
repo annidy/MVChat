@@ -202,6 +202,7 @@
     self.messages = [messages mutableCopy];
     self.sections = [sections mutableCopy];
     [self.messagesTableView reloadData];
+    [[MVChatManager sharedInstance] markChatAsRead:self.chatId];
 }
 
 - (void)insertNewMessage:(MVMessageModel *)message {
@@ -210,6 +211,10 @@
     });
     
     //Animate new message!
+}
+
+- (void)updateMessage:(MVMessageModel *)message {
+    //TODO: support delivery status
 }
 
 - (void)handleNewMessagesBlock:(NSArray <MVMessageModel *> *)messageModels {
@@ -234,6 +239,7 @@
         @synchronized (self) {
             self.loadingNewPage = NO;
         }
+        [[MVChatManager sharedInstance] markChatAsRead:self.chatId];
     });
 }
 

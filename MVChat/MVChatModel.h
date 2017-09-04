@@ -17,6 +17,7 @@
 @property (strong, nonatomic) NSDate *lastUpdateDate;
 @property (strong, nonatomic) MVMessageModel *lastMessage;
 @property (assign, nonatomic) BOOL isPeerToPeer;
+@property (assign, nonatomic) NSUInteger unreadCount;
 - (instancetype)initWithId:(NSString *)id andTitle:(NSString *)title;
 - (MVContactModel *)getPeer;
 - (NSComparisonResult)compareChatByLastUpdateDate:(MVChatModel *)chat;

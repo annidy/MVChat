@@ -25,7 +25,7 @@ typedef NS_ENUM(NSUInteger, MVMessageType) {
 
 #endif /* MVMessageType_h */
 
-@interface MVMessageModel : NSObject <NSCoding>
+@interface MVMessageModel : NSObject <NSCoding, NSCopying>
 @property (strong, nonatomic) NSString *id;
 @property (strong, nonatomic) NSString *chatId;
 @property (strong, nonatomic) NSString *text;
@@ -33,6 +33,7 @@ typedef NS_ENUM(NSUInteger, MVMessageType) {
 @property (assign, nonatomic) MVMessageType type;
 @property (strong, nonatomic) NSDate *sendDate;
 @property (strong, nonatomic) MVContactModel *contact;
+@property (assign, nonatomic) BOOL read;
 - (instancetype)initWithId:(NSString *)id chatId:(NSString *)chatId type:(MVMessageType)type text:(NSString *)text;
 - (NSComparisonResult)compareMessageBySendDate:(MVMessageModel *)message;
 @end

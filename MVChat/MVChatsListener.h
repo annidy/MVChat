@@ -12,10 +12,13 @@
 
 @protocol MVMessagesUpdatesListener <NSObject>
 - (void)insertNewMessage:(MVMessageModel *)message;
+- (void)updateMessage:(MVMessageModel *)message;
 - (NSString *)chatId;
 @end
 
 @protocol MVChatsUpdatesListener <NSObject>
 - (void)updateChats;
 - (void)insertNewChat:(MVChatModel *)chat;
+- (void)updateChat:(MVChatModel *)chat withSorting:(BOOL)sorting newIndex:(NSUInteger)newIndex;
+- (void)removeChat:(MVChatModel *)chat;
 @end

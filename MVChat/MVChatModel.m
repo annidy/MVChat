@@ -38,6 +38,7 @@
     copy.lastUpdateDate = [self.lastUpdateDate copy];
     copy.lastMessage = [self.lastMessage copy];
     copy.isPeerToPeer = self.isPeerToPeer;
+    copy.unreadCount = self.unreadCount;
     
     return copy;
 }
@@ -50,6 +51,7 @@
         _lastUpdateDate = [decoder decodeObjectForKey:@"lastUpdateDate"];
         _lastMessage = [decoder decodeObjectForKey:@"lastMessage"];
         _isPeerToPeer = [decoder decodeBoolForKey:@"isPeerToPeer"];
+        _unreadCount = [decoder decodeIntegerForKey:@"unreadCount"];
     }
     
     return self;
@@ -62,6 +64,7 @@
     [encoder encodeObject:_lastUpdateDate forKey:@"lastUpdateDate"];
     [encoder encodeObject:_lastMessage forKey:@"lastMessage"];
     [encoder encodeBool:_isPeerToPeer forKey:@"isPeerToPeer"];
+    [encoder encodeInteger:_unreadCount forKey:@"unreadCount"];
 }
 
 - (NSComparisonResult)compareChatByLastUpdateDate:(MVChatModel *)chat {

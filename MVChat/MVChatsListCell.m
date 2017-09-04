@@ -23,7 +23,7 @@ static NSDateFormatter *todayDateFormatter;
 @property (strong, nonatomic) IBOutlet UILabel *dateLabel;
 @property (strong, nonatomic) IBOutlet UIImageView *avatarImageView;
 @property (strong, nonatomic) MVChatModel *chatModel;
-
+@property (strong, nonatomic) IBOutlet UIButton *unreadCountButton;
 @end
 
 @implementation MVChatsListCell
@@ -64,7 +64,14 @@ static NSDateFormatter *todayDateFormatter;
         formatter = self.defaultDateFormatter;
     }
     self.dateLabel.text = [formatter stringFromDate:chat.lastUpdateDate];
-
+    
+    if (chat.unreadCount != 0) {
+        [self.unreadCountButton setTitle:[NSString stringWithFormat:@"%lu", (unsigned long)chat.unreadCount] forState:UIControlStateNormal];
+        self.unreadCountButton.hidden = NO;
+    } else {
+        self.unreadCountButton.hidden = YES;
+    }
+    
     self.avatarImageView.image = nil;
     
     [[MVFileManager sharedInstance] loadThumbnailAvatarForChat:chat maxWidth:50 completion:^(UIImage *image) {
@@ -83,6 +90,8 @@ static NSDateFormatter *todayDateFormatter;
     
     self.avatarImageView.layer.cornerRadius = 24;
     self.avatarImageView.layer.masksToBounds = YES;
+    self.unreadCountButton.layer.cornerRadius = 9;
+    self.unreadCountButton.layer.masksToBounds = YES;
     
     [[NSNotificationCenter defaultCenter] addObserverForName:@"ChatAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
         NSString *chatId = note.userInfo[@"Id"];

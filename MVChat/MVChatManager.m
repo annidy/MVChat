@@ -136,17 +136,18 @@ static MVChatManager *sharedManager;
 
 - (void)replaceChat:(MVChatModel *)chat withSorting:(BOOL)sorting {
     NSInteger oldIndex = [self indexOfChatWithId:chat.id];
+    NSInteger newIndex = NSNotFound;
     @synchronized (self.chats) {
         if (!sorting) {
             [self.chats replaceObjectAtIndex:oldIndex withObject:chat];
         } else {
             [self.chats removeObjectAtIndex:oldIndex];
-            NSUInteger newIndex = [self.chats indexOfObject:chat inSortedRange:(NSRange){0, self.chats.count} options:NSBinarySearchingInsertionIndex usingComparator:MVChatModel.comparatorByLastUpdateDate];
+            newIndex = [self.chats indexOfObject:chat inSortedRange:(NSRange){0, self.chats.count} options:NSBinarySearchingInsertionIndex usingComparator:MVChatModel.comparatorByLastUpdateDate];
             [self.chats insertObject:chat atIndex:newIndex];
         }
     };
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self.chatsListener updateChats];
+        [self.chatsListener updateChat:chat withSorting:sorting newIndex:newIndex];
     });
 }
 
@@ -159,13 +160,12 @@ static MVChatManager *sharedManager;
     }
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self.chatsListener updateChats];
+        [self.chatsListener removeChat:chat];
     });
 }
 
 - (void)addMessage:(MVMessageModel *)message {
     dispatch_async(self.managerQueue, ^{
-        
         @synchronized (self.chatsMessages) {
             NSMutableArray *messages = [self.chatsMessages objectForKey:message.chatId];
             if (!messages) {
@@ -181,14 +181,24 @@ static MVChatManager *sharedManager;
                 [self.messagesListener insertNewMessage:message];
             });
         }
-        
-        MVChatModel *chat = [self chatWithId:message.chatId];
-        chat.lastUpdateDate = message.sendDate;
-        chat.lastMessage = message;
-        [self replaceChat:chat withSorting:YES];
     });
 }
 
+- (void)updateMessage:(MVMessageModel *)message {
+    dispatch_async(self.managerQueue, ^{
+        NSUInteger index = [self indexOfMessage:message];
+        if (index != NSNotFound) {
+            @synchronized (self.chatsMessages) {
+                [[self.chatsMessages objectForKey:message.chatId] replaceObjectAtIndex:index withObject:message];
+            }
+            if ([self.messagesListener.chatId isEqualToString:message.chatId]) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.messagesListener updateMessage:message];
+                });
+            }
+        }
+    });
+}
 
 #pragma mark - Handle Chats
 - (void)chatWithContact:(MVContactModel *)contact andCompeltion:(void (^)(MVChatModel *))callback {
@@ -247,6 +257,34 @@ static MVChatManager *sharedManager;
     });
 }
 
+- (void)markChatAsRead:(NSString *)chatId {
+    dispatch_async(self.managerQueue, ^{
+        MVChatModel *existingChat = [self chatWithId:chatId];
+        if (existingChat && existingChat.unreadCount != 0) {
+            existingChat.unreadCount = 0;
+            [self replaceChat:existingChat withSorting:NO];
+            [[MVDatabaseManager sharedInstance] insertChats:@[existingChat] withCompletion:nil];
+        }
+        
+        NSArray *messages;
+        @synchronized (self.chatsMessages) {
+            messages = [self.chatsMessages objectForKey:chatId];
+        }
+        
+        for (MVMessageModel *message in messages) {
+            if (!message.read) {
+                MVMessageModel *messageCopy = [message copy];
+                messageCopy.read = YES;
+                [self updateMessage:messageCopy];
+                [[MVDatabaseManager sharedInstance] insertMessages:@[messageCopy] withCompletion:nil];
+            }
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.chatsListener updateChats];
+        });
+    });
+}
 
 #pragma mark - Send Messages
 - (void)sendTextMessage:(NSString *)text toChatWithId:(NSString *)chatId{
@@ -274,6 +312,12 @@ static MVChatManager *sharedManager;
         message.sendDate = [NSDate new];
         [self addMessage:message];
         [[MVDatabaseManager sharedInstance] insertMessages:@[message] withCompletion:nil];
+        
+        MVChatModel *chat = [self chatWithId:chatId];
+        chat.lastMessage = message;
+        chat.lastUpdateDate = message.sendDate;
+        [self updateChat:chat];
+        [[MVDatabaseManager sharedInstance] insertChats:@[chat] withCompletion:nil];
     });
 }
 
@@ -303,13 +347,21 @@ static MVChatManager *sharedManager;
 
 #pragma mark - Helpers
 - (void)generateMessageForChatWithId:(NSString *)chatId {
-    MVChatModel *chat = [self chatWithId:chatId];
-    MVMessageModel *message = [[MVRandomGenerator sharedInstance] randomIncomingMessageWithChat:chat];
-    message.sendDate = [NSDate new];
-    message.id = [NSUUID UUID].UUIDString;
+    dispatch_async(self.managerQueue, ^{
+        MVChatModel *chat = [self chatWithId:chatId];
+        MVMessageModel *message = [[MVRandomGenerator sharedInstance] randomIncomingMessageWithChat:chat];
+        message.sendDate = [NSDate new];
+        message.id = [NSUUID UUID].UUIDString;
+        [self addMessage:message];
+        [[MVDatabaseManager sharedInstance] insertMessages:@[message] withCompletion:nil];
     
-    [[MVDatabaseManager sharedInstance] insertMessages:@[message] withCompletion:nil];
-    [self addMessage:message];
+        chat.lastMessage = message;
+        chat.lastUpdateDate = message.sendDate;
+        chat.unreadCount += 1;
+        [self replaceChat:chat withSorting:YES];
+        [[MVDatabaseManager sharedInstance] insertChats:@[chat] withCompletion:nil];
+    });
+    
 }
 
 - (NSUInteger)numberOfPages:(NSArray *)messages {
@@ -351,6 +403,18 @@ static MVChatManager *sharedManager;
         for (MVChatModel *chat in self.chats) {
             if ([chat.id isEqualToString:chatId]) {
                 return [self.chats indexOfObject:chat];
+            }
+        }
+    }
+    
+    return NSNotFound;
+}
+
+- (NSInteger)indexOfMessage:(MVMessageModel *)message {
+    @synchronized (self.chatsMessages) {
+        for (MVMessageModel *messageModel in [self.chatsMessages objectForKey:message.chatId]) {
+            if ([message.id isEqualToString:messageModel.id]) {
+                return [self.chats indexOfObject:messageModel];
             }
         }
     }

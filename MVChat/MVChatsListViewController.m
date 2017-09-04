@@ -87,6 +87,38 @@
     [self.chatsList reloadData];
 }
 
+- (void)removeChat:(MVChatModel *)chat {
+    NSUInteger index = [self indexOfChatWithId:chat.id];
+    NSMutableArray *mutableChats = [self.chats mutableCopy];
+    [mutableChats removeObjectAtIndex:index];
+    self.chats = [mutableChats copy];
+    if (index != NSNotFound) {
+        [self.chatsList deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
+}
+
+- (void)updateChat:(MVChatModel *)chat withSorting:(BOOL)sorting newIndex:(NSUInteger)newIndex {
+    NSUInteger index = [self indexOfChatWithId:chat.id];
+    NSMutableArray *mutableChats = [self.chats mutableCopy];
+    if (sorting) {
+        [mutableChats removeObjectAtIndex:index];
+        [mutableChats insertObject:chat atIndex:newIndex];
+    } else {
+        [mutableChats replaceObjectAtIndex:index withObject:chat];
+    }
+    
+    self.chats = [mutableChats copy];
+    
+    if (sorting) {
+        [self.chatsList moveRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0] toIndexPath:[NSIndexPath indexPathForRow:newIndex inSection:0]];
+    }
+    
+    NSInteger rowToReload = sorting? newIndex : index;
+    [UIView setAnimationsEnabled:NO];
+    [self.chatsList reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:rowToReload inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+    [UIView setAnimationsEnabled:YES];
+}
+
 #pragma mark - Table view
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
@@ -177,6 +209,7 @@
     }]];
     [menuElements addObject:[MVOverlayMenuElement elementWithTitle:@"Chats update" action:^{
         [[MVUpdatesProvider sharedInstance] performChatsUpdate];
+        [[MVChatManager sharedInstance] generateMessageForChatWithId:self.chats[0].id];
     }]];
     menu.menuElements = [menuElements copy];
     
@@ -189,4 +222,13 @@
     [self.navigationController.navigationController pushViewController:chatVC animated:YES];
 }
 
+- (NSInteger)indexOfChatWithId:(NSString *)chatId {
+    for (MVChatModel *chat in self.chats) {
+        if ([chat.id isEqualToString:chatId]) {
+            return [self.chats indexOfObject:chat];
+        }
+    }
+    
+    return NSNotFound;
+}
 @end

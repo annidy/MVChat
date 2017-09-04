@@ -40,6 +40,7 @@ static NSUInteger MVMessagesPageSize = 15;
 - (void)createChatWithContacts:(NSArray <MVContactModel *> *)contacts title:(NSString *)title andCompletion:(void (^)(MVChatModel *))callback;
 - (void)updateChat:(MVChatModel *)chat;
 - (void)exitAndDeleteChat:(MVChatModel *)chat;
+- (void)markChatAsRead:(NSString *)chatId;
 
 #pragma mark - Send Messages
 - (void)sendTextMessage:(NSString *)text toChatWithId:(NSString *)chatId;

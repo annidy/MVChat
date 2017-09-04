@@ -169,6 +169,7 @@ static MVRandomGenerator *singleton;
     chat.participants = [chatContacts copy];
     chat.isPeerToPeer = NO;
     chat.id = [NSUUID UUID].UUIDString;
+    chat.unreadCount = 0;
     
     return chat;
 }
@@ -213,7 +214,10 @@ static MVRandomGenerator *singleton;
         [otherParticipants removeObject:myContact];
     }
     
-    return [self randomMessageWithChatId:chat.id sender:[self randomContactFromArray:otherParticipants] afterDate:nil];
+    MVMessageModel *message = [self randomMessageWithChatId:chat.id sender:[self randomContactFromArray:otherParticipants] afterDate:nil];
+    message.read = NO;
+    
+    return message;
 }
 
 - (MVMessageModel *)randomMessageWithChat:(MVChatModel *)chat {
@@ -227,6 +231,7 @@ static MVRandomGenerator *singleton;
     message.contact = sender;
     message.type = MVMessageTypeText;
     message.id = [NSUUID UUID].UUIDString;
+    message.read = YES;
     
     if ([sender.id isEqualToString:[MVContactManager myContact].id]) {
         message.direction = MessageDirectionOutgoing;
