@@ -311,13 +311,6 @@
 			name = "Shared Media";
 			sourceTree = "<group>";
 		};
-		CD9BF88B1F5DE3C700FDA378 /* Contacts List */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = "Contacts List";
-			sourceTree = "<group>";
-		};
 		CD9BF88C1F5DE3D800FDA378 /* Search */ = {
 			isa = PBXGroup;
 			children = (
@@ -560,7 +553,6 @@
 			isa = PBXGroup;
 			children = (
 				CD4472391F4F32CA008AB607 /* Custom Elements */,
-				CD9BF88B1F5DE3C700FDA378 /* Contacts List */,
 				CD0503631F27D20D00A1C4D2 /* Contacts List */,
 				CDEA5CC01EC746D0004C7433 /* Chats List */,
 				CDEA5CBF1EC746C6004C7433 /* Chat */,
