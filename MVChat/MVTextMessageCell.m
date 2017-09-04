@@ -83,7 +83,7 @@ static CGFloat MVAvatarImageOffset = 5;
         [[self.messageLabel.leftAnchor constraintEqualToAnchor:self.contentView.leftAnchor constant:MVMessageLabelOffsetIncoming] setActive:YES];
     }
     
-    if (self.direction == MessageDirectionIncoming) {
+    if (self.direction == MessageDirectionIncoming && (self.tailType == MVMessageCellTailTypeDefault || self.tailType == MVMessageCellTailTypeLastTailess)) {
         self.avatarImage = [self buildAvatarImageView];
         [self.contentView addSubview:self.avatarImage];
         [[self.avatarImage.widthAnchor constraintEqualToConstant:MVAvatarImageSide] setActive:YES];

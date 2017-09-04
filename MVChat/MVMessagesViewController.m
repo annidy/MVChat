@@ -21,7 +21,6 @@
 
 @interface MVMessagesViewController () <UITableViewDelegate, UITableViewDataSource, UIGestureRecognizerDelegate, MVMessagesUpdatesListener, MVMessageCellDelegate>
 @property (strong, nonatomic) IBOutlet UITableView *messagesTableView;
-@property (strong, nonatomic) NSArray <MVMessageModel *> *messageModels;
 
 @property (strong, nonatomic) NSMutableArray <NSString *> *sections;
 @property (strong, nonatomic) NSMutableDictionary <NSString *, NSMutableArray <MVMessageModel *>*> *messages;
@@ -34,6 +33,7 @@
 @property (strong, nonatomic) NSCache *cellHeightCache;
 @property (assign, nonatomic) BOOL keyboardShown;
 @property (strong, nonatomic) NSMutableArray *mediaViewModels;
+@property (assign, nonatomic) BOOL hasUnreadMessages;
 @end
 
 @implementation MVMessagesViewController
@@ -41,7 +41,6 @@
 #pragma mark - Lifecycle
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
     if (self = [super initWithCoder:aDecoder]) {
-        _messageModels = [NSArray new];
         _sections = [NSMutableArray new];
         _messages = [NSMutableDictionary new];
         _cellHeightCache = [NSCache new];
@@ -85,7 +84,6 @@
     [[MVChatManager sharedInstance] loadMessagesForChatWithId:self.chatId withCallback:^() {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self tryToLoadNextPage];
-            self.initialLoadComplete = YES;
         });
     }];
     
@@ -187,7 +185,7 @@
     NSMutableDictionary *messages = [self.messages mutableCopy];
     
     for (MVMessageModel *message in models) {
-        NSString *key = [self headerTitleFromDate:message.sendDate];
+        NSString *key = [self headerTitleFromMessage:message];
         NSMutableArray *rows = messages[key];
         
         if (!rows) {
@@ -222,7 +220,7 @@
     NSMutableDictionary *messages = [self.messages mutableCopy];
     
     for (MVMessageModel *message in messageModels) {
-        NSString *key = [self headerTitleFromDate:message.sendDate];
+        NSString *key = [self headerTitleFromMessage:message];
         NSMutableArray *rows = messages[key];
         if (!rows) {
             rows = [NSMutableArray new];
@@ -230,6 +228,10 @@
             [messages setObject:rows forKey:key];
         }
         [rows insertObject:message atIndex:0];
+    }
+    
+    if ([messages objectForKey:@"unread"]) {
+        self.hasUnreadMessages = YES;
     }
     
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -240,6 +242,7 @@
             self.loadingNewPage = NO;
         }
         [[MVChatManager sharedInstance] markChatAsRead:self.chatId];
+        self.initialLoadComplete = YES;
     });
 }
 
@@ -456,7 +459,7 @@
 
 #pragma mark - Helpers
 static NSDateFormatter *dateFormatter;
-- (NSString *)headerTitleFromDate:(NSDate *)date {
+- (NSString *)headerTitleFromMessage:(MVMessageModel *)message {
     if (!dateFormatter) {
         dateFormatter = [NSDateFormatter new];
         dateFormatter.timeStyle = NSDateFormatterNoStyle;
@@ -464,7 +467,11 @@ static NSDateFormatter *dateFormatter;
         dateFormatter.doesRelativeDateFormatting = YES;
     }
     
-    return [dateFormatter stringFromDate:date];
+    if ((!self.initialLoadComplete && message.read) || (self.initialLoadComplete && !self.hasUnreadMessages)) {
+        return [dateFormatter stringFromDate:message.sendDate];
+    } else {
+        return @"unread";
+    }
 }
 
 - (NSString *)cellIdForIndexPath:(NSIndexPath *)indexPath {
