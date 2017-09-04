@@ -96,20 +96,21 @@
         self.avatarImageView.image = image;
     }];
     
+    __weak typeof(self) weakSelf = self;
     if (self.chat.isPeerToPeer) {
         [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
             NSString *contactId = note.userInfo[@"Id"];
             UIImage *image = note.userInfo[@"Image"];
-            if (self.chat.isPeerToPeer && [self.chat.getPeer.id isEqualToString:contactId]) {
-                [self.avatarImageView setImage:image];
+            if (weakSelf.chat.isPeerToPeer && [weakSelf.chat.getPeer.id isEqualToString:contactId]) {
+                [weakSelf.avatarImageView setImage:image];
             }
         }];
     } else {
         [[NSNotificationCenter defaultCenter] addObserverForName:@"ChatAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
             NSString *chatId = note.userInfo[@"Id"];
             UIImage *image = note.userInfo[@"Image"];
-            if (!self.chat.isPeerToPeer && [self.chat.id isEqualToString:chatId]) {
-                [self.avatarImageView setImage:image];
+            if (!weakSelf.chat.isPeerToPeer && [weakSelf.chat.id isEqualToString:chatId]) {
+                [weakSelf.avatarImageView setImage:image];
             }
         }];
     }
@@ -127,8 +128,18 @@
     [items addObject:[MVOverlayMenuElement elementWithTitle:@"Open profile" action:^{
         [self navigationItemTitleTappedAction];
     }]];
+    
+    NSString *chatId = [self.chat.id copy];
     [items addObject:[MVOverlayMenuElement elementWithTitle:@"Spawn message" action:^{
-        [self spawnNewMessage];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [[MVChatManager sharedInstance] generateMessageForChatWithId:chatId];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [[MVChatManager sharedInstance] generateMessageForChatWithId:chatId];
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [[MVChatManager sharedInstance] generateMessageForChatWithId:chatId];
+                });
+            });
+        });
     }]];
     [items addObject:[MVOverlayMenuElement elementWithTitle:@"Generate avatars" action:^{
         
