@@ -412,9 +412,10 @@ static MVChatManager *sharedManager;
 
 - (NSInteger)indexOfMessage:(MVMessageModel *)message {
     @synchronized (self.chatsMessages) {
-        for (MVMessageModel *messageModel in [self.chatsMessages objectForKey:message.chatId]) {
+        NSArray *messages = [self.chatsMessages objectForKey:message.chatId];
+        for (MVMessageModel *messageModel in messages) {
             if ([message.id isEqualToString:messageModel.id]) {
-                return [self.chats indexOfObject:messageModel];
+                return [messages indexOfObject:messageModel];
             }
         }
     }
