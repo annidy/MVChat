@@ -197,17 +197,8 @@
 			children = (
 				CD0503601F27D20700A1C4D2 /* MVContactsListController.h */,
 				CD0503611F27D20700A1C4D2 /* MVContactsListController.m */,
-				CD61CFA01F2E3A0000A5884D /* MVContactsListSearchViewController.h */,
-				CD61CFA11F2E3A0000A5884D /* MVContactsListSearchViewController.m */,
-			);
-			name = "Contacts List";
-			sourceTree = "<group>";
-		};
-		CD0503671F27D2FB00A1C4D2 /* Contacts List */ = {
-			isa = PBXGroup;
-			children = (
-				CD0503641F27D2F300A1C4D2 /* MVContactsListCell.h */,
-				CD0503651F27D2F300A1C4D2 /* MVContactsListCell.m */,
+				CD9BF88C1F5DE3D800FDA378 /* Search */,
+				CD9BF88D1F5DE3E900FDA378 /* Cells */,
 			);
 			name = "Contacts List";
 			sourceTree = "<group>";
@@ -228,6 +219,7 @@
 			children = (
 				CD4059BE1F4DAC4A00808D3A /* MVOverlayMenuController.h */,
 				CD4059BF1F4DAC4A00808D3A /* MVOverlayMenuController.m */,
+				CD9BF8941F5DE46100FDA378 /* Cells */,
 			);
 			name = "Overlay Menu";
 			sourceTree = "<group>";
@@ -250,48 +242,32 @@
 			name = "Contact Profile";
 			sourceTree = "<group>";
 		};
-		CD4472391F4F32CA008AB607 /* Custom Controllers */ = {
+		CD4472391F4F32CA008AB607 /* Custom Elements */ = {
 			isa = PBXGroup;
 			children = (
-				CD05F6851F2A8B9200721421 /* MVNavigationController.h */,
-				CD05F6861F2A8B9200721421 /* MVNavigationController.m */,
 				CD05F6881F2A8BC900721421 /* MVTabBarController.h */,
 				CD05F6891F2A8BC900721421 /* MVTabBarController.m */,
+				CD05F6851F2A8B9200721421 /* MVNavigationController.h */,
+				CD05F6861F2A8B9200721421 /* MVNavigationController.m */,
 				CD4472331F4DF525008AB607 /* MVViewController.h */,
 				CD4472341F4DF525008AB607 /* MVViewController.m */,
-			);
-			name = "Custom Controllers";
-			sourceTree = "<group>";
-		};
-		CD44723A1F4F32F4008AB607 /* Overlay Menu */ = {
-			isa = PBXGroup;
-			children = (
-				CD4059C41F4DC8E300808D3A /* MVOverlayMenuCell.h */,
-				CD4059C51F4DC8E300808D3A /* MVOverlayMenuCell.m */,
-			);
-			name = "Overlay Menu";
-			sourceTree = "<group>";
-		};
-		CD44723B1F4F3302008AB607 /* Custom Views */ = {
-			isa = PBXGroup;
-			children = (
 				CD61CF9D1F2E2C9D00A5884D /* MVTableViewHeader.h */,
 				CD61CF9E1F2E2C9D00A5884D /* MVTableViewHeader.m */,
+				CD4059B81F4DAA7600808D3A /* MVForceTouchGestureRecogniser.h */,
+				CD4059B91F4DAA7600808D3A /* MVForceTouchGestureRecogniser.m */,
+				CD61CFA31F2E3A6A00A5884D /* MVSearchProviderDelegate.h */,
 			);
-			name = "Custom Views";
+			name = "Custom Elements";
 			sourceTree = "<group>";
 		};
 		CD6C2A401EC609F90007BA05 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				CD0550911F0938DD0076FB25 /* Text generators */,
 				CD6C2A3D1EC609F00007BA05 /* MVRandomGenerator.h */,
 				CD6C2A3E1EC609F00007BA05 /* MVRandomGenerator.m */,
-				CD0550911F0938DD0076FB25 /* Text generators */,
-				CD4059B81F4DAA7600808D3A /* MVForceTouchGestureRecogniser.h */,
-				CD4059B91F4DAA7600808D3A /* MVForceTouchGestureRecogniser.m */,
 				CD4059C11F4DAE9D00808D3A /* NSInvocation+Protocols.h */,
 				CD4059C21F4DAE9D00808D3A /* NSInvocation+Protocols.m */,
-				CD61CFA31F2E3A6A00A5884D /* MVSearchProviderDelegate.h */,
 				CD9BF8811F59657100FDA378 /* NSString+Helpers.h */,
 				CD9BF8821F59657100FDA378 /* NSString+Helpers.m */,
 			);
@@ -327,26 +303,157 @@
 		CD75F68D1F57462D004119A3 /* Shared Media */ = {
 			isa = PBXGroup;
 			children = (
-				CD75F6611F5465C8004119A3 /* MVChatSharedMediaListController.h */,
-				CD75F6621F5465C8004119A3 /* MVChatSharedMediaListController.m */,
-				CD75F6861F571F51004119A3 /* MVChatSharedMediaPageController.h */,
-				CD75F6871F571F51004119A3 /* MVChatSharedMediaPageController.m */,
-				CD75F6691F55D039004119A3 /* MVImageViewerController.h */,
-				CD75F66A1F55D039004119A3 /* MVImageViewerController.m */,
-				CD75F6891F5726B1004119A3 /* MVImageViewerViewModel.h */,
-				CD75F68A1F5726B1004119A3 /* MVImageViewerViewModel.m */,
+				CD9BF8951F5DE48800FDA378 /* List */,
+				CD9BF8961F5DE49400FDA378 /* Page */,
+				CD9BF8971F5DE49900FDA378 /* Image Viewer */,
 				CD75F68C1F5745EB004119A3 /* Transitions */,
 			);
 			name = "Shared Media";
 			sourceTree = "<group>";
 		};
-		CD75F68E1F57463D004119A3 /* Shared Media */ = {
+		CD9BF88B1F5DE3C700FDA378 /* Contacts List */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "Contacts List";
+			sourceTree = "<group>";
+		};
+		CD9BF88C1F5DE3D800FDA378 /* Search */ = {
+			isa = PBXGroup;
+			children = (
+				CD61CFA01F2E3A0000A5884D /* MVContactsListSearchViewController.h */,
+				CD61CFA11F2E3A0000A5884D /* MVContactsListSearchViewController.m */,
+			);
+			name = Search;
+			sourceTree = "<group>";
+		};
+		CD9BF88D1F5DE3E900FDA378 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				CD0503641F27D2F300A1C4D2 /* MVContactsListCell.h */,
+				CD0503651F27D2F300A1C4D2 /* MVContactsListCell.m */,
+			);
+			name = Cells;
+			sourceTree = "<group>";
+		};
+		CD9BF88E1F5DE3FC00FDA378 /* Search */ = {
+			isa = PBXGroup;
+			children = (
+				CD05F6821F2A631500721421 /* MVChatsListSearchViewController.h */,
+				CD05F6831F2A631500721421 /* MVChatsListSearchViewController.m */,
+			);
+			name = Search;
+			sourceTree = "<group>";
+		};
+		CD9BF88F1F5DE40400FDA378 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				CDB89D381F2242DB0024BFDB /* MVChatsListCell.h */,
+				CDB89D391F2242DB0024BFDB /* MVChatsListCell.m */,
+				CD05F68B1F2B67DD00721421 /* MVChatsListSearchCollectionViewCell.h */,
+				CD05F68C1F2B67DD00721421 /* MVChatsListSearchCollectionViewCell.m */,
+			);
+			name = Cells;
+			sourceTree = "<group>";
+		};
+		CD9BF8901F5DE42600FDA378 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				CDF479C31EB6993A003B3C8E /* MVTextMessageCell.h */,
+				CDF479C41EB6993A003B3C8E /* MVTextMessageCell.m */,
+				CD28B38D1EB7E1D100BFFCAA /* MVMessageHeader.h */,
+				CD28B38E1EB7E1D100BFFCAA /* MVMessageHeader.m */,
+				CD4059811F4B168D00808D3A /* MVSystemMessageCell.h */,
+				CD4059821F4B168D00808D3A /* MVSystemMessageCell.m */,
+				CD5FF0DB1F53045D00A347EF /* MVMediaMessageCell.h */,
+				CD5FF0DC1F53045D00A347EF /* MVMediaMessageCell.m */,
+			);
+			name = Cells;
+			sourceTree = "<group>";
+		};
+		CD9BF8911F5DE42F00FDA378 /* Footer */ = {
+			isa = PBXGroup;
+			children = (
+				CDF479B51EB68AAF003B3C8E /* MVFooterViewController.h */,
+				CDF479B61EB68AAF003B3C8E /* MVFooterViewController.m */,
+			);
+			name = Footer;
+			sourceTree = "<group>";
+		};
+		CD9BF8921F5DE43500FDA378 /* Messages List */ = {
+			isa = PBXGroup;
+			children = (
+				CDF479B21EB68980003B3C8E /* MVMessagesViewController.h */,
+				CDF479B31EB68980003B3C8E /* MVMessagesViewController.m */,
+			);
+			name = "Messages List";
+			sourceTree = "<group>";
+		};
+		CD9BF8931F5DE43F00FDA378 /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				CD75F68F1F584E0F004119A3 /* MVMessageCellDelegate.h */,
+				CD4059A61F4CA44800808D3A /* MVMessageCellProtocol.h */,
+				CD28B3671EB7694700BFFCAA /* MVSlidingCell.h */,
+			);
+			name = Protocols;
+			sourceTree = "<group>";
+		};
+		CD9BF8941F5DE46100FDA378 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				CD4059C41F4DC8E300808D3A /* MVOverlayMenuCell.h */,
+				CD4059C51F4DC8E300808D3A /* MVOverlayMenuCell.m */,
+			);
+			name = Cells;
+			sourceTree = "<group>";
+		};
+		CD9BF8951F5DE48800FDA378 /* List */ = {
+			isa = PBXGroup;
+			children = (
+				CD75F6611F5465C8004119A3 /* MVChatSharedMediaListController.h */,
+				CD75F6621F5465C8004119A3 /* MVChatSharedMediaListController.m */,
+				CD9BF8981F5DE4A800FDA378 /* Cells */,
+			);
+			name = List;
+			sourceTree = "<group>";
+		};
+		CD9BF8961F5DE49400FDA378 /* Page */ = {
+			isa = PBXGroup;
+			children = (
+				CD75F6861F571F51004119A3 /* MVChatSharedMediaPageController.h */,
+				CD75F6871F571F51004119A3 /* MVChatSharedMediaPageController.m */,
+			);
+			name = Page;
+			sourceTree = "<group>";
+		};
+		CD9BF8971F5DE49900FDA378 /* Image Viewer */ = {
+			isa = PBXGroup;
+			children = (
+				CD75F6691F55D039004119A3 /* MVImageViewerController.h */,
+				CD75F66A1F55D039004119A3 /* MVImageViewerController.m */,
+				CD75F6891F5726B1004119A3 /* MVImageViewerViewModel.h */,
+				CD75F68A1F5726B1004119A3 /* MVImageViewerViewModel.m */,
+			);
+			name = "Image Viewer";
+			sourceTree = "<group>";
+		};
+		CD9BF8981F5DE4A800FDA378 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
 				CD75F6641F546658004119A3 /* MVChatSharedMediaListCell.h */,
 				CD75F6651F546658004119A3 /* MVChatSharedMediaListCell.m */,
 			);
-			name = "Shared Media";
+			name = Cells;
+			sourceTree = "<group>";
+		};
+		CD9BF8991F5DE4C400FDA378 /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				CD9BF8851F59969C00FDA378 /* MVContactsListener.h */,
+				CD9BF8841F59950200FDA378 /* MVChatsListener.h */,
+			);
+			name = Protocols;
 			sourceTree = "<group>";
 		};
 		CDAB09791E7DE2D800A142DC = {
@@ -374,8 +481,7 @@
 				CD28B3491EB6A5F800BFFCAA /* AppDelegate.m */,
 				CD6C2A401EC609F90007BA05 /* Helpers */,
 				CDF479BC1EB68DE3003B3C8E /* Model */,
-				CDF479B81EB68DB4003B3C8E /* Controller */,
-				CDF479C61EB6993F003B3C8E /* View */,
+				CDF479B81EB68DB4003B3C8E /* UI */,
 				CDAB09851E7DE2D800A142DC /* Supporting Files */,
 				CD28B34B1EB6A61000BFFCAA /* LaunchScreen.storyboard */,
 				CD28B34D1EB6A61000BFFCAA /* Main.storyboard */,
@@ -396,28 +502,15 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		CDB89D3B1F2242E10024BFDB /* Chats List */ = {
-			isa = PBXGroup;
-			children = (
-				CDB89D381F2242DB0024BFDB /* MVChatsListCell.h */,
-				CDB89D391F2242DB0024BFDB /* MVChatsListCell.m */,
-				CD05F68B1F2B67DD00721421 /* MVChatsListSearchCollectionViewCell.h */,
-				CD05F68C1F2B67DD00721421 /* MVChatsListSearchCollectionViewCell.m */,
-			);
-			name = "Chats List";
-			sourceTree = "<group>";
-		};
 		CDEA5CBD1EC746AF004C7433 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
-				CD9BF8851F59969C00FDA378 /* MVContactsListener.h */,
-				CD9BF8841F59950200FDA378 /* MVChatsListener.h */,
+				CD0550881F06E8110076FB25 /* MVDatabaseManager.h */,
+				CD0550891F06E8110076FB25 /* MVDatabaseManager.m */,
 				CD28B3941EBCA72E00BFFCAA /* MVContactManager.h */,
 				CD28B3951EBCA72E00BFFCAA /* MVContactManager.m */,
 				CD28B35A1EB6A63300BFFCAA /* MVChatManager.h */,
 				CD28B35B1EB6A63300BFFCAA /* MVChatManager.m */,
-				CD0550881F06E8110076FB25 /* MVDatabaseManager.h */,
-				CD0550891F06E8110076FB25 /* MVDatabaseManager.m */,
 				CDB97CDE1F43522800950F6A /* MVFileManager.h */,
 				CDB97CDF1F43522800950F6A /* MVFileManager.m */,
 				CD9BF8861F59B93200FDA378 /* MVUpdatesProvider.h */,
@@ -431,10 +524,10 @@
 			children = (
 				CD28B35C1EB6A63300BFFCAA /* MVContactModel.h */,
 				CD28B35D1EB6A63300BFFCAA /* MVContactModel.m */,
-				CD28B35E1EB6A63300BFFCAA /* MVMessageModel.h */,
-				CD28B35F1EB6A63300BFFCAA /* MVMessageModel.m */,
 				CD2048A41EC4F17C00EDDFA8 /* MVChatModel.h */,
 				CD2048A51EC4F17C00EDDFA8 /* MVChatModel.m */,
+				CD28B35E1EB6A63300BFFCAA /* MVMessageModel.h */,
+				CD28B35F1EB6A63300BFFCAA /* MVMessageModel.m */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -442,13 +535,12 @@
 		CDEA5CBF1EC746C6004C7433 /* Chat */ = {
 			isa = PBXGroup;
 			children = (
+				CD9BF8931F5DE43F00FDA378 /* Protocols */,
 				CDF479AD1EB66C00003B3C8E /* MVChatViewController.h */,
 				CDF479AE1EB66C00003B3C8E /* MVChatViewController.m */,
-				CDF479B21EB68980003B3C8E /* MVMessagesViewController.h */,
-				CDF479B31EB68980003B3C8E /* MVMessagesViewController.m */,
-				CDF479B51EB68AAF003B3C8E /* MVFooterViewController.h */,
-				CDF479B61EB68AAF003B3C8E /* MVFooterViewController.m */,
-				CD75F68F1F584E0F004119A3 /* MVMessageCellDelegate.h */,
+				CD9BF8921F5DE43500FDA378 /* Messages List */,
+				CD9BF8911F5DE42F00FDA378 /* Footer */,
+				CD9BF8901F5DE42600FDA378 /* Cells */,
 			);
 			name = Chat;
 			sourceTree = "<group>";
@@ -458,33 +550,17 @@
 			children = (
 				CD6C2A4C1EC61A640007BA05 /* MVChatsListViewController.h */,
 				CD6C2A4D1EC61A640007BA05 /* MVChatsListViewController.m */,
-				CD05F6821F2A631500721421 /* MVChatsListSearchViewController.h */,
-				CD05F6831F2A631500721421 /* MVChatsListSearchViewController.m */,
+				CD9BF88E1F5DE3FC00FDA378 /* Search */,
+				CD9BF88F1F5DE40400FDA378 /* Cells */,
 			);
 			name = "Chats List";
 			sourceTree = "<group>";
 		};
-		CDEA5CC11EC746E6004C7433 /* Chat */ = {
+		CDF479B81EB68DB4003B3C8E /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				CD4059A61F4CA44800808D3A /* MVMessageCellProtocol.h */,
-				CD28B3671EB7694700BFFCAA /* MVSlidingCell.h */,
-				CDF479C31EB6993A003B3C8E /* MVTextMessageCell.h */,
-				CDF479C41EB6993A003B3C8E /* MVTextMessageCell.m */,
-				CD28B38D1EB7E1D100BFFCAA /* MVMessageHeader.h */,
-				CD28B38E1EB7E1D100BFFCAA /* MVMessageHeader.m */,
-				CD4059811F4B168D00808D3A /* MVSystemMessageCell.h */,
-				CD4059821F4B168D00808D3A /* MVSystemMessageCell.m */,
-				CD5FF0DB1F53045D00A347EF /* MVMediaMessageCell.h */,
-				CD5FF0DC1F53045D00A347EF /* MVMediaMessageCell.m */,
-			);
-			name = Chat;
-			sourceTree = "<group>";
-		};
-		CDF479B81EB68DB4003B3C8E /* Controller */ = {
-			isa = PBXGroup;
-			children = (
-				CD4472391F4F32CA008AB607 /* Custom Controllers */,
+				CD4472391F4F32CA008AB607 /* Custom Elements */,
+				CD9BF88B1F5DE3C700FDA378 /* Contacts List */,
 				CD0503631F27D20D00A1C4D2 /* Contacts List */,
 				CDEA5CC01EC746D0004C7433 /* Chats List */,
 				CDEA5CBF1EC746C6004C7433 /* Chat */,
@@ -493,29 +569,17 @@
 				CD4472361F4F3289008AB607 /* Overlay Menu */,
 				CD75F68D1F57462D004119A3 /* Shared Media */,
 			);
-			name = Controller;
+			name = UI;
 			sourceTree = "<group>";
 		};
 		CDF479BC1EB68DE3003B3C8E /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				CDEA5CBD1EC746AF004C7433 /* Managers */,
 				CDEA5CBE1EC746BA004C7433 /* Models */,
+				CD9BF8991F5DE4C400FDA378 /* Protocols */,
+				CDEA5CBD1EC746AF004C7433 /* Managers */,
 			);
 			name = Model;
-			sourceTree = "<group>";
-		};
-		CDF479C61EB6993F003B3C8E /* View */ = {
-			isa = PBXGroup;
-			children = (
-				CD44723B1F4F3302008AB607 /* Custom Views */,
-				CD0503671F27D2FB00A1C4D2 /* Contacts List */,
-				CDB89D3B1F2242E10024BFDB /* Chats List */,
-				CDEA5CC11EC746E6004C7433 /* Chat */,
-				CD44723A1F4F32F4008AB607 /* Overlay Menu */,
-				CD75F68E1F57463D004119A3 /* Shared Media */,
-			);
-			name = View;
 			sourceTree = "<group>";
 		};
 		E3E3FBD0C3B75998100C9D3B /* Pods */ = {
