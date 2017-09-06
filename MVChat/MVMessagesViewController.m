@@ -10,9 +10,9 @@
 #import "MVMessageModel.h"
 #import "MVChatManager.h"
 #import "MVMessageTextCell.h"
-#import "MVMessageHeader.h"
+#import "MVMessageHeaderCell.h"
 #import "MVContactManager.h"
-#import "MVSystemMessageCell.h"
+#import "MVMessageSystemCell.h"
 #import "MVMessageMediaCell.h"
 #import "MVMessageCellDelegate.h"
 #import "MVChatSharedMediaPageController.h"
@@ -61,8 +61,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self.messagesTableView registerClass:[MVMessageHeader class] forCellReuseIdentifier:@"MVMessageHeader"];
-    [self.messagesTableView registerClass:[MVSystemMessageCell class] forCellReuseIdentifier:@"MVMessageCellSystem"];
+    [self.messagesTableView registerClass:[MVMessageHeaderCell class] forCellReuseIdentifier:@"MVMessageHeader"];
+    [self.messagesTableView registerClass:[MVMessageSystemCell class] forCellReuseIdentifier:@"MVMessageCellSystem"];
     [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeDefaultIncoming"];
     [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeTailessIncoming"];
     [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeLastTailessIncoming"];
@@ -295,10 +295,10 @@
     
     CGFloat height;
     if (indexPath.row == 0) {
-        height = [MVMessageHeader heightWithText:section];
+        height = [MVMessageHeaderCell heightWithText:section];
     } else {
         if (model.type == MVMessageTypeSystem) {
-            height = [MVSystemMessageCell heightWithText:model.text];
+            height = [MVMessageSystemCell heightWithText:model.text];
         } else if (model.type == MVMessageTypeText){
             MVMessageCellTailType tailType = [self messageCellTailTypeAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row - 1 inSection:indexPath.section]];
             height = [MVMessageTextCell heightWithTailType:tailType direction:model.direction andModel:model];
