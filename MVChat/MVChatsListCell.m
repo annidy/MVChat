@@ -56,7 +56,12 @@ static NSDateFormatter *todayDateFormatter;
         self.titleLabel.text = chat.title;
     }
     
-    self.messageLabel.text = chat.lastMessage.text;
+    if (chat.lastMessage.type == MVMessageTypeText) {
+        self.messageLabel.text = chat.lastMessage.text;
+    } else {
+        self.messageLabel.text = @"Media message";
+    }
+    
     NSDateFormatter *formatter;
     if ([[NSCalendar currentCalendar] isDateInToday:chat.lastUpdateDate]) {
         formatter = self.todayDateFormatter;
