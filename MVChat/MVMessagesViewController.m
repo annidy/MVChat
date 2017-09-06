@@ -424,7 +424,7 @@ static NSDateFormatter *dateFormatter;
     if ((!self.initialLoadComplete && message.read) || (self.initialLoadComplete && !self.hasUnreadMessages)) {
         return [dateFormatter stringFromDate:message.sendDate];
     } else {
-        return @"Unread Messages";
+        return @"New Messages";
     }
 }
 
