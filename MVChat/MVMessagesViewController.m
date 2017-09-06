@@ -9,11 +9,11 @@
 #import "MVMessagesViewController.h"
 #import "MVMessageModel.h"
 #import "MVChatManager.h"
-#import "MVTextMessageCell.h"
+#import "MVMessageTextCell.h"
 #import "MVMessageHeader.h"
 #import "MVContactManager.h"
 #import "MVSystemMessageCell.h"
-#import "MVMediaMessageCell.h"
+#import "MVMessageMediaCell.h"
 #import "MVMessageCellDelegate.h"
 #import "MVChatSharedMediaPageController.h"
 #import "MVImageViewerViewModel.h"
@@ -63,16 +63,16 @@
     
     [self.messagesTableView registerClass:[MVMessageHeader class] forCellReuseIdentifier:@"MVMessageHeader"];
     [self.messagesTableView registerClass:[MVSystemMessageCell class] forCellReuseIdentifier:@"MVMessageCellSystem"];
-    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeDefaultIncoming"];
-    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeTailessIncoming"];
-    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeLastTailessIncoming"];
-    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeFirstTailessIncoming"];
-    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeDefaultOutgoing"];
-    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeTailessOutgoing"];
-    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeLastTailessOutgoing"];
-    [self.messagesTableView registerClass:[MVTextMessageCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeFirstTailessOutgoing"];
-    [self.messagesTableView registerClass:[MVMediaMessageCell class] forCellReuseIdentifier:@"MVMessageCellMediaOutgoing"];
-    [self.messagesTableView registerClass:[MVMediaMessageCell class] forCellReuseIdentifier:@"MVMessageCellMediaIncoming"];
+    [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeDefaultIncoming"];
+    [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeTailessIncoming"];
+    [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeLastTailessIncoming"];
+    [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeFirstTailessIncoming"];
+    [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeDefaultOutgoing"];
+    [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeTailessOutgoing"];
+    [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeLastTailessOutgoing"];
+    [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeFirstTailessOutgoing"];
+    [self.messagesTableView registerClass:[MVMessageMediaCell class] forCellReuseIdentifier:@"MVMessageCellMediaOutgoing"];
+    [self.messagesTableView registerClass:[MVMessageMediaCell class] forCellReuseIdentifier:@"MVMessageCellMediaIncoming"];
     self.messagesTableView.tableFooterView = [UIView new];
     self.messagesTableView.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
     
@@ -301,9 +301,9 @@
             height = [MVSystemMessageCell heightWithText:model.text];
         } else if (model.type == MVMessageTypeText){
             MVMessageCellTailType tailType = [self messageCellTailTypeAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row - 1 inSection:indexPath.section]];
-            height = [MVTextMessageCell heightWithTailType:tailType direction:model.direction andModel:model];
+            height = [MVMessageTextCell heightWithTailType:tailType direction:model.direction andModel:model];
         } else {
-            height = [MVMediaMessageCell heightWithTailType:0 direction:model.direction andModel:model];
+            height = [MVMessageMediaCell heightWithTailType:0 direction:model.direction andModel:model];
         }
     }
     
@@ -330,8 +330,8 @@
             id <MVMessageCellComplexProtocol> complexCell = (id <MVMessageCellComplexProtocol>) cell;
             [complexCell fillWithModel:model];
             
-            if ([complexCell isKindOfClass:[MVMediaMessageCell class]]) {
-                MVMediaMessageCell *mediaClass = (MVMediaMessageCell *)complexCell;
+            if ([complexCell isKindOfClass:[MVMessageMediaCell class]]) {
+                MVMessageMediaCell *mediaClass = (MVMessageMediaCell *)complexCell;
                 mediaClass.indexPath = [NSIndexPath indexPathForRow:indexPath.row - 1 inSection:indexPath.section];
                 mediaClass.delegate = self;
             }
@@ -357,8 +357,8 @@
 }
 
 - (void)cellTapped:(id<MVMessageCellComplexProtocol>)cell {
-    if ([cell isKindOfClass:[MVMediaMessageCell class]]) {
-        MVMediaMessageCell *mediaCell = (MVMediaMessageCell *)cell;
+    if ([cell isKindOfClass:[MVMessageMediaCell class]]) {
+        MVMessageMediaCell *mediaCell = (MVMessageMediaCell *)cell;
         NSIndexPath *indexPath = mediaCell.indexPath;
         NSString *section = self.sections[indexPath.section];
         MVMessageModel *model = self.messages[section][indexPath.row];
@@ -402,7 +402,7 @@
     
     if (panRecognizer.state == UIGestureRecognizerStateEnded || panRecognizer.state == UIGestureRecognizerStateFailed || panRecognizer.state == UIGestureRecognizerStateCancelled) {
         CGFloat constant = 0;
-        for (MVTextMessageCell *cell in visibleCells) {
+        for (MVMessageTextCell *cell in visibleCells) {
             [cell setSlidingConstraint:constant];
         }
         
@@ -430,7 +430,7 @@
     if (oldConstant != constant) {
         CGFloat path = ABS(oldConstant - constant);
         NSTimeInterval duration = path / velocityX;
-        for (MVTextMessageCell *cell in visibleCells) {
+        for (MVMessageTextCell *cell in visibleCells) {
             [cell setSlidingConstraint:constant];
         }
         

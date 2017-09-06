@@ -6,14 +6,14 @@
 //  Copyright © 2017 Mark Vasiv. All rights reserved.
 //
 
-#import "MVMediaMessageCell.h"
+#import "MVMessageMediaCell.h"
 #import "MVMessageModel.h"
 #import "MVFileManager.h"
 
 static CGFloat MVMediaContentVerticalOffset = 2;
 static CGFloat MVMediaContentHorizontalOffset = 2;
 
-@implementation MVMediaMessageCell
+@implementation MVMessageMediaCell
 #pragma mark - Lifecycle
 - (void)prepareForReuse {
     [super prepareForReuse];

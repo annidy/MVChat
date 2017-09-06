@@ -6,16 +6,16 @@
 //  Copyright © 2017 Mark Vasiv. All rights reserved.
 //
 
-#import "MVTextMessageCell.h"
+#import "MVMessageTextCell.h"
 
 static CGFloat MVTextContentVerticalOffset = 4;
 static CGFloat MVTextContentHorizontalOffset = 7;
 
-@interface MVTextMessageCell ()
+@interface MVMessageTextCell ()
 @property (strong, nonatomic) UILabel *messageLabel;
 @end
 
-@implementation MVTextMessageCell
+@implementation MVMessageTextCell
 #pragma mark - Build views
 - (void)setupViews {
     [super setupViews];

@@ -9,6 +9,6 @@
 #import <UIKit/UIKit.h>
 #import "MVMessageBubbleCell.h"
 
-@interface MVMediaMessageCell : MVMessageBubbleCell
+@interface MVMessageMediaCell : MVMessageBubbleCell
 @property (strong, nonatomic) UIImageView *mediaImageView;
 @end

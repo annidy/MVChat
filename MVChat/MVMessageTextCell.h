@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 #import "MVMessageBubbleCell.h"
 
-@interface MVTextMessageCell : MVMessageBubbleCell
+@interface MVMessageTextCell : MVMessageBubbleCell
 @end
