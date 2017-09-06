@@ -92,8 +92,6 @@
     
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(messagesTapped)];
     [self.messagesTableView addGestureRecognizer:tapGesture];
-    
-    
 }
 
 - (void)messagesTapped {

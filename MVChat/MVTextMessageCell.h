@@ -7,8 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "MVSlidingCell.h"
-#import "MVMessageCellProtocol.h"
+#import "MVMessageBubbleCell.h"
 
-@interface MVTextMessageCell : UITableViewCell <MVSlidingCell, MVMessageCellComplexProtocol>
+@interface MVTextMessageCell : MVMessageBubbleCell
 @end

@@ -7,12 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "MVSlidingCell.h"
-#import "MVMessageCellProtocol.h"
-#import "MVMessageCellDelegate.h"
+#import "MVMessageBubbleCell.h"
 
-@interface MVMediaMessageCell : UITableViewCell <MVSlidingCell, MVMessageCellComplexProtocol>
-@property (weak, nonatomic) id <MVMessageCellDelegate> delegate;
-@property (strong, nonatomic) NSIndexPath *indexPath;
+@interface MVMediaMessageCell : MVMessageBubbleCell
 @property (strong, nonatomic) UIImageView *mediaImageView;
 @end
