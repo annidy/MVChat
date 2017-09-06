@@ -108,7 +108,9 @@ static MVChatManager *sharedManager;
             }
             
             pagedMessages = [messages subarrayWithRange:NSMakeRange(startIndex, length)];
-            callback(pagedMessages);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                callback(pagedMessages);
+            });
         }
     });
 }

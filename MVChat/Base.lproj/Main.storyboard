@@ -760,6 +760,7 @@
                                 <connections>
                                     <outlet property="dataSource" destination="e0v-Ll-oyT" id="9Zx-dP-U6d"/>
                                     <outlet property="delegate" destination="e0v-Ll-oyT" id="qvi-0X-pUx"/>
+                                    <outletCollection property="gestureRecognizers" destination="TXl-z8-hDi" appends="YES" id="048-yk-rUp"/>
                                 </connections>
                             </tableView>
                         </subviews>
@@ -787,6 +788,11 @@
                         <outlet property="delegate" destination="e0v-Ll-oyT" id="gEc-bm-bBn"/>
                     </connections>
                 </panGestureRecognizer>
+                <tapGestureRecognizer id="TXl-z8-hDi">
+                    <connections>
+                        <action selector="tableViewTapped:" destination="e0v-Ll-oyT" id="ABh-jY-ctf"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="58" y="75"/>
         </scene>

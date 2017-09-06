@@ -10,6 +10,7 @@
 #import "MVMessageModel.h"
 #import "NSString+Helpers.h"
 #import "MVFileManager.h"
+#import "MVMessageCellProtocol.h"
 
 static CGFloat MVBubbleWidthMultiplierOutgoing = 0.8;
 static CGFloat MVBubbleWidthMultiplierIncoming = 0.7;
@@ -34,6 +35,7 @@ static CGFloat MVBubbleMinTailessSize = 30;
         _tailType = [[self class] tailTypeForReuseIdentifier:reuseIdentifier];
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         [self setupViews];
+        [self setupTapRecognizers];
     }
     
     return self;

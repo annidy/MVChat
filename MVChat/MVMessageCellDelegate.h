@@ -10,5 +10,5 @@
 #import "MVMessageCellProtocol.h"
 
 @protocol MVMessageCellDelegate <NSObject>
-- (void)cellTapped:(id <MVMessageCellComplexProtocol>)cell;
+- (void)cellTapped:(UITableViewCell *)cell;
 @end

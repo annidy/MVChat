@@ -7,6 +7,7 @@
 //
 
 #import "MVMessagePlainCell.h"
+#import "MVMessageCellProtocol.h"
 
 @interface MVMessagePlainCell ()
 @property (strong, nonatomic) UILabel *titleLabel;

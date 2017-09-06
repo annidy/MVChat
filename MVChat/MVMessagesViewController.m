@@ -26,13 +26,11 @@
 @property (strong, nonatomic) NSMutableDictionary <NSString *, NSMutableArray <MVMessageModel *>*> *messages;
 @property (assign, nonatomic) CGFloat sliderOffset;
 @property (assign, nonatomic) BOOL autoscrollEnabled;
-@property (strong, nonatomic) UILabel *referenceLabel;
-@property (assign, nonatomic) NSUInteger loadedPageIndex;
-@property (assign, nonatomic) BOOL loadingNewPage;
+@property (assign, nonatomic) NSInteger loadedPageIndex;
+@property (assign, nonatomic) BOOL processingMessages;
 @property (assign, nonatomic) BOOL initialLoadComplete;
 @property (strong, nonatomic) NSCache *cellHeightCache;
 @property (assign, nonatomic) BOOL keyboardShown;
-@property (strong, nonatomic) NSMutableArray *mediaViewModels;
 @property (assign, nonatomic) BOOL hasUnreadMessages;
 @end
 
@@ -61,74 +59,192 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self.messagesTableView registerClass:[MVMessageHeaderCell class] forCellReuseIdentifier:@"MVMessageHeader"];
-    [self.messagesTableView registerClass:[MVMessageSystemCell class] forCellReuseIdentifier:@"MVMessageCellSystem"];
-    [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeDefaultIncoming"];
-    [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeTailessIncoming"];
-    [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeLastTailessIncoming"];
-    [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeFirstTailessIncoming"];
-    [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeDefaultOutgoing"];
-    [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeTailessOutgoing"];
-    [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeLastTailessOutgoing"];
-    [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageCellTextTailTypeFirstTailessOutgoing"];
-    [self.messagesTableView registerClass:[MVMessageMediaCell class] forCellReuseIdentifier:@"MVMessageCellMediaOutgoing"];
-    [self.messagesTableView registerClass:[MVMessageMediaCell class] forCellReuseIdentifier:@"MVMessageCellMediaIncoming"];
+    [self registerCells];
+    
     self.messagesTableView.tableFooterView = [UIView new];
     self.messagesTableView.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
     
-    [self.messagesTableView addObserver:self forKeyPath:@"contentSize" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:nil];
-    
-    self.mediaViewModels = [NSMutableArray new];
-
     [MVChatManager sharedInstance].messagesListener = self;
-    [[MVChatManager sharedInstance] loadMessagesForChatWithId:self.chatId withCallback:^() {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self tryToLoadNextPage];
-        });
-    }];
+    [self tryToLoadNextPage];
     
+    [self.messagesTableView addObserver:self forKeyPath:@"contentSize" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+}
+
+- (void)registerCells {
+    [self.messagesTableView registerClass:[MVMessageHeaderCell class] forCellReuseIdentifier:@"MVMessageHeaderCell"];
+    [self.messagesTableView registerClass:[MVMessageSystemCell class] forCellReuseIdentifier:@"MVMessageSystemCell"];
+    [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageTextTailTypeDefaultIncomingCell"];
+    [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageTextTailTypeTailessIncomingCell"];
+    [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageTextTailTypeLastTailessIncomingCell"];
+    [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageTextTailTypeFirstTailessIncomingCell"];
+    [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageTextTailTypeDefaultOutgoingCell"];
+    [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageTextTailTypeTailessOutgoingCell"];
+    [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageTextTailTypeLastTailessOutgoingCell"];
+    [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageTextTailTypeFirstTailessOutgoingCell"];
+    [self.messagesTableView registerClass:[MVMessageMediaCell class] forCellReuseIdentifier:@"MVMessageMediaTailTypeDefaultIncomingCell"];
+    [self.messagesTableView registerClass:[MVMessageMediaCell class] forCellReuseIdentifier:@"MVMessageMediaTailTypeTailessIncomingCell"];
+    [self.messagesTableView registerClass:[MVMessageMediaCell class] forCellReuseIdentifier:@"MVMessageMediaTailTypeLastTailessIncomingCell"];
+    [self.messagesTableView registerClass:[MVMessageMediaCell class] forCellReuseIdentifier:@"MVMessageMediaTailTypeFirstTailessIncomingCell"];
+    [self.messagesTableView registerClass:[MVMessageMediaCell class] forCellReuseIdentifier:@"MVMessageMediaTailTypeDefaultOutgoingCell"];
+    [self.messagesTableView registerClass:[MVMessageMediaCell class] forCellReuseIdentifier:@"MVMessageMediaTailTypeTailessOutgoingCell"];
+    [self.messagesTableView registerClass:[MVMessageMediaCell class] forCellReuseIdentifier:@"MVMessageMediaTailTypeLastTailessOutgoingCell"];
+    [self.messagesTableView registerClass:[MVMessageMediaCell class] forCellReuseIdentifier:@"MVMessageMediaTailTypeFirstTailessOutgoingCell"];
+}
+
+#pragma mark - Data handling
+- (void)handleNewMessages:(NSArray <MVMessageModel *> *)models reverseOrder:(BOOL)reverse {
+    NSMutableArray *sections = [self.sections mutableCopy];
+    NSMutableDictionary *messages = [self.messages mutableCopy];
     
-    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(messagesTapped)];
-    [self.messagesTableView addGestureRecognizer:tapGesture];
+    for (MVMessageModel *message in models) {
+        NSString *sectionKey = [self headerTitleFromMessage:message];
+        NSMutableArray *rows = messages[sectionKey];
+        
+        if (!rows) {
+            rows = [NSMutableArray new];
+            [messages setObject:rows forKey:sectionKey];
+            
+            if (reverse) {
+                [sections insertObject:sectionKey atIndex:0];
+            } else {
+                [sections addObject:sectionKey];
+            }
+        }
+        
+        if (reverse) {
+            [rows insertObject:message atIndex:0];
+        } else {
+            [rows addObject:message];
+        }
+    }
+    
+    self.messages = [messages mutableCopy];
+    self.sections = [sections mutableCopy];
+    [self.messagesTableView reloadData];
+    
+    [[MVChatManager sharedInstance] markChatAsRead:self.chatId];
 }
 
-- (void)messagesTapped {
-    [self.view.superview.superview endEditing:YES];
+- (void)insertNewMessage:(MVMessageModel *)message {
+    //TODO: animate
+    self.processingMessages = YES;
+    [self handleNewMessages:@[message] reverseOrder:NO];
+    self.processingMessages = NO;
 }
 
-- (void)keyboardWillShow:(NSNotification *)notification {
-    if (!self.keyboardShown) {
-        [self adjustContentOffsetDuringKeyboardAppear:YES withNotification:notification];
-        self.keyboardShown = YES;
+- (void)updateMessage:(MVMessageModel *)message {
+    //TODO: support delivery status
+}
+
+- (void)tryToLoadNextPage {
+    if (self.processingMessages) {
+        return;
+    }
+    
+    NSInteger numberOfPages = [[MVChatManager sharedInstance] numberOfPagesInChatWithId:self.chatId];
+    BOOL shouldLoad = (numberOfPages > self.loadedPageIndex + 1) || (numberOfPages == 0 && !self.initialLoadComplete);
+    
+    if (shouldLoad) {
+        self.processingMessages = YES;
+        [[MVChatManager sharedInstance] messagesPage:++self.loadedPageIndex forChatWithId:self.chatId withCallback:^(NSArray<MVMessageModel *> *messages) {
+            [self handleNewMessages:messages reverseOrder:YES];
+            self.processingMessages = NO;
+            self.initialLoadComplete = YES;
+        }];
     }
 }
 
-- (void)keyboardWillHide:(NSNotification *)notification {
-    if (self.keyboardShown) {
-        [self adjustContentOffsetDuringKeyboardAppear:NO withNotification:notification];
-        self.keyboardShown = NO;
-    }
+#pragma mark - Table view
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return self.sections.count;
 }
 
-- (void)adjustContentOffsetDuringKeyboardAppear:(BOOL)appear withNotification:(NSNotification *)notification {
-    NSTimeInterval duration = [notification.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-    UIViewAnimationCurve curve = [notification.userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue];
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return self.messages[self.sections[section]].count + 1;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSString *section = self.sections[indexPath.section];
+    MVMessageModel *model;
+    MVMessageCellTailType tailType = 0;
     
-    CGRect keyboardEndFrame = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    CGFloat keyboardHeight = CGRectGetHeight(keyboardEndFrame);
+    if (indexPath.row != 0) {
+        model = self.messages[section][indexPath.row - 1];
+        if (model.type != MVMessageTypeSystem) {
+            tailType = [self messageCellTailTypeAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row - 1 inSection:indexPath.section]];
+        }
+    }
     
-    CGPoint offset = self.messagesTableView.contentOffset;
-    if (appear) {
-        offset.y += keyboardHeight;
+    NSString *cacheKey = [NSString stringWithFormat:@"%@_%@_%lu", section, model.id, (unsigned long)tailType];
+    NSNumber *cachedHeight = [self.cellHeightCache objectForKey:cacheKey];
+    if (cachedHeight) {
+        return [cachedHeight floatValue];
+    }
+    
+    CGFloat height;
+    if (indexPath.row == 0) {
+        height = [MVMessageHeaderCell heightWithText:section];
+    } else if (model.type == MVMessageTypeSystem) {
+        height = [MVMessageSystemCell heightWithText:model.text];
+    } else if (model.type == MVMessageTypeText){
+        height = [MVMessageTextCell heightWithTailType:tailType direction:model.direction andModel:model];
     } else {
-        offset.y -= keyboardHeight;
+        height = [MVMessageMediaCell heightWithTailType:tailType direction:model.direction andModel:model];
     }
     
-    [UIView animateWithDuration:duration delay:0 options:UIViewAnimationOptionBeginFromCurrentState | curve animations:^{
-        self.messagesTableView.contentOffset = offset;
-    } completion:nil];
+    [self.cellHeightCache setObject:@(height) forKey:cacheKey];
+    
+    return height;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSString *cellId = [self cellIdForIndexPath:indexPath];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
+    
+    if (indexPath.row == 0) {
+        MVMessagePlainCell *headerCell = (MVMessagePlainCell *)cell;
+        NSString *sectionTitle = self.sections[indexPath.section];
+        [headerCell fillWithText:sectionTitle];
+    } else {
+        NSString *section = self.sections[indexPath.section];
+        MVMessageModel *model = self.messages[section][indexPath.row - 1];
+        if (model.type == MVMessageTypeSystem) {
+            MVMessagePlainCell *systemCell = (MVMessagePlainCell *)cell;
+            [systemCell fillWithText:model.text];
+        } else {
+            MVMessageBubbleCell *bubbleCell = (MVMessageBubbleCell *)cell;
+            [bubbleCell fillWithModel:model];
+            bubbleCell.indexPath = [NSIndexPath indexPathForRow:indexPath.row - 1 inSection:indexPath.section];
+            bubbleCell.delegate = self;
+        }
+    }
+    
+    return cell;
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (![cell conformsToProtocol:NSProtocolFromString(@"MVSlidingCell")]) {
+        return;
+    }
+    
+    UITableViewCell <MVSlidingCell> *slidingCell = (UITableViewCell <MVSlidingCell> *)cell;
+    CGFloat oldSlidingConstraint = slidingCell.slidingConstraint;
+    
+    if (oldSlidingConstraint != self.sliderOffset) {
+        [slidingCell setSlidingConstraint:self.sliderOffset];
+        [slidingCell.contentView layoutIfNeeded];
+    }
+}
+
+#pragma mark - Scroll View
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    self.autoscrollEnabled = (self.messagesTableView.contentOffset.y >= (self.messagesTableView.contentSize.height - self.messagesTableView.frame.size.height));
+    
+    if(self.initialLoadComplete && self.messagesTableView.contentOffset.y <= 200) {
+        [self tryToLoadNextPage];
+    }
 }
 
 #pragma mark - KVO
@@ -177,210 +293,44 @@
     }
 }
 
-#pragma mark - Data handling
-- (void)handleNewMessages:(NSArray <MVMessageModel *> *)models {
-    NSMutableArray *sections = [self.sections mutableCopy];
-    NSMutableDictionary *messages = [self.messages mutableCopy];
-    
-    for (MVMessageModel *message in models) {
-        NSString *key = [self headerTitleFromMessage:message];
-        NSMutableArray *rows = messages[key];
-        
-        if (!rows) {
-            rows = [NSMutableArray new];
-            [sections addObject:key];
-        }
-        
-        [rows addObject:message];
-        [messages setObject:rows forKey:key];
+#pragma mark - Handle Keyboard
+- (void)keyboardWillShow:(NSNotification *)notification {
+    if (!self.keyboardShown) {
+        [self adjustContentOffsetDuringKeyboardAppear:YES withNotification:notification];
+        self.keyboardShown = YES;
     }
-    
-    self.messages = [messages mutableCopy];
-    self.sections = [sections mutableCopy];
-    [self.messagesTableView reloadData];
-    [[MVChatManager sharedInstance] markChatAsRead:self.chatId];
 }
 
-- (void)insertNewMessage:(MVMessageModel *)message {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self handleNewMessages:@[message]];
-    });
-    
-    //Animate new message!
+- (void)keyboardWillHide:(NSNotification *)notification {
+    if (self.keyboardShown) {
+        [self adjustContentOffsetDuringKeyboardAppear:NO withNotification:notification];
+        self.keyboardShown = NO;
+    }
 }
 
-- (void)updateMessage:(MVMessageModel *)message {
-    //TODO: support delivery status
-}
-
-- (void)handleNewMessagesBlock:(NSArray <MVMessageModel *> *)messageModels {
-    NSMutableArray *sections = [self.sections mutableCopy];
-    NSMutableDictionary *messages = [self.messages mutableCopy];
+- (void)adjustContentOffsetDuringKeyboardAppear:(BOOL)appear withNotification:(NSNotification *)notification {
+    NSTimeInterval duration = [notification.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    UIViewAnimationCurve curve = [notification.userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue];
     
-    for (MVMessageModel *message in messageModels) {
-        NSString *key = [self headerTitleFromMessage:message];
-        NSMutableArray *rows = messages[key];
-        if (!rows) {
-            rows = [NSMutableArray new];
-            [sections insertObject:key atIndex:0];
-            [messages setObject:rows forKey:key];
-        }
-        [rows insertObject:message atIndex:0];
-    }
+    CGRect keyboardEndFrame = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    CGFloat keyboardHeight = CGRectGetHeight(keyboardEndFrame);
     
-    if ([messages objectForKey:@"unread"]) {
-        self.hasUnreadMessages = YES;
-    }
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        self.sections = [sections mutableCopy];
-        self.messages = [messages mutableCopy];
-        [self.messagesTableView reloadData];
-        @synchronized (self) {
-            self.loadingNewPage = NO;
-        }
-        [[MVChatManager sharedInstance] markChatAsRead:self.chatId];
-        self.initialLoadComplete = YES;
-    });
-}
-
-- (void)tryToLoadNextPage {
-    @synchronized (self) {
-        if (self.loadingNewPage) {
-            return;
-        }
-        
-        self.loadingNewPage = YES;
-    }
-    
-    if ([[MVChatManager sharedInstance] numberOfPagesInChatWithId:self.chatId] > self.loadedPageIndex + 1) {
-        [[MVChatManager sharedInstance] messagesPage:self.loadedPageIndex + 1 forChatWithId:self.chatId withCallback:^(NSArray<MVMessageModel *> *messages) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                self.loadedPageIndex++;
-                [self handleNewMessagesBlock:messages];
-                @synchronized (self) {
-                    self.loadingNewPage = NO;
-                }
-            });
-        }];
+    CGPoint offset = self.messagesTableView.contentOffset;
+    if (appear) {
+        offset.y += keyboardHeight;
     } else {
-        @synchronized (self) {
-            self.loadingNewPage = NO;
-        }
-    }
-}
-
-#pragma mark - Table view
--(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return self.sections.count;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.messages[self.sections[section]].count + 1;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSString *section = self.sections[indexPath.section];
-    MVMessageModel *model;
-    
-    if (indexPath.row != 0) {
-        model = self.messages[section][indexPath.row - 1];
+        offset.y -= keyboardHeight;
     }
     
-    NSString *cacheKey = [NSString stringWithFormat:@"%@_%@", section, model.id];
-    NSNumber *cachedHeight = [self.cellHeightCache objectForKey:cacheKey];
-    if (cachedHeight) {
-        return [cachedHeight floatValue];
-    }
-    
-    CGFloat height;
-    if (indexPath.row == 0) {
-        height = [MVMessageHeaderCell heightWithText:section];
-    } else {
-        if (model.type == MVMessageTypeSystem) {
-            height = [MVMessageSystemCell heightWithText:model.text];
-        } else if (model.type == MVMessageTypeText){
-            MVMessageCellTailType tailType = [self messageCellTailTypeAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row - 1 inSection:indexPath.section]];
-            height = [MVMessageTextCell heightWithTailType:tailType direction:model.direction andModel:model];
-        } else {
-            height = [MVMessageMediaCell heightWithTailType:0 direction:model.direction andModel:model];
-        }
-    }
-    
-    [self.cellHeightCache setObject:@(height) forKey:cacheKey];
-    
-    return height;
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSString *cellId = [self cellIdForIndexPath:indexPath];
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
-    
-    if (indexPath.row == 0) {
-        id <MVMessageCellSimpleProtocol> simpleCell = (id <MVMessageCellSimpleProtocol>) cell;
-        NSString *sectionTitle = self.sections[indexPath.section];
-        [simpleCell fillWithText:sectionTitle];
-    } else {
-        NSString *section = self.sections[indexPath.section];
-        MVMessageModel *model = self.messages[section][indexPath.row - 1];
-        if (model.type == MVMessageTypeSystem) {
-            id <MVMessageCellSimpleProtocol> simpleCell = (id <MVMessageCellSimpleProtocol>) cell;
-            [simpleCell fillWithText:model.text];
-        } else {
-            id <MVMessageCellComplexProtocol> complexCell = (id <MVMessageCellComplexProtocol>) cell;
-            [complexCell fillWithModel:model];
-            
-            if ([complexCell isKindOfClass:[MVMessageMediaCell class]]) {
-                MVMessageMediaCell *mediaClass = (MVMessageMediaCell *)complexCell;
-                mediaClass.indexPath = [NSIndexPath indexPathForRow:indexPath.row - 1 inSection:indexPath.section];
-                mediaClass.delegate = self;
-            }
-        }
-    }
-    
-    return cell;
-}
-
-- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (![cell conformsToProtocol:NSProtocolFromString(@"MVSlidingCell")]) {
-        return;
-    }
-    
-    UITableViewCell <MVSlidingCell> *slidingCell = (UITableViewCell <MVSlidingCell> *)cell;
-    CGFloat oldSlidingConstraint = slidingCell.slidingConstraint;
-    
-    if (oldSlidingConstraint != self.sliderOffset) {
-        [slidingCell setSlidingConstraint:self.sliderOffset];
-    }
-    
-    [slidingCell.contentView layoutIfNeeded];
-}
-
-- (void)cellTapped:(id<MVMessageCellComplexProtocol>)cell {
-    if ([cell isKindOfClass:[MVMessageMediaCell class]]) {
-        MVMessageMediaCell *mediaCell = (MVMessageMediaCell *)cell;
-        NSIndexPath *indexPath = mediaCell.indexPath;
-        NSString *section = self.sections[indexPath.section];
-        MVMessageModel *model = self.messages[section][indexPath.row];
-        
-        [[MVFileManager sharedInstance] loadAttachmentForMessage:model completion:^(DBAttachment *attachment) {
-            MVImageViewerViewModel *viewModel = [[MVImageViewerViewModel alloc] initWithSourceImageView:mediaCell.mediaImageView attachment:attachment andIndex:0];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                MVChatSharedMediaPageController *imageController = [MVChatSharedMediaPageController loadFromStoryboardWithViewModels:@[viewModel] andStartIndex:0];
-                [self presentViewController:imageController animated:YES completion:nil];
-            });
-        }];
-    }
+    [UIView animateWithDuration:duration delay:0 options:UIViewAnimationOptionBeginFromCurrentState | curve animations:^{
+        self.messagesTableView.contentOffset = offset;
+    } completion:nil];
 }
 
 #pragma mark - Gesture recognizers
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
     CGPoint translation = [(UIPanGestureRecognizer *)gestureRecognizer translationInView:self.view];
-    if (ABS(translation.y) > 1) {
-        return NO;
-    } else {
-        return YES;
-    }
+    return ABS(translation.y) < 1;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
@@ -419,13 +369,9 @@
     CGFloat constant = [panRecognizer translationInView:self.view].x;
     CGFloat velocityX = [panRecognizer velocityInView:self.view].x;
     
-    if (constant > 0) {
-        constant = 0;
-    }
+    if (constant > 0) constant = 0;
     
-    if (constant < -40) {
-        constant = -40;
-    }
+    if (constant < -40) constant = -40;
     
     if (oldConstant != constant) {
         CGFloat path = ABS(oldConstant - constant);
@@ -442,17 +388,27 @@
     }
 }
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    if(self.messagesTableView.contentOffset.y >= (self.messagesTableView.contentSize.height - self.messagesTableView.frame.size.height)) {
-        self.autoscrollEnabled = YES;
-    }
-    else {
-        self.autoscrollEnabled = NO;
+- (IBAction)tableViewTapped:(id)sender {
+    [self.view.superview.superview endEditing:YES];
+}
+
+- (void)cellTapped:(UITableViewCell *)cell {
+    if (![cell isKindOfClass:[MVMessageMediaCell class]]) {
+        return;
     }
     
-    if(self.initialLoadComplete && self.messagesTableView.contentOffset.y <= 200) {
-        [self tryToLoadNextPage];
-    }
+    MVMessageMediaCell *mediaCell = (MVMessageMediaCell *)cell;
+    NSIndexPath *indexPath = mediaCell.indexPath;
+    NSString *section = self.sections[indexPath.section];
+    MVMessageModel *message = self.messages[section][indexPath.row];
+    
+    [[MVFileManager sharedInstance] loadAttachmentForMessage:message completion:^(DBAttachment *attachment) {
+        MVImageViewerViewModel *viewModel = [[MVImageViewerViewModel alloc] initWithSourceImageView:mediaCell.mediaImageView attachment:attachment andIndex:0];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            MVChatSharedMediaPageController *imageController = [MVChatSharedMediaPageController loadFromStoryboardWithViewModels:@[viewModel] andStartIndex:0];
+            [self presentViewController:imageController animated:YES completion:nil];
+        });
+    }];
 }
 
 #pragma mark - Helpers
@@ -468,45 +424,47 @@ static NSDateFormatter *dateFormatter;
     if ((!self.initialLoadComplete && message.read) || (self.initialLoadComplete && !self.hasUnreadMessages)) {
         return [dateFormatter stringFromDate:message.sendDate];
     } else {
-        return @"unread";
+        return @"Unread Messages";
     }
 }
 
 - (NSString *)cellIdForIndexPath:(NSIndexPath *)indexPath {
-    
-    NSMutableString *cellId = [NSMutableString new];
+    NSMutableString *cellId = [NSMutableString stringWithString:@"MVMessage"];
     
     if (indexPath.row == 0) {
-        [cellId setString:@"MVMessageHeader"];
+        [cellId appendString:@"Header"];
     } else {
         NSString *section = self.sections[indexPath.section];
         MVMessageModel *model = self.messages[section][indexPath.row - 1];
         
         if (model.type == MVMessageTypeSystem) {
-            [cellId setString:@"MVMessageCellSystem"];
+            [cellId appendString:@"System"];
         } else {
             if(model.type == MVMessageTypeMedia) {
-                [cellId setString:@"MVMessageCellMedia"];
+                [cellId appendString:@"Media"];
             } else {
-                [cellId setString:@"MVMessageCellText"];
-                MVMessageCellTailType tailType = [self messageCellTailTypeAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row - 1 inSection:indexPath.section]];
-                switch (tailType) {
-                    case MVMessageCellTailTypeDefault:
-                        [cellId appendString:@"TailTypeDefault"];
-                        break;
-                    case MVMessageCellTailTypeTailess:
-                        [cellId appendString:@"TailTypeTailess"];
-                        break;
-                    case MVMessageCellTailTypeLastTailess:
-                        [cellId appendString:@"TailTypeLastTailess"];
-                        break;
-                    case MVMessageCellTailTypeFirstTailess:
-                        [cellId appendString:@"TailTypeFirstTailess"];
-                        break;
-                    default:
-                        break;
-                }
+                [cellId appendString:@"Text"];
             }
+            
+            [cellId appendString:@"TailType"];
+            MVMessageCellTailType tailType = [self messageCellTailTypeAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row - 1 inSection:indexPath.section]];
+            switch (tailType) {
+                case MVMessageCellTailTypeDefault:
+                    [cellId appendString:@"Default"];
+                    break;
+                case MVMessageCellTailTypeTailess:
+                    [cellId appendString:@"Tailess"];
+                    break;
+                case MVMessageCellTailTypeLastTailess:
+                    [cellId appendString:@"LastTailess"];
+                    break;
+                case MVMessageCellTailTypeFirstTailess:
+                    [cellId appendString:@"FirstTailess"];
+                    break;
+                default:
+                    break;
+            }
+            
             if (model.direction == MessageDirectionOutgoing) {
                 [cellId appendString:@"Outgoing"];
             } else {
@@ -514,6 +472,8 @@ static NSDateFormatter *dateFormatter;
             }
         }
     }
+    
+    [cellId appendString:@"Cell"];
     
     return [cellId copy];
 }
