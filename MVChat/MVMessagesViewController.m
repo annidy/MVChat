@@ -32,6 +32,7 @@
 @property (strong, nonatomic) NSCache *cellHeightCache;
 @property (assign, nonatomic) BOOL keyboardShown;
 @property (assign, nonatomic) BOOL hasUnreadMessages;
+@property (assign, nonatomic) BOOL shouldAnimateContentOffset;
 @end
 
 @implementation MVMessagesViewController
@@ -94,7 +95,7 @@
 }
 
 #pragma mark - Data handling
-- (void)handleNewMessages:(NSArray <MVMessageModel *> *)models reverseOrder:(BOOL)reverse {
+- (void)handleNewMessagesPage:(NSArray <MVMessageModel *> *)models {
     NSMutableArray *sections = [self.sections mutableCopy];
     NSMutableDictionary *messages = [self.messages mutableCopy];
     
@@ -105,33 +106,55 @@
         if (!rows) {
             rows = [NSMutableArray new];
             [messages setObject:rows forKey:sectionKey];
+            [sections insertObject:sectionKey atIndex:0];
             
-            if (reverse) {
-                [sections insertObject:sectionKey atIndex:0];
-            } else {
-                [sections addObject:sectionKey];
-            }
         }
         
-        if (reverse) {
-            [rows insertObject:message atIndex:0];
-        } else {
-            [rows addObject:message];
-        }
+        [rows insertObject:message atIndex:0];
     }
     
     self.messages = [messages mutableCopy];
     self.sections = [sections mutableCopy];
     [self.messagesTableView reloadData];
+    [[MVChatManager sharedInstance] markChatAsRead:self.chatId];
+}
+
+- (void)handleNewMessage:(MVMessageModel *)message {
+    NSMutableArray *sections = [self.sections mutableCopy];
+    NSMutableDictionary *messages = [self.messages mutableCopy];
     
+    NSString *sectionKey = [self headerTitleFromMessage:message];
+    NSMutableArray *rows = messages[sectionKey];
+    
+    BOOL insertedSection = NO;
+    if (!rows) {
+        insertedSection = YES;
+        rows = [NSMutableArray new];
+        [messages setObject:rows forKey:sectionKey];
+        [sections addObject:sectionKey];
+    }
+    
+    [rows addObject:message];
+    
+    self.messages = [messages mutableCopy];
+    self.sections = [sections mutableCopy];
+    self.shouldAnimateContentOffset = YES;
+    if (insertedSection) {
+        [self.messagesTableView insertSections:[NSIndexSet indexSetWithIndex:self.sections.count - 1] withRowAnimation:UITableViewRowAnimationBottom];
+    } else {
+        NSIndexPath *indexPathToInsert = [NSIndexPath indexPathForRow:rows.count inSection:sections.count - 1];
+        NSIndexPath *indexPathToReload = [NSIndexPath indexPathForRow:rows.count - 1 inSection:sections.count - 1];
+        [self.messagesTableView insertRowsAtIndexPaths:@[indexPathToInsert] withRowAnimation:UITableViewRowAnimationBottom];
+        [self.messagesTableView reloadRowsAtIndexPaths:@[indexPathToReload] withRowAnimation:UITableViewRowAnimationNone];
+    }
     [[MVChatManager sharedInstance] markChatAsRead:self.chatId];
 }
 
 - (void)insertNewMessage:(MVMessageModel *)message {
-    //TODO: animate
     self.processingMessages = YES;
-    [self handleNewMessages:@[message] reverseOrder:NO];
+    [self handleNewMessage:message];
     self.processingMessages = NO;
+    
 }
 
 - (void)updateMessage:(MVMessageModel *)message {
@@ -149,7 +172,7 @@
     if (shouldLoad) {
         self.processingMessages = YES;
         [[MVChatManager sharedInstance] messagesPage:++self.loadedPageIndex forChatWithId:self.chatId withCallback:^(NSArray<MVMessageModel *> *messages) {
-            [self handleNewMessages:messages reverseOrder:YES];
+            [self handleNewMessagesPage:messages];
             self.processingMessages = NO;
             self.initialLoadComplete = YES;
         }];
@@ -274,7 +297,6 @@
         tableViewInsets.top = inset;
         self.messagesTableView.contentInset = tableViewInsets;
     }
-    
 }
 
 - (void)updateContentOffsetForOldContent:(CGSize)oldSize andNewContent:(CGSize)newSize {
@@ -289,7 +311,8 @@
     }
     
     if (offset.y != self.messagesTableView.contentOffset.y) {
-        self.messagesTableView.contentOffset = offset;
+        [self.messagesTableView setContentOffset:offset animated:self.shouldAnimateContentOffset];
+        self.shouldAnimateContentOffset = NO;
     }
 }
 
