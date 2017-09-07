@@ -12,9 +12,6 @@
 		CD0503661F27D2F300A1C4D2 /* MVContactsListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0503651F27D2F300A1C4D2 /* MVContactsListCell.m */; };
 		CD05508A1F06E8110076FB25 /* MVDatabaseManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0550891F06E8110076FB25 /* MVDatabaseManager.m */; };
 		CD0550901F0938D90076FB25 /* MVNameGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05508F1F0938D90076FB25 /* MVNameGenerator.m */; };
-		CD0550951F0939E60076FB25 /* name.csv in Resources */ = {isa = PBXBuildFile; fileRef = CD0550921F0939E60076FB25 /* name.csv */; };
-		CD0550961F0939E60076FB25 /* syllable.csv in Resources */ = {isa = PBXBuildFile; fileRef = CD0550931F0939E60076FB25 /* syllable.csv */; };
-		CD0550971F0939E60076FB25 /* title.csv in Resources */ = {isa = PBXBuildFile; fileRef = CD0550941F0939E60076FB25 /* title.csv */; };
 		CD05509A1F0951B70076FB25 /* MVTextGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0550991F0951B70076FB25 /* MVTextGenerator.m */; };
 		CD05F6841F2A631500721421 /* MVChatsListSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05F6831F2A631500721421 /* MVChatsListSearchViewController.m */; };
 		CD05F6871F2A8B9200721421 /* MVNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05F6861F2A8B9200721421 /* MVNavigationController.m */; };
@@ -61,6 +58,9 @@
 		CDB89D3A1F2242DB0024BFDB /* MVChatsListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB89D391F2242DB0024BFDB /* MVChatsListCell.m */; };
 		CDB97CE01F43522800950F6A /* MVFileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB97CDF1F43522800950F6A /* MVFileManager.m */; };
 		CDE4B46A1F61C13B00014DE0 /* MVSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE4B4691F61C13B00014DE0 /* MVSettingsViewController.m */; };
+		CDE4B46F1F61DF0100014DE0 /* name.csv in Resources */ = {isa = PBXBuildFile; fileRef = CDE4B46C1F61DF0100014DE0 /* name.csv */; };
+		CDE4B4701F61DF0100014DE0 /* syllable.csv in Resources */ = {isa = PBXBuildFile; fileRef = CDE4B46D1F61DF0100014DE0 /* syllable.csv */; };
+		CDE4B4711F61DF0100014DE0 /* title.csv in Resources */ = {isa = PBXBuildFile; fileRef = CDE4B46E1F61DF0100014DE0 /* title.csv */; };
 		CDF479AF1EB66C00003B3C8E /* MVChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF479AE1EB66C00003B3C8E /* MVChatViewController.m */; };
 		CDF479B41EB68980003B3C8E /* MVMessagesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF479B31EB68980003B3C8E /* MVMessagesViewController.m */; };
 		CDF479B71EB68AAF003B3C8E /* MVFooterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF479B61EB68AAF003B3C8E /* MVFooterViewController.m */; };
@@ -79,9 +79,6 @@
 		CD0550891F06E8110076FB25 /* MVDatabaseManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVDatabaseManager.m; sourceTree = "<group>"; };
 		CD05508E1F0938D90076FB25 /* MVNameGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVNameGenerator.h; sourceTree = "<group>"; };
 		CD05508F1F0938D90076FB25 /* MVNameGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVNameGenerator.m; sourceTree = "<group>"; };
-		CD0550921F0939E60076FB25 /* name.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = name.csv; path = "../../../../Downloads/NameGen-master/name.csv"; sourceTree = "<group>"; };
-		CD0550931F0939E60076FB25 /* syllable.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = syllable.csv; path = "../../../../Downloads/NameGen-master/syllable.csv"; sourceTree = "<group>"; };
-		CD0550941F0939E60076FB25 /* title.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = title.csv; path = "../../../../Downloads/NameGen-master/title.csv"; sourceTree = "<group>"; };
 		CD0550981F0951B70076FB25 /* MVTextGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVTextGenerator.h; sourceTree = "<group>"; };
 		CD0550991F0951B70076FB25 /* MVTextGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVTextGenerator.m; sourceTree = "<group>"; };
 		CD05F6821F2A631500721421 /* MVChatsListSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVChatsListSearchViewController.h; sourceTree = "<group>"; };
@@ -179,6 +176,9 @@
 		CDB97CDF1F43522800950F6A /* MVFileManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVFileManager.m; sourceTree = "<group>"; };
 		CDE4B4681F61C13B00014DE0 /* MVSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVSettingsViewController.h; sourceTree = "<group>"; };
 		CDE4B4691F61C13B00014DE0 /* MVSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVSettingsViewController.m; sourceTree = "<group>"; };
+		CDE4B46C1F61DF0100014DE0 /* name.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = name.csv; sourceTree = "<group>"; };
+		CDE4B46D1F61DF0100014DE0 /* syllable.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = syllable.csv; sourceTree = "<group>"; };
+		CDE4B46E1F61DF0100014DE0 /* title.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = title.csv; sourceTree = "<group>"; };
 		CDF479AD1EB66C00003B3C8E /* MVChatViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVChatViewController.h; sourceTree = "<group>"; };
 		CDF479AE1EB66C00003B3C8E /* MVChatViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVChatViewController.m; sourceTree = "<group>"; };
 		CDF479B21EB68980003B3C8E /* MVMessagesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVMessagesViewController.h; sourceTree = "<group>"; };
@@ -517,9 +517,9 @@
 			isa = PBXGroup;
 			children = (
 				CDAB09861E7DE2D800A142DC /* main.m */,
-				CD0550921F0939E60076FB25 /* name.csv */,
-				CD0550931F0939E60076FB25 /* syllable.csv */,
-				CD0550941F0939E60076FB25 /* title.csv */,
+				CDE4B46C1F61DF0100014DE0 /* name.csv */,
+				CDE4B46D1F61DF0100014DE0 /* syllable.csv */,
+				CDE4B46E1F61DF0100014DE0 /* title.csv */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -685,12 +685,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CDE4B4701F61DF0100014DE0 /* syllable.csv in Resources */,
 				CD28B3501EB6A61000BFFCAA /* Main.storyboard in Resources */,
-				CD0550961F0939E60076FB25 /* syllable.csv in Resources */,
-				CD0550951F0939E60076FB25 /* name.csv in Resources */,
 				CDAB09921E7DE2D800A142DC /* Assets.xcassets in Resources */,
 				CD28B34F1EB6A61000BFFCAA /* LaunchScreen.storyboard in Resources */,
-				CD0550971F0939E60076FB25 /* title.csv in Resources */,
+				CDE4B46F1F61DF0100014DE0 /* name.csv in Resources */,
+				CDE4B4711F61DF0100014DE0 /* title.csv in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
