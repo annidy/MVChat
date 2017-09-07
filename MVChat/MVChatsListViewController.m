@@ -199,18 +199,17 @@
     [menuElements addObject:[MVOverlayMenuElement elementWithTitle:@"Create chat" action:^{
         [self createNewChat];
     }]];
-    [menuElements addObject:[MVOverlayMenuElement elementWithTitle:@"Avatars update" action:^{
+    [menuElements addObject:[MVOverlayMenuElement elementWithTitle:@"Update avatars" action:^{
         [[MVUpdatesProvider sharedInstance] performAvatarsUpdate];
     }]];
-    [menuElements addObject:[MVOverlayMenuElement elementWithTitle:@"Last seen update" action:^{
+    [menuElements addObject:[MVOverlayMenuElement elementWithTitle:@"Update last seen time" action:^{
         [[MVUpdatesProvider sharedInstance] performLastSeenUpdate];
     }]];
-    [menuElements addObject:[MVOverlayMenuElement elementWithTitle:@"Messages update" action:^{
-        [[MVUpdatesProvider sharedInstance] performMessagesUpdate];
+    [menuElements addObject:[MVOverlayMenuElement elementWithTitle:@"Generate new messages" action:^{
+        [[MVUpdatesProvider sharedInstance] generateNewMessages];
     }]];
-    [menuElements addObject:[MVOverlayMenuElement elementWithTitle:@"Chats update" action:^{
-        [[MVUpdatesProvider sharedInstance] performChatsUpdate];
-        [[MVChatManager sharedInstance] generateMessageForChatWithId:self.chats[0].id];
+    [menuElements addObject:[MVOverlayMenuElement elementWithTitle:@"Generate new chats" action:^{
+        [[MVUpdatesProvider sharedInstance] generateNewChats];
     }]];
     menu.menuElements = [menuElements copy];
     

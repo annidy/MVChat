@@ -19,6 +19,7 @@
 #import "MVContactManager.h"
 #import "MVOverlayMenuController.h"
 #import <DBAttachment.h>
+#import "MVUpdatesProvider.h"
 
 @interface MVChatViewController () <MVForceTouchPresentaionDelegate>
 @property (weak, nonatomic) MVMessagesViewController *MessagesController;
@@ -130,19 +131,12 @@
     }]];
     
     NSString *chatId = [self.chat.id copy];
-    [items addObject:[MVOverlayMenuElement elementWithTitle:@"Spawn message" action:^{
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [[MVChatManager sharedInstance] generateMessageForChatWithId:chatId];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [[MVChatManager sharedInstance] generateMessageForChatWithId:chatId];
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    [[MVChatManager sharedInstance] generateMessageForChatWithId:chatId];
-                });
-            });
-        });
+    NSArray *contacts = [self.chat.participants copy];
+    [items addObject:[MVOverlayMenuElement elementWithTitle:@"Generate message" action:^{
+        [[MVUpdatesProvider sharedInstance] generateMessageForChatWithId:chatId];
     }]];
-    [items addObject:[MVOverlayMenuElement elementWithTitle:@"Generate avatars" action:^{
-        
+    [items addObject:[MVOverlayMenuElement elementWithTitle:@"Update avatars" action:^{
+        [[MVUpdatesProvider sharedInstance] performAvatarsUpdateForContacts:contacts];
     }]];
     
     menu.menuElements = items;
@@ -182,10 +176,6 @@
     }
     MVContactProfileViewController *contactProfile = [MVContactProfileViewController loadFromStoryboardWithContact:peer];
     [self.navigationController pushViewController:contactProfile animated:YES];
-}
-
-- (void)spawnNewMessage {
-    [[MVChatManager sharedInstance] generateMessageForChatWithId:self.chat.id];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
