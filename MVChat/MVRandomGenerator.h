@@ -13,19 +13,9 @@
 @class MVMessageModel;
 @class UIColor;
 
-typedef enum : NSUInteger {
-    MVUpdateTypeChats,
-    MVUpdateTypeMessages
-} MVUpdateType;
-
-@protocol AppListener
-- (void)updateWithType:(MVUpdateType)type andObjects:(NSArray *)objects;
-@end
 
 @interface MVRandomGenerator : NSObject
-@property (weak, nonatomic) id <AppListener> updatesListener;
-+(instancetype)sharedInstance;
-
++ (instancetype)sharedInstance;
 - (NSArray <MVContactModel *> *)generateContacts;
 - (NSArray <MVChatModel *> *)generateChatsWithContacts:(NSArray<MVContactModel *> *)contacts;
 - (NSArray <MVMessageModel *> *)generateMessagesForChat:(MVChatModel *)chat;
@@ -35,4 +25,5 @@ typedef enum : NSUInteger {
 - (UIColor *)randomColor;
 - (NSArray <UIColor *> *)randomGradientColors;
 - (NSDate *)randomLastSeenDate;
+- (NSArray <MVChatModel *> *)generateChatsWithCount:(NSUInteger)count andContacts:(NSArray<MVContactModel *> *)contacts;
 @end
