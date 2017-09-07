@@ -189,7 +189,7 @@
             return;
         }
         
-        __block CGImageSourceRef imageSource;
+        __block CGImageSourceRef imageSource = NULL;
         PHImageRequestOptions *requestOptions = [PHImageRequestOptions new];
         requestOptions.synchronous = YES;
 
@@ -202,11 +202,19 @@
                                                             }];
                 break;
             case DBAttachmentSourceTypeDocumentURL:
-                imageSource = CGImageSourceCreateWithURL((CFURLRef)[NSURL fileURLWithPath:self.originalFilePath], nil);
+                if (self.originalFilePath) {
+                    imageSource = CGImageSourceCreateWithURL((CFURLRef)[NSURL fileURLWithPath:self.originalFilePath], nil);
+                }
                 break;
             default:
-                imageSource = CGImageSourceCreateWithData((CFDataRef)UIImagePNGRepresentation(self.image), NULL);
+                if (self.image) {
+                    imageSource = CGImageSourceCreateWithData((CFDataRef)UIImagePNGRepresentation(self.image), NULL);
+                }
                 break;
+        }
+        
+        if (imageSource == NULL) {
+            return;
         }
         
         CGFloat scale = UIScreen.mainScreen.scale;
