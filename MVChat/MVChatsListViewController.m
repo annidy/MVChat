@@ -79,7 +79,8 @@
     NSMutableArray *chats = [self.chats mutableCopy];
     [chats insertObject:chat atIndex:0];
     self.chats = [chats copy];
-    [self.chatsList reloadData];
+    NSIndexPath *insertPath = [NSIndexPath indexPathForRow:0 inSection:0];
+    [self.chatsList insertRowsAtIndexPaths:@[insertPath] withRowAnimation:UITableViewRowAnimationBottom];
 }
 
 - (void)updateChats {
