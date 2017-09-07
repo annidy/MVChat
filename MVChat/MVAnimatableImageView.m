@@ -9,7 +9,7 @@
 #import "MVAnimatableImageView.h"
 #import <QuartzCore/QuartzCore.h>
 #import <AVFoundation/AVFoundation.h>
-#import <objc/objc-runtime.h>
+#import <objc/runtime.h>
 
 @interface MVAction : NSObject <CAAction>
 @property (strong, nonatomic) CABasicAnimation *pendingAnimation;
