@@ -39,4 +39,6 @@
 #pragma mark - Helpers
 - (CGSize)sizeOfAttachmentForMessage:(MVMessageModel *)message;
 - (NSString *)documentsPath;
+- (void)deleteAllFiles;
+- (void)clearAllCache;
 @end

@@ -47,5 +47,10 @@ static NSUInteger MVMessagesPageSize = 15;
 - (void)sendMediaMessageWithAttachment:(DBAttachment *)attachment toChatWithId:(NSString *)chatId;
 
 #pragma mark - Helpers
-- (void)generateMessageForChatWithId:(NSString *)chatId;
+- (MVChatModel *)chatWithId:(NSString *)chatId;
+
+#pragma mark - External events
+- (void)handleNewChats:(NSArray <MVChatModel *> *)chats;
+- (void)handleNewMessages:(NSArray <MVMessageModel *> *)messages;
+- (void)clearAllCache;
 @end

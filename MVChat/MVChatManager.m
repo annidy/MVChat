@@ -19,6 +19,7 @@
 @property (strong, nonatomic) NSMutableArray *chats;
 @property (strong, nonatomic) NSMutableDictionary *chatsMessages;
 @property (strong, nonatomic) NSMutableDictionary *chatsMessagesPages;
+@property (strong, nonatomic) NSMutableSet *cachedChatIds;
 @property (strong, nonatomic) dispatch_queue_t managerQueue;
 @end
 
@@ -40,6 +41,7 @@ static MVChatManager *sharedManager;
         _chats = [NSMutableArray new];
         _chatsMessages = [NSMutableDictionary new];
         _chatsMessagesPages = [NSMutableDictionary new];
+        _cachedChatIds = [NSMutableSet new];
     }
     
     return self;
@@ -72,6 +74,7 @@ static MVChatManager *sharedManager;
                 @synchronized (self.chatsMessages) {
                     [self.chatsMessages setObject:[messages mutableCopy] forKey:chatId];
                     [self.chatsMessagesPages setObject:@([self numberOfPages:messages]) forKey:chatId];
+                    [self.cachedChatIds addObject:chatId];
                 }
                 if (callback) callback();
             });
@@ -167,8 +170,8 @@ static MVChatManager *sharedManager;
 }
 
 - (void)addMessage:(MVMessageModel *)message {
-    dispatch_async(self.managerQueue, ^{
-        @synchronized (self.chatsMessages) {
+    @synchronized (self.chatsMessages) {
+        if ([self.cachedChatIds containsObject:message.chatId]) {
             NSMutableArray *messages = [self.chatsMessages objectForKey:message.chatId];
             if (!messages) {
                 messages = [NSMutableArray new];
@@ -177,13 +180,13 @@ static MVChatManager *sharedManager;
             [messages insertObject:message atIndex:0];
             [self.chatsMessagesPages setObject:@([self numberOfPages:messages]) forKey:message.chatId];
         }
-    
-        if ([self.messagesListener.chatId isEqualToString:message.chatId]) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self.messagesListener insertNewMessage:message];
-            });
-        }
-    });
+    }
+
+    if ([self.messagesListener.chatId isEqualToString:message.chatId]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.messagesListener insertNewMessage:message];
+        });
+    }
 }
 
 - (void)updateMessage:(MVMessageModel *)message {
@@ -232,6 +235,7 @@ static MVChatManager *sharedManager;
         [self addChat:chat];
         @synchronized (self.chatsMessages) {
             [self.chatsMessages setObject:[NSMutableArray new] forKey:chat.id];
+            [self.cachedChatIds addObject:chat.id];
         }
         dispatch_async(dispatch_get_main_queue(), ^{
             callback(chat);
@@ -348,24 +352,6 @@ static MVChatManager *sharedManager;
 }
 
 #pragma mark - Helpers
-- (void)generateMessageForChatWithId:(NSString *)chatId {
-    dispatch_async(self.managerQueue, ^{
-        MVChatModel *chat = [self chatWithId:chatId];
-        MVMessageModel *message = [[MVRandomGenerator sharedInstance] randomIncomingMessageWithChat:chat];
-        message.sendDate = [NSDate new];
-        message.id = [NSUUID UUID].UUIDString;
-        [self addMessage:message];
-        [[MVDatabaseManager sharedInstance] insertMessages:@[message] withCompletion:nil];
-    
-        chat.lastMessage = message;
-        chat.lastUpdateDate = message.sendDate;
-        chat.unreadCount += 1;
-        [self replaceChat:chat withSorting:YES];
-        [[MVDatabaseManager sharedInstance] insertChats:@[chat] withCompletion:nil];
-    });
-    
-}
-
 - (NSUInteger)numberOfPages:(NSArray *)messages {
     NSUInteger messagesCount = [messages count];
     NSUInteger numberOfPages = messagesCount/MVMessagesPageSize;
@@ -423,5 +409,47 @@ static MVChatManager *sharedManager;
     }
     
     return NSNotFound;
+}
+
+#pragma mark - External events
+- (void)handleNewChats:(NSArray <MVChatModel *> *)chats {
+    dispatch_async(self.managerQueue, ^{
+        for (MVChatModel *chat in chats) {
+            [self addChat:chat];
+            [[MVDatabaseManager sharedInstance] insertChats:@[chat] withCompletion:nil];
+        }
+    });
+}
+
+- (void)handleNewMessages:(NSArray<MVMessageModel *> *)messages {
+    dispatch_async(self.managerQueue, ^{
+        for (MVMessageModel *message in messages) {
+            MVChatModel *chat = [self chatWithId:message.chatId];
+            chat.lastMessage = message;
+            chat.lastUpdateDate = message.sendDate;
+            chat.unreadCount++;
+            [self addMessage:message];
+            [self replaceChat:chat withSorting:YES];
+            [[MVDatabaseManager sharedInstance] insertMessages:@[message] withCompletion:nil];
+            [[MVDatabaseManager sharedInstance] insertChats:@[chat] withCompletion:nil];
+        }
+    });
+}
+
+- (void)clearAllCache {
+    dispatch_async(self.managerQueue, ^{
+        @synchronized (self.chats) {
+            self.chats = [NSMutableArray new];
+        }
+        @synchronized (self.chatsMessages) {
+            self.chatsMessages = [NSMutableDictionary new];
+            self.chatsMessagesPages = [NSMutableDictionary new];
+            self.cachedChatIds = [NSMutableSet new];
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.chatsListener updateChats];
+        });
+    });
 }
 @end

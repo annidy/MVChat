@@ -31,9 +31,6 @@
     if (self = [super init]) {
         _managerQueue = dispatch_queue_create("com.markvasiv.contactsManager", DISPATCH_QUEUE_SERIAL);
         _contacts = [NSArray new];
-        dispatch_async(self.managerQueue, ^{
-            [self generateUserActivity];
-        });
     }
     
     return self;
@@ -52,40 +49,20 @@
 
 - (NSArray <MVContactModel *> *)getAllContacts {
     @synchronized (self.contacts) {
-        return self.contacts;
+        return [self.contacts copy];
     }
 }
 
-- (void)generateUserActivity {
-    NSArray *contacts;
+- (void)handleContactLastSeenTimeUpdate:(MVContactModel *)contact {
     @synchronized (self.contacts) {
-        contacts = [self.contacts copy];
-    }
-    
-    for (MVContactModel *contact in contacts) {
-        NSDate *lastSeenDate = [[MVRandomGenerator sharedInstance] randomLastSeenDate];
-        NSNotification *update = [[NSNotification alloc] initWithName:@"ContactLastSeenTimeUpdate" object:nil userInfo:@{@"Id" : contact.id, @"LastSeenTime" : lastSeenDate}];
-        [[NSNotificationCenter defaultCenter] postNotification:update];
-        contact.lastSeenDate = lastSeenDate;
-    }
-    
-    NSMutableArray *changedContacts = [NSMutableArray new];
-    @synchronized (self.contacts) {
-        for (MVContactModel *existingContact in self.contacts) {
-            for (MVContactModel *updatedContact in contacts) {
-                if ([existingContact.id isEqualToString:updatedContact.id]) {
-                    existingContact.lastSeenDate = updatedContact.lastSeenDate;
-                    [changedContacts addObject:existingContact];
-                }
+        for (MVContactModel *oldContact in self.contacts) {
+            if ([oldContact.id isEqualToString:contact.id]) {
+                oldContact.lastSeenDate = contact.lastSeenDate;
+                NSNotification *update = [[NSNotification alloc] initWithName:@"ContactLastSeenTimeUpdate" object:nil userInfo:@{@"Id" : contact.id, @"LastSeenTime" : contact.lastSeenDate}];
+                [[NSNotificationCenter defaultCenter] postNotification:update];
             }
         }
     }
-    
-    [[MVDatabaseManager sharedInstance] insertContacts:changedContacts withCompletion:^(BOOL success) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)([[MVRandomGenerator sharedInstance] randomUIntegerWithMin:5 andMax:20] * NSEC_PER_SEC)), self.managerQueue, ^{
-            [self generateUserActivity];
-        });
-    }];
 }
 
 static MVContactModel *myContact;
@@ -99,5 +76,16 @@ static MVContactModel *myContact;
     }
     
     return myContact;
+}
+
+- (void)clearAllCache {
+    dispatch_async(self.managerQueue, ^{
+        @synchronized (self.contacts) {
+            self.contacts = [NSArray new];
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.updatesListener updateContacts];
+        });
+    });
 }
 @end

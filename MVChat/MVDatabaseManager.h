@@ -28,4 +28,5 @@ typedef NS_ENUM(NSUInteger, MVMessageType);
 - (void)deleteChat:(MVChatModel *)chatModel withCompletion:(void (^)(BOOL success))completion;
 
 - (void)generateData;
+- (void)deleteAllData;
 @end

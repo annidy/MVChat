@@ -11,7 +11,12 @@
 @interface MVUpdatesProvider : NSObject
 + (instancetype)sharedInstance;
 - (void)performAvatarsUpdate;
+- (void)performAvatarsUpdateForContacts:(NSArray *)contacts;
 - (void)performLastSeenUpdate;
-- (void)performMessagesUpdate;
-- (void)performChatsUpdate;
+- (void)generateNewChats;
+- (void)generateMessageForChatWithId:(NSString *)chatId;
+- (void)generateNewMessages;
+
+- (void)generateData;
+- (void)deleteAllData;
 @end

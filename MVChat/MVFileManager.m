@@ -187,7 +187,8 @@ static MVFileManager *instance;
             }
             NSString *letter = [[chat.title substringToIndex:1] uppercaseString];
             UIImage *image = [self generateGradientImageForLetter:letter];
-            [self writeData:UIImagePNGRepresentation(image) toFileAtRelativePath:[self relativePathForChatAvatar:chat]];
+            DBAttachment *attachment = [DBAttachment attachmentFromCameraImage:image];
+            [self saveChatAvatar:chat attachment:attachment];
         }
     });
 }
@@ -197,7 +198,8 @@ static MVFileManager *instance;
         for (MVContactModel *contact in contacts) {
             NSString *letter = [[contact.name substringToIndex:1] uppercaseString];
             UIImage *image = [self generateGradientImageForLetter:letter];
-            [self writeData:UIImagePNGRepresentation(image) toFileAtRelativePath:[self relativePathForContactAvatar:contact]];
+            DBAttachment *attachment = [DBAttachment attachmentFromCameraImage:image];
+            [self saveContactAvatar:contact attachment:attachment];
         }
     });
 }
@@ -314,4 +316,22 @@ static MVFileManager *instance;
     return [NSURL fileURLWithPath:[self globalPathFromRelative:relativePath]];
 }
 
+- (void)deleteAllFiles {
+    dispatch_async(self.managerQueue, ^{
+        NSArray *files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:[self documentsPath] error:nil];
+        for (NSString *file in files) {
+            if ([file containsString:@"yap"]) {
+                continue;
+            }
+            [[NSFileManager defaultManager] removeItemAtPath:[self globalPathFromRelative:file] error:nil];
+        }
+    });
+}
+
+- (void)clearAllCache {
+    dispatch_async(self.managerQueue, ^{
+        self.messageAttachments = [NSMutableDictionary new];
+        self.imagesCache = [NSCache new];
+    });
+}
 @end

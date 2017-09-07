@@ -55,23 +55,6 @@ static MVDatabaseManager *instance;
 }
 
 - (void)setupDatabase {
-    //secondary index
-//    YapDatabaseSecondaryIndexSetup *messagesSecondaryIndexSetup = [[YapDatabaseSecondaryIndexSetup alloc] init];
-//    [messagesSecondaryIndexSetup addColumn:@"messageChatId" withType:YapDatabaseSecondaryIndexTypeText];
-//    [messagesSecondaryIndexSetup addColumn:@"messageType" withType:YapDatabaseSecondaryIndexTypeInteger];
-//    
-//    YapDatabaseSecondaryIndexHandler *messagesSecondaryIndexHandler = [YapDatabaseSecondaryIndexHandler withObjectBlock:^(YapDatabaseReadTransaction *transaction, NSMutableDictionary *dict, NSString *collection, NSString *key, id object) {
-//        if ([collection isEqualToString:@"messages"]) {
-//            MVMessageModel *message = (MVMessageModel *)object;
-//            dict[@"messageChatId"] = message.chatId;
-//            dict[@"messageType"] = @(message.type);
-//        }
-//    }];
-//    
-//    YapDatabaseSecondaryIndex *messageSecondaryIndex = [[YapDatabaseSecondaryIndex alloc] initWithSetup:messagesSecondaryIndexSetup handler:messagesSecondaryIndexHandler];
-//    [self.db registerExtension:messageSecondaryIndex withName:@"secondaryIndex"];
-    
-    //views
     YapDatabaseViewGrouping *messagesGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString * _Nullable(YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
         if ([collection isEqualToString:messagesCollection]) {
             MVMessageModel *message = (MVMessageModel *)object;
@@ -122,18 +105,6 @@ static MVDatabaseManager *instance;
     
     YapDatabaseAutoView *contactsView = [[YapDatabaseAutoView alloc] initWithGrouping:contactsGrouping sorting:contactsSorting];
     [self.db registerExtension:contactsView withName:@"orderedContacts"];
-    
-    
-//    YapDatabaseViewFiltering *filt = [YapDatabaseViewFiltering withObjectBlock:^BOOL(YapDatabaseReadTransaction *transaction, NSString *group, NSString *collection, NSString *key, id object) {
-//        return YES;
-//    }];
-    
-//    self.mesagesFilteredView = [[YapDatabaseFilteredView alloc] initWithParentViewName:@"orderedMessages" filtering:filt versionTag:@"0"];
-//    self.mesagesFilteredView.options.isPersistent = NO;
-//    
-//    [self.db registerExtension:self.mesagesFilteredView withName:@"filteredMessages"];
-    //[self.db unregisterExtensionWithName:@"orderedMessages"];
-    //[self.db unregisterExtensionWithName:@"orderedChats"];
 }
 
 #pragma mark - Select
@@ -255,6 +226,11 @@ static MVDatabaseManager *instance;
 
 #pragma mark - Helpers
 
+- (void)deleteAllData {
+    [self.chatsConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
+        [transaction removeAllObjectsInAllCollections];
+    }];
+}
 //test
 - (void)generateData {
     NSArray <MVContactModel *> *contacts = [[MVRandomGenerator sharedInstance] generateContacts];

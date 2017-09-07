@@ -18,4 +18,6 @@
 - (void)loadContacts;
 - (NSArray <MVContactModel *> *)getAllContacts;
 + (MVContactModel *)myContact;
+- (void)handleContactLastSeenTimeUpdate:(MVContactModel *)contact;
+- (void)clearAllCache;
 @end
