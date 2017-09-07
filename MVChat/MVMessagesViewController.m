@@ -113,6 +113,10 @@
         [rows insertObject:message atIndex:0];
     }
     
+    if ([sections containsObject:@"New Messages"]) {
+        self.hasUnreadMessages = YES;
+    }
+    
     self.messages = [messages mutableCopy];
     self.sections = [sections mutableCopy];
     [self.messagesTableView reloadData];
@@ -276,8 +280,10 @@
         CGSize oldSize = [[change objectForKey:NSKeyValueChangeOldKey] CGSizeValue];
         CGSize newSize = [[change objectForKey:NSKeyValueChangeNewKey] CGSizeValue];
         
-        [self updateContentOffsetForOldContent:oldSize andNewContent:newSize];
-        [self updateContentInsetForNewContent:newSize];
+        [UIView animateWithDuration:self.shouldAnimateContentOffset? 0.2 : 0 animations:^{
+            [self updateContentOffsetForOldContent:oldSize andNewContent:newSize];
+            [self updateContentInsetForNewContent:newSize];
+        }];
     }
 }
 
@@ -311,8 +317,8 @@
     }
     
     if (offset.y != self.messagesTableView.contentOffset.y) {
-        [self.messagesTableView setContentOffset:offset animated:self.shouldAnimateContentOffset];
-        self.shouldAnimateContentOffset = NO;
+        //[self.messagesTableView setContentOffset:offset animated:self.shouldAnimateContentOffset];
+        self.messagesTableView.contentOffset = offset;
     }
 }
 
