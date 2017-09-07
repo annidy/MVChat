@@ -33,6 +33,8 @@
     
     self.avatarImageView.layer.cornerRadius = 27;
     self.avatarImageView.layer.masksToBounds = YES;
+    self.avatarImageView.layer.borderWidth = 0.3f;
+    self.avatarImageView.layer.borderColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:0.4].CGColor;
 }
 
 - (void)fillWithChat:(MVChatModel *)chat {

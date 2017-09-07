@@ -63,7 +63,8 @@
     [self registerCells];
     
     self.messagesTableView.tableFooterView = [UIView new];
-    self.messagesTableView.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
+    CGFloat topHeight = [UIApplication sharedApplication].statusBarFrame.size.height + [self navigationController].navigationBar.frame.size.height;
+    self.messagesTableView.contentInset = UIEdgeInsetsMake(topHeight, 0, 0, 0);
     
     [MVChatManager sharedInstance].messagesListener = self;
     [self tryToLoadNextPage];

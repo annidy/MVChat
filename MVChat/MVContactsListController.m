@@ -65,7 +65,8 @@
     
     [self setupNavigationBar];
     self.contactsList.tableFooterView = [UIView new];
-    self.contactsList.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
+    CGFloat topHeight = [UIApplication sharedApplication].statusBarFrame.size.height + [self navigationController].navigationBar.frame.size.height;
+    self.contactsList.contentInset = UIEdgeInsetsMake(topHeight, 0, 0, 0);
     [self.contactsList registerClass:[MVTableViewHeader class] forHeaderFooterViewReuseIdentifier:@"MVTableViewHeader"];
     
     if (self.mode == MVContactsListControllerModeDefault) {

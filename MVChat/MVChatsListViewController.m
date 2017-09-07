@@ -41,7 +41,8 @@
     [MVChatManager sharedInstance].chatsListener = self;
     self.chats = [[MVChatManager sharedInstance] chatsList];
     self.chatsList.tableFooterView = [UIView new];
-    self.chatsList.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
+    CGFloat topHeight = [UIApplication sharedApplication].statusBarFrame.size.height + [self navigationController].navigationBar.frame.size.height;
+    self.chatsList.contentInset = UIEdgeInsetsMake(topHeight, 0, 0, 0);
     self.chatsList.delegate = self;
     self.chatsList.dataSource = self;
     

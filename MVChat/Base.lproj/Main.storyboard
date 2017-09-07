@@ -767,9 +767,12 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="617"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="chatBackground" translatesAutoresizingMaskIntoConstraints="NO" id="YFK-py-fbx">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="617"/>
+                            </imageView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="ySx-5M-MSu">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="617"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <connections>
                                     <outlet property="dataSource" destination="e0v-Ll-oyT" id="9Zx-dP-U6d"/>
                                     <outlet property="delegate" destination="e0v-Ll-oyT" id="qvi-0X-pUx"/>
@@ -780,9 +783,13 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
                         <constraints>
+                            <constraint firstItem="YFK-py-fbx" firstAttribute="leading" secondItem="ySx-5M-MSu" secondAttribute="leading" id="7tE-MM-oWk"/>
+                            <constraint firstItem="YFK-py-fbx" firstAttribute="bottom" secondItem="ySx-5M-MSu" secondAttribute="bottom" id="NPD-vw-38j"/>
                             <constraint firstItem="ySx-5M-MSu" firstAttribute="leading" secondItem="9sj-hO-NKE" secondAttribute="leading" id="RLy-mL-Z8N"/>
+                            <constraint firstItem="YFK-py-fbx" firstAttribute="top" secondItem="ySx-5M-MSu" secondAttribute="top" id="cog-oT-zpm"/>
                             <constraint firstItem="ySx-5M-MSu" firstAttribute="top" secondItem="9sj-hO-NKE" secondAttribute="top" id="fVm-4g-ZVX"/>
                             <constraint firstAttribute="bottom" secondItem="ySx-5M-MSu" secondAttribute="bottom" id="ifQ-qv-MoA"/>
+                            <constraint firstItem="YFK-py-fbx" firstAttribute="trailing" secondItem="ySx-5M-MSu" secondAttribute="trailing" id="xt8-aC-0W2"/>
                             <constraint firstAttribute="trailing" secondItem="ySx-5M-MSu" secondAttribute="trailing" id="ydy-Q2-sY5"/>
                         </constraints>
                         <connections>
@@ -1421,6 +1428,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="chatBackground" width="640" height="1002"/>
         <image name="iconAttachment" width="20" height="21"/>
         <image name="iconChats" width="29" height="25"/>
         <image name="iconChatsSelect" width="31" height="26"/>

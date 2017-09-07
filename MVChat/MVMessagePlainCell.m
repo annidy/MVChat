@@ -17,6 +17,7 @@
 #pragma mark - Lifecycle
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
+        self.selectionStyle = UITableViewCellSelectionStyleNone;
         [self setupViews];
     }
     
@@ -25,7 +26,7 @@
 
 #pragma mark - Setup Views
 - (void)setupViews {
-    self.contentView.backgroundColor = [UIColor whiteColor];
+    self.backgroundColor = [UIColor clearColor];
     UIView *container = [self buildContainer];
     self.container = container;
     [self.contentView addSubview:container];
@@ -41,20 +42,16 @@
     [container addSubview:label];
     [[label.leftAnchor constraintEqualToAnchor:container.leftAnchor constant:10] setActive:YES];
     [[label.rightAnchor constraintEqualToAnchor:container.rightAnchor constant:-10] setActive:YES];
-    [[label.topAnchor constraintEqualToAnchor:container.topAnchor constant:5] setActive:YES];
-    [[label.bottomAnchor constraintEqualToAnchor:container.bottomAnchor constant:-5] setActive:YES];
+    [[label.topAnchor constraintEqualToAnchor:container.topAnchor constant:3] setActive:YES];
+    [[label.bottomAnchor constraintEqualToAnchor:container.bottomAnchor constant:-3] setActive:YES];
     
 }
 
 - (UIView *)buildContainer {
     UIView *container = [UIView new];
-    container.backgroundColor = [UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1];
+    container.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.2];
     container.layer.cornerRadius = 10;
     container.translatesAutoresizingMaskIntoConstraints = NO;
-    container.layer.shadowColor = [UIColor grayColor].CGColor;
-    container.layer.shadowOffset = CGSizeMake(0, 1);
-    container.layer.shadowRadius = 1;
-    container.layer.shadowOpacity = 1;
     
     return container;
 }
@@ -63,8 +60,9 @@
     UILabel *label = [UILabel new];
     label.numberOfLines = 0;
     label.textAlignment = NSTextAlignmentLeft;
-    label.font = [UIFont systemFontOfSize:14];
+    label.font = [UIFont systemFontOfSize:13];
     label.translatesAutoresizingMaskIntoConstraints = NO;
+    label.textColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:1];
     
     return label;
 }
@@ -75,7 +73,7 @@
     
     [self.referenceLabel setText:text];
     
-    CGFloat maxLabelWidth = UIScreen.mainScreen.bounds.size.width - 20;
+    CGFloat maxLabelWidth = UIScreen.mainScreen.bounds.size.width - 26;
     height += [self.referenceLabel sizeThatFits:CGSizeMake(maxLabelWidth, CGFLOAT_MAX)].height;
     
     return height;
@@ -90,7 +88,7 @@ static UILabel *referenceLabel;
 + (UILabel *)referenceLabel {
     if (!referenceLabel) {
         referenceLabel = [UILabel new];
-        referenceLabel.font = [UIFont systemFontOfSize:14];
+        referenceLabel.font = [UIFont systemFontOfSize:13];
         referenceLabel.numberOfLines = 0;
     }
     

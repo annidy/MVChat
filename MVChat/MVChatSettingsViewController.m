@@ -198,6 +198,8 @@ static NSString *MediaFilesCellID = @"MVChatSettingsMediaCell";
             
             avatarImageView.layer.masksToBounds = YES;
             avatarImageView.layer.cornerRadius = 30;
+            avatarImageView.layer.borderWidth = 0.3f;
+            avatarImageView.layer.borderColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:0.4].CGColor;
             
             UITapGestureRecognizer *tapGestureRecogniser = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showChatPhotoSelectController)];
             avatarImageView.userInteractionEnabled = YES;
@@ -249,6 +251,8 @@ static NSString *MediaFilesCellID = @"MVChatSettingsMediaCell";
         
         contactAvatarImageView.layer.masksToBounds = YES;
         contactAvatarImageView.layer.cornerRadius = 15;
+        contactAvatarImageView.layer.borderWidth = 0.3f;
+        contactAvatarImageView.layer.borderColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:0.4].CGColor;
         
         lastSeenLabel.text = [NSString lastSeenTimeStringForDate:contact.lastSeenDate];
         [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactLastSeenTimeUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {

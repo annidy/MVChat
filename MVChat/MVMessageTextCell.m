@@ -34,6 +34,7 @@ static CGFloat MVTextContentHorizontalOffset = 9;
     messageLabel.numberOfLines = 0;
     messageLabel.font = [UIFont systemFontOfSize:17];
     messageLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    messageLabel.textColor = [UIColor darkTextColor];
     [messageLabel setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
     [messageLabel setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
     return messageLabel;

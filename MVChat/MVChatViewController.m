@@ -89,10 +89,15 @@
     imageView.layer.cornerRadius = 17;
     imageView.layer.masksToBounds = YES;
     imageView.contentMode = UIViewContentModeScaleAspectFill;
+    imageView.layer.borderWidth = 0.3f;
+    imageView.layer.borderColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:0.4].CGColor;
     
     UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithCustomView:imageView];
     self.navigationItem.rightBarButtonItem = item;
     self.avatarImageView = imageView;
+    
+    [[imageView.widthAnchor constraintEqualToConstant:34] setActive:YES];
+    [[imageView.heightAnchor constraintEqualToConstant:34] setActive:YES];
     
     [[MVFileManager sharedInstance] loadThumbnailAvatarForChat:self.chat maxWidth:50 completion:^(UIImage *image) {
         self.avatarImageView.image = image;

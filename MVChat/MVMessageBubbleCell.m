@@ -100,12 +100,7 @@ static CGFloat MVBubbleMinTailessSize = 30;
 - (UIImageView *)buildBubbleImageView {
     UIImageView *bubbleImageView = [UIImageView new];
     bubbleImageView.image = [self bubbleImage];
-    bubbleImageView.tintColor = [self bubbleColor];
     bubbleImageView.translatesAutoresizingMaskIntoConstraints = NO;
-    bubbleImageView.layer.shadowColor = [UIColor grayColor].CGColor;
-    bubbleImageView.layer.shadowOffset = CGSizeMake(0, 1);
-    bubbleImageView.layer.shadowRadius = 1;
-    bubbleImageView.layer.shadowOpacity = 1;
     
     return bubbleImageView;
 }
@@ -113,6 +108,7 @@ static CGFloat MVBubbleMinTailessSize = 30;
 - (UILabel *)buildTimeLabel {
     UILabel *timeLabel = [UILabel new];
     timeLabel.font = [UIFont systemFontOfSize:11];
+    timeLabel.textColor = [UIColor darkTextColor];
     timeLabel.translatesAutoresizingMaskIntoConstraints = NO;
     
     return timeLabel;
@@ -124,6 +120,8 @@ static CGFloat MVBubbleMinTailessSize = 30;
     avatarImageView.layer.masksToBounds = YES;
     avatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
     avatarImageView.contentMode = UIViewContentModeScaleAspectFill;
+    avatarImageView.layer.borderWidth = 0.3f;
+    avatarImageView.layer.borderColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:0.4].CGColor;
     
     return avatarImageView;
 }
@@ -131,34 +129,22 @@ static CGFloat MVBubbleMinTailessSize = 30;
 - (UIView *)buildAvatarImageViewContainer {
     UIView *container = [UIView new];
     container.translatesAutoresizingMaskIntoConstraints = NO;
-    container.layer.shadowColor = [UIColor grayColor].CGColor;
-    container.layer.shadowOffset = CGSizeMake(0, 1);
-    container.layer.shadowRadius = 1;
-    container.layer.shadowOpacity = 1;
     container.layer.cornerRadius = 20;
     
     return container;
-}
-
-- (UIColor *)bubbleColor {
-    if (self.direction == MessageDirectionOutgoing) {
-        return [UIColor colorWithRed:0.85 green:0.92 blue:0.92 alpha:1];
-    } else {
-        return [UIColor colorWithRed:0.76 green:0.92 blue:0.92 alpha:1];
-    }
 }
 
 - (UIImage *)bubbleImage {
     UIImage *bubbleImage;
     UIEdgeInsets insets;
     if (self.tailType == MVMessageCellTailTypeTailess || self.tailType == MVMessageCellTailTypeFirstTailess) {
-        bubbleImage = [UIImage imageNamed:@"bubbleTailess"];
+        bubbleImage = [UIImage imageNamed:@"bubbleNewTailess"];
         insets = UIEdgeInsetsMake(6, 6, 6, 6);
     } else if (self.direction == MessageDirectionOutgoing) {
-        bubbleImage = [UIImage imageNamed:@"bubbleOutgoing"];
+        bubbleImage = [UIImage imageNamed:@"bubbleNewOutgoing"];
         insets = UIEdgeInsetsMake(6, 6, 6, 11);
     } else {
-        bubbleImage = [UIImage imageNamed:@"bubbleIncoming"];
+        bubbleImage = [UIImage imageNamed:@"bubbleNewIncoming"];
         insets = UIEdgeInsetsMake(6, 11, 6, 6);
     }
     CGFloat scale = [UIScreen mainScreen].scale;
@@ -167,7 +153,7 @@ static CGFloat MVBubbleMinTailessSize = 30;
     insets.right *= scale;
     insets.bottom *= scale;
     
-    bubbleImage = [[bubbleImage resizableImageWithCapInsets:insets resizingMode:UIImageResizingModeStretch] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    bubbleImage = [[bubbleImage resizableImageWithCapInsets:insets resizingMode:UIImageResizingModeStretch] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
     
     return bubbleImage;
 }
