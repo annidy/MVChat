@@ -17,6 +17,7 @@
 #import "MVFileManager.h"
 #import "MVContactProfileViewController.h"
 #import "NSString+Helpers.h"
+#import "MVChatSharedMediaListController.h"
 
 typedef enum : NSUInteger {
     MVChatSettingsModeNew,
@@ -24,18 +25,18 @@ typedef enum : NSUInteger {
 } MVChatSettingsMode;
 
 @interface MVChatSettingsViewController () <UITableViewDataSource, UITableViewDelegate>
-@property (strong, nonatomic) IBOutlet UITableView *tableView;
 @property (assign, nonatomic) MVChatSettingsMode mode;
 @property (strong, nonatomic) MVChatModel *chat;
 @property (strong, nonatomic) NSMutableArray <MVContactModel *> *contacts;
-@property (weak, nonatomic) UITextField *titleTextField;
 @property (strong, nonatomic) NSString *chatTitle;
-@property (nonatomic, copy) void (^doneAction)(NSArray <MVContactModel *> *, NSString *, DBAttachment *);
-@property (strong, nonatomic) UIBarButtonItem *doneButton;
-@property (weak, nonatomic) UIImageView *avatarImageView;
 @property (strong, nonatomic) UIImage *avatarImage;
 @property (strong, nonatomic) DBAttachment *avatarAttachment;
 @property (assign, nonatomic) BOOL avatarChanged;
+@property (strong, nonatomic) IBOutlet UITableView *tableView;
+@property (weak, nonatomic) UITextField *titleTextField;
+@property (weak, nonatomic) UIImageView *avatarImageView;
+@property (strong, nonatomic) UIBarButtonItem *doneButton;
+@property (nonatomic, copy) void (^doneAction)(NSArray <MVContactModel *> *, NSString *, DBAttachment *);
 @end
 
 static NSString *AvatarTitleCellId = @"MVChatSettingsAvatarTitleCell";
@@ -43,6 +44,7 @@ static NSString *AvatarCellId = @"MVChatSettingsAvatarCell";
 static NSString *ContactCellId = @"MVChatSettingsContactCell";
 static NSString *NewContactCellId = @"MVChatSettingsNewContactCell";
 static NSString *DeleteContactCellId = @"MVChatSettingsDeleteCell";
+static NSString *MediaFilesCellID = @"MVChatSettingsMediaCell";
 
 @implementation MVChatSettingsViewController
 #pragma mark - Initialization
@@ -79,6 +81,12 @@ static NSString *DeleteContactCellId = @"MVChatSettingsDeleteCell";
 }
 
 #pragma mark - View lifecycle
+- (void)dealloc {
+    [self removeObserver:self forKeyPath:@"titleTextField"];
+    [self removeObserver:self forKeyPath:@"avatarImage"];
+    [self.titleTextField removeTarget:self action:@selector(titleTextDidChange:) forControlEvents:UIControlEventEditingChanged];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self addObserver:self forKeyPath:@"titleTextField" options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:nil];
@@ -89,15 +97,16 @@ static NSString *DeleteContactCellId = @"MVChatSettingsDeleteCell";
         self.chatTitle = self.chat.title;
         [[MVFileManager sharedInstance] loadThumbnailAvatarForChat:self.chat maxWidth:50 completion:^(UIImage *image) {
             self.avatarImage = image;
-            self.avatarImageView.image = image;
         }];
         
         [[NSNotificationCenter defaultCenter] addObserverForName:@"ChatAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
             NSString *chatId = note.userInfo[@"Id"];
             UIImage *image = note.userInfo[@"Image"];
             if ([self.chat.id isEqualToString:chatId]) {
-                self.avatarImageView.image = image;
                 self.avatarImage = image;
+                self.avatarAttachment = nil;
+                self.avatarChanged = NO;
+                self.doneButton.enabled = [self canProceed];
             }
         }];
     }
@@ -117,12 +126,6 @@ static NSString *DeleteContactCellId = @"MVChatSettingsDeleteCell";
     self.navigationItem.rightBarButtonItem = self.doneButton;
     self.navigationItem.title = navigationBarTitle;
     self.doneButton.enabled = NO;
-}
-
-- (void)dealloc {
-    [self removeObserver:self forKeyPath:@"titleTextField"];
-    [self.titleTextField removeTarget:self action:@selector(titleTextDidChange:) forControlEvents:UIControlEventEditingChanged];
-    [self removeObserver:self forKeyPath:@"avatarImage"];
 }
 
 #pragma mark - KVO
@@ -157,7 +160,7 @@ static NSString *DeleteContactCellId = @"MVChatSettingsDeleteCell";
     if (self.mode == MVChatSettingsModeNew) {
         return 2;
     } else {
-        return 3;
+        return 4;
     }
 }
 
@@ -172,10 +175,8 @@ static NSString *DeleteContactCellId = @"MVChatSettingsDeleteCell";
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.section == 0) {
-        if (indexPath.row == 0) {
-            return 100;
-        }
+    if (indexPath.section == 0 && indexPath.row == 0) {
+        return 100;
     }
     
     return 44;
@@ -260,6 +261,8 @@ static NSString *DeleteContactCellId = @"MVChatSettingsDeleteCell";
         }];
         
         return cell;
+    } else if (indexPath.section == 2){
+        return [tableView dequeueReusableCellWithIdentifier:MediaFilesCellID];
     } else {
         return [tableView dequeueReusableCellWithIdentifier:DeleteContactCellId];
     }
@@ -279,7 +282,9 @@ static NSString *DeleteContactCellId = @"MVChatSettingsDeleteCell";
             [self showContactProfileForContact:self.contacts[indexPath.row - 1]];
         }
         
-    } else if (indexPath.section == 2 && indexPath.row == 0) {
+    } else if (indexPath.section == 2) {
+        [self showAllSharedMedia];
+    } else {
         [self showDeleteAlert];
     }
 }
@@ -296,6 +301,12 @@ static NSString *DeleteContactCellId = @"MVChatSettingsDeleteCell";
     [self.contacts removeObjectAtIndex:indexPath.row - 1];
     [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
     self.doneButton.enabled = [self canProceed];
+}
+
+#pragma mark - Helpers
+- (void)showAllSharedMedia {
+    MVChatSharedMediaListController *vc = [MVChatSharedMediaListController loadFromStoryboardWithChatId:self.chat.id];
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 - (void)showContactsSelectController {
@@ -332,7 +343,7 @@ static NSString *DeleteContactCellId = @"MVChatSettingsDeleteCell";
     DBAttachmentPickerController *attachmentPicker = [DBAttachmentPickerController attachmentPickerControllerFinishPickingBlock:^(NSArray<DBAttachment *> *attachmentArray) {
         DBAttachment *attachment = attachmentArray[0];
         self.avatarAttachment = attachment;
-        [attachment loadThumbnailImageWithTargetSize:CGSizeMake(100, 100) completion:^(UIImage *resultImage) {
+        [attachment thumbnailImageWithMaxWidth:50 completion:^(UIImage *resultImage) {
             self.avatarImage = resultImage;
             self.avatarChanged = YES;
             self.doneButton.enabled = [self canProceed];
@@ -351,9 +362,9 @@ static NSString *DeleteContactCellId = @"MVChatSettingsDeleteCell";
 #pragma mark - Helpers
 - (BOOL)canProceed {
     if (self.mode == MVChatSettingsModeSettings) {
-        return [self dataChanged];
+        return [self dataChanged] && [self dataValid];
     } else {
-        return (self.contacts.count > 0 && self.chatTitle.length > 0);
+        return [self dataValid];
     }
 }
 
@@ -376,4 +387,7 @@ static NSString *DeleteContactCellId = @"MVChatSettingsDeleteCell";
     }
 }
 
+- (BOOL)dataValid {
+    return (self.contacts.count > 0 && self.chatTitle.length > 0);
+}
 @end
