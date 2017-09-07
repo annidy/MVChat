@@ -34,12 +34,13 @@ static CGFloat MVMediaContentHorizontalOffset = 2;
 }
 
 - (UIImageView *)buildMediaImageView {
-    UIImageView *bubbleImageView = [UIImageView new];
-    bubbleImageView.translatesAutoresizingMaskIntoConstraints = NO;
-    bubbleImageView.layer.cornerRadius = 8;
-    bubbleImageView.layer.masksToBounds = YES;
+    UIImageView *mediaImageView = [UIImageView new];
+    mediaImageView.translatesAutoresizingMaskIntoConstraints = NO;
+    mediaImageView.layer.cornerRadius = 8;
+    mediaImageView.layer.masksToBounds = YES;
+    mediaImageView.contentMode = UIViewContentModeScaleAspectFill;
     
-    return bubbleImageView;
+    return mediaImageView;
 }
 
 #pragma mark - Offsets
