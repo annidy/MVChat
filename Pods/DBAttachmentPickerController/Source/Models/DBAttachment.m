@@ -217,10 +217,25 @@
             return;
         }
         
+        CGFloat height = 0;
+        
+        NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:NO] forKey:(NSString *)kCGImageSourceShouldCache];
+        CFDictionaryRef properties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, (CFDictionaryRef)options);
+        
+        if (properties) {
+            NSDictionary *pr = (__bridge NSDictionary *)properties;
+            NSNumber *heightNum = [pr objectForKey:(NSString *)kCGImagePropertyPixelHeight];
+            if (heightNum) {
+                height = [heightNum floatValue];
+            }
+            CFRelease(properties);
+        }
+        
         CGFloat scale = UIScreen.mainScreen.scale;
         CGFloat width = maxWidth * scale;
+        height = height * scale;
         
-        NSDictionary *dict = @{(id)kCGImageSourceShouldAllowFloat:@YES, (id)kCGImageSourceCreateThumbnailWithTransform:@YES, (id)kCGImageSourceCreateThumbnailFromImageAlways:@YES, (id)kCGImageSourceThumbnailMaxPixelSize:@(width)};
+        NSDictionary *dict = @{(id)kCGImageSourceShouldAllowFloat:@YES, (id)kCGImageSourceCreateThumbnailWithTransform:@YES, (id)kCGImageSourceCreateThumbnailFromImageAlways:@YES, (id)kCGImageSourceThumbnailMaxPixelSize:@(MAX(width, height)/2)};
         CGImageRef imageRef = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, (CFDictionaryRef)dict);
         image = [UIImage imageWithCGImage:imageRef scale:scale orientation:UIImageOrientationUp];
         
@@ -233,6 +248,9 @@
                 completion(image);
             }
         });
+        
+        CFRelease(imageRef);
+        CFRelease(imageSource);
     });
 }
 
