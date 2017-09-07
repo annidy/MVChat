@@ -70,10 +70,10 @@ static NSDateFormatter *todayDateFormatter;
         self.titleLabel.text = chat.title;
     }
     
-    if (chat.lastMessage.type == MVMessageTypeText) {
-        self.messageLabel.text = chat.lastMessage.text;
-    } else {
+    if (chat.lastMessage.type == MVMessageTypeMedia) {
         self.messageLabel.text = @"Media message";
+    } else {
+        self.messageLabel.text = chat.lastMessage.text;
     }
     
     NSDateFormatter *formatter;
