@@ -8,8 +8,8 @@
 
 #import "MVMessageTextCell.h"
 
-static CGFloat MVTextContentVerticalOffset = 4;
-static CGFloat MVTextContentHorizontalOffset = 7;
+static CGFloat MVTextContentVerticalOffset = 6;
+static CGFloat MVTextContentHorizontalOffset = 9;
 
 @interface MVMessageTextCell ()
 @property (strong, nonatomic) UILabel *messageLabel;
@@ -32,7 +32,7 @@ static CGFloat MVTextContentHorizontalOffset = 7;
 - (UILabel *)buildMessageLabel {
     UILabel *messageLabel = [UILabel new];
     messageLabel.numberOfLines = 0;
-    messageLabel.font = [UIFont systemFontOfSize:14];
+    messageLabel.font = [UIFont systemFontOfSize:17];
     messageLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [messageLabel setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
     [messageLabel setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
@@ -62,7 +62,7 @@ static UILabel *referenceMessageLabel;
 + (UILabel *)referenceMessageLabel {
     if (!referenceMessageLabel) {
         referenceMessageLabel = [UILabel new];
-        referenceMessageLabel.font = [UIFont systemFontOfSize:14];
+        referenceMessageLabel.font = [UIFont systemFontOfSize:17];
         referenceMessageLabel.numberOfLines = 0;
     }
     

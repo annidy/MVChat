@@ -88,6 +88,7 @@
     imageView.frame = CGRectMake(0, 0, 34, 34);
     imageView.layer.cornerRadius = 17;
     imageView.layer.masksToBounds = YES;
+    imageView.contentMode = UIViewContentModeScaleAspectFill;
     
     UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithCustomView:imageView];
     self.navigationItem.rightBarButtonItem = item;

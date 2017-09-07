@@ -15,8 +15,8 @@
 static CGFloat MVBubbleWidthMultiplierOutgoing = 0.8;
 static CGFloat MVBubbleWidthMultiplierIncoming = 0.7;
 static CGFloat MVBubbleVerticalOffsetDefault = 7;
-static CGFloat MVBubbleVerticalOffsetTailess = 1;
-static CGFloat MVAvatarImageSide = 36;
+static CGFloat MVBubbleVerticalOffsetTailess = 2;
+static CGFloat MVAvatarImageSide = 40;
 static CGFloat MVAvatarImageOffset = 5;
 static CGFloat MVBubbleDefaultHorizontalOffset = 10;
 static CGFloat MVBubbleMinSize = 36;
@@ -71,11 +71,17 @@ static CGFloat MVBubbleMinTailessSize = 30;
     
     if (self.direction == MessageDirectionIncoming && (self.tailType == MVMessageCellTailTypeDefault || self.tailType == MVMessageCellTailTypeLastTailess)) {
         self.avatarImage = [self buildAvatarImageView];
-        [self.contentView addSubview:self.avatarImage];
-        [[self.avatarImage.widthAnchor constraintEqualToConstant:MVAvatarImageSide] setActive:YES];
-        [[self.avatarImage.heightAnchor constraintEqualToConstant:MVAvatarImageSide] setActive:YES];
-        [[self.avatarImage.leftAnchor constraintEqualToAnchor:self.contentView.leftAnchor constant:MVAvatarImageOffset] setActive:YES];
-        [[self.avatarImage.bottomAnchor constraintEqualToAnchor:self.bubbleImageView.bottomAnchor] setActive:YES];
+        UIView *avatarContainer = [self buildAvatarImageViewContainer];
+        [self.contentView addSubview:avatarContainer];
+        [avatarContainer addSubview:self.avatarImage];
+        [[avatarContainer.widthAnchor constraintEqualToConstant:MVAvatarImageSide] setActive:YES];
+        [[avatarContainer.heightAnchor constraintEqualToConstant:MVAvatarImageSide] setActive:YES];
+        [[self.avatarImage.leftAnchor constraintEqualToAnchor:avatarContainer.leftAnchor] setActive:YES];
+        [[self.avatarImage.rightAnchor constraintEqualToAnchor:avatarContainer.rightAnchor] setActive:YES];
+        [[self.avatarImage.topAnchor constraintEqualToAnchor:avatarContainer.topAnchor] setActive:YES];
+        [[self.avatarImage.bottomAnchor constraintEqualToAnchor:avatarContainer.bottomAnchor] setActive:YES];
+        [[avatarContainer.leftAnchor constraintEqualToAnchor:self.contentView.leftAnchor constant:MVAvatarImageOffset] setActive:YES];
+        [[avatarContainer.bottomAnchor constraintEqualToAnchor:self.bubbleImageView.bottomAnchor] setActive:YES];
     }
     
     if (self.direction == MessageDirectionOutgoing) {
@@ -96,6 +102,10 @@ static CGFloat MVBubbleMinTailessSize = 30;
     bubbleImageView.image = [self bubbleImage];
     bubbleImageView.tintColor = [self bubbleColor];
     bubbleImageView.translatesAutoresizingMaskIntoConstraints = NO;
+    bubbleImageView.layer.shadowColor = [UIColor grayColor].CGColor;
+    bubbleImageView.layer.shadowOffset = CGSizeMake(0, 1);
+    bubbleImageView.layer.shadowRadius = 1;
+    bubbleImageView.layer.shadowOpacity = 1;
     
     return bubbleImageView;
 }
@@ -110,11 +120,24 @@ static CGFloat MVBubbleMinTailessSize = 30;
 
 - (UIImageView *)buildAvatarImageView {
     UIImageView *avatarImageView = [UIImageView new];
-    avatarImageView.layer.cornerRadius = 18;
+    avatarImageView.layer.cornerRadius = 20;
     avatarImageView.layer.masksToBounds = YES;
     avatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
+    avatarImageView.contentMode = UIViewContentModeScaleAspectFill;
     
     return avatarImageView;
+}
+
+- (UIView *)buildAvatarImageViewContainer {
+    UIView *container = [UIView new];
+    container.translatesAutoresizingMaskIntoConstraints = NO;
+    container.layer.shadowColor = [UIColor grayColor].CGColor;
+    container.layer.shadowOffset = CGSizeMake(0, 1);
+    container.layer.shadowRadius = 1;
+    container.layer.shadowOpacity = 1;
+    container.layer.cornerRadius = 20;
+    
+    return container;
 }
 
 - (UIColor *)bubbleColor {

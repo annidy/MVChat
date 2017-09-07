@@ -50,8 +50,12 @@
     UIView *container = [UIView new];
     container.backgroundColor = [UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1];
     container.layer.cornerRadius = 10;
-    container.layer.masksToBounds = YES;
     container.translatesAutoresizingMaskIntoConstraints = NO;
+    container.layer.shadowColor = [UIColor grayColor].CGColor;
+    container.layer.shadowOffset = CGSizeMake(0, 1);
+    container.layer.shadowRadius = 1;
+    container.layer.shadowOpacity = 1;
+    
     return container;
 }
 
@@ -59,8 +63,9 @@
     UILabel *label = [UILabel new];
     label.numberOfLines = 0;
     label.textAlignment = NSTextAlignmentLeft;
-    label.font = [UIFont systemFontOfSize:12];
+    label.font = [UIFont systemFontOfSize:14];
     label.translatesAutoresizingMaskIntoConstraints = NO;
+    
     return label;
 }
 
@@ -85,7 +90,7 @@ static UILabel *referenceLabel;
 + (UILabel *)referenceLabel {
     if (!referenceLabel) {
         referenceLabel = [UILabel new];
-        referenceLabel.font = [UIFont systemFontOfSize:12];
+        referenceLabel.font = [UIFont systemFontOfSize:14];
         referenceLabel.numberOfLines = 0;
     }
     

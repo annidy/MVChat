@@ -316,13 +316,14 @@ static MVChatManager *sharedManager;
         message.direction = MessageDirectionOutgoing;
         message.chatId = chatId;
         message.sendDate = [NSDate new];
+        message.read = YES;
         [self addMessage:message];
         [[MVDatabaseManager sharedInstance] insertMessages:@[message] withCompletion:nil];
         
         MVChatModel *chat = [self chatWithId:chatId];
         chat.lastMessage = message;
         chat.lastUpdateDate = message.sendDate;
-        [self updateChat:chat];
+        [self replaceChat:chat withSorting:YES];
         [[MVDatabaseManager sharedInstance] insertChats:@[chat] withCompletion:nil];
     });
 }

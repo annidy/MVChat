@@ -35,7 +35,7 @@ static NSDateFormatter *todayDateFormatter;
 - (void)awakeFromNib {
     [super awakeFromNib];
     
-    self.avatarImageView.layer.cornerRadius = 24;
+    self.avatarImageView.layer.cornerRadius = 30;
     self.avatarImageView.layer.masksToBounds = YES;
     self.unreadCountButton.layer.cornerRadius = 9;
     self.unreadCountButton.layer.masksToBounds = YES;
@@ -91,7 +91,7 @@ static NSDateFormatter *todayDateFormatter;
         self.unreadCountButton.hidden = YES;
     }
     
-    [[MVFileManager sharedInstance] loadThumbnailAvatarForChat:chat maxWidth:50 completion:^(UIImage *image) {
+    [[MVFileManager sharedInstance] loadThumbnailAvatarForChat:chat maxWidth:60 completion:^(UIImage *image) {
         self.avatarImageView.image = image;
     }];
     
