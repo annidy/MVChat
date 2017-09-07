@@ -22,33 +22,47 @@ static NSDateFormatter *todayDateFormatter;
 @property (strong, nonatomic) IBOutlet UILabel *messageLabel;
 @property (strong, nonatomic) IBOutlet UILabel *dateLabel;
 @property (strong, nonatomic) IBOutlet UIImageView *avatarImageView;
-@property (strong, nonatomic) MVChatModel *chatModel;
 @property (strong, nonatomic) IBOutlet UIButton *unreadCountButton;
+@property (strong, nonatomic) MVChatModel *chatModel;
 @end
 
 @implementation MVChatsListCell
-
-- (NSDateFormatter *)defaultDateFormatter {
-    if (!defaultDateFormatter) {
-        defaultDateFormatter = [NSDateFormatter new];
-        [defaultDateFormatter setDateStyle:NSDateFormatterShortStyle];
-        [defaultDateFormatter setDoesRelativeDateFormatting:YES];
-    }
-    
-    return defaultDateFormatter;
+#pragma mark - Lifecycle
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (NSDateFormatter *)todayDateFormatter {
-    if (!todayDateFormatter) {
-        todayDateFormatter = [NSDateFormatter new];
-        [todayDateFormatter setDateStyle:NSDateFormatterNoStyle];
-        [todayDateFormatter setTimeStyle:NSDateFormatterShortStyle];
-        [todayDateFormatter setDoesRelativeDateFormatting:YES];
-    }
+- (void)awakeFromNib {
+    [super awakeFromNib];
     
-    return todayDateFormatter;
+    self.avatarImageView.layer.cornerRadius = 24;
+    self.avatarImageView.layer.masksToBounds = YES;
+    self.unreadCountButton.layer.cornerRadius = 9;
+    self.unreadCountButton.layer.masksToBounds = YES;
+    
+    [[NSNotificationCenter defaultCenter] addObserverForName:@"ChatAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        NSString *chatId = note.userInfo[@"Id"];
+        UIImage *image = note.userInfo[@"Image"];
+        if (!self.chatModel.isPeerToPeer && [self.chatModel.id isEqualToString:chatId]) {
+            self.avatarImageView.image = image;
+        }
+    }];
+    
+    [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        NSString *contactId = note.userInfo[@"Id"];
+        UIImage *image = note.userInfo[@"Image"];
+        if (self.chatModel.isPeerToPeer && [self.chatModel.getPeer.id isEqualToString:contactId]) {
+            self.avatarImageView.image = image;
+        }
+    }];
 }
 
+- (void)prepareForReuse {
+    [super prepareForReuse];
+    self.avatarImageView.image = nil;
+}
+
+#pragma mark - Fill with data
 - (void)fillWithChat:(MVChatModel *)chat {
     if (chat.isPeerToPeer) {
         self.titleLabel.text = chat.getPeer.name;
@@ -77,8 +91,6 @@ static NSDateFormatter *todayDateFormatter;
         self.unreadCountButton.hidden = YES;
     }
     
-    self.avatarImageView.image = nil;
-    
     [[MVFileManager sharedInstance] loadThumbnailAvatarForChat:chat maxWidth:50 completion:^(UIImage *image) {
         self.avatarImageView.image = image;
     }];
@@ -86,38 +98,25 @@ static NSDateFormatter *todayDateFormatter;
     self.chatModel = chat;
 }
 
--(void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)awakeFromNib {
-    [super awakeFromNib];
+#pragma mark - Helpers
+- (NSDateFormatter *)defaultDateFormatter {
+    if (!defaultDateFormatter) {
+        defaultDateFormatter = [NSDateFormatter new];
+        [defaultDateFormatter setDateStyle:NSDateFormatterShortStyle];
+        [defaultDateFormatter setDoesRelativeDateFormatting:YES];
+    }
     
-    self.avatarImageView.layer.cornerRadius = 24;
-    self.avatarImageView.layer.masksToBounds = YES;
-    self.unreadCountButton.layer.cornerRadius = 9;
-    self.unreadCountButton.layer.masksToBounds = YES;
+    return defaultDateFormatter;
+}
+
+- (NSDateFormatter *)todayDateFormatter {
+    if (!todayDateFormatter) {
+        todayDateFormatter = [NSDateFormatter new];
+        [todayDateFormatter setDateStyle:NSDateFormatterNoStyle];
+        [todayDateFormatter setTimeStyle:NSDateFormatterShortStyle];
+        [todayDateFormatter setDoesRelativeDateFormatting:YES];
+    }
     
-    [[NSNotificationCenter defaultCenter] addObserverForName:@"ChatAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        NSString *chatId = note.userInfo[@"Id"];
-        UIImage *image = note.userInfo[@"Image"];
-        if (!self.chatModel.isPeerToPeer && [self.chatModel.id isEqualToString:chatId]) {
-            self.avatarImageView.image = image;
-        }
-    }];
-    [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        NSString *contactId = note.userInfo[@"Id"];
-        UIImage *image = note.userInfo[@"Image"];
-        if (self.chatModel.isPeerToPeer && [self.chatModel.getPeer.id isEqualToString:contactId]) {
-            self.avatarImageView.image = image;
-        }
-    }];
+    return todayDateFormatter;
 }
-
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
-    [super setSelected:selected animated:animated];
-
-    // Configure the view for the selected state
-}
-
 @end
