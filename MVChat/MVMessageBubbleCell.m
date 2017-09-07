@@ -138,7 +138,12 @@ static CGFloat MVBubbleMinTailessSize = 30;
     UIImage *bubbleImage;
     UIEdgeInsets insets;
     if (self.tailType == MVMessageCellTailTypeTailess || self.tailType == MVMessageCellTailTypeFirstTailess) {
-        bubbleImage = [UIImage imageNamed:@"bubbleNewTailess"];
+        if (self.direction == MessageDirectionIncoming) {
+            bubbleImage = [UIImage imageNamed:@"bubbleNewIncomingTailess"];
+        } else {
+            bubbleImage = [UIImage imageNamed:@"bubbleNewOutgoingTailess"];
+        }
+        
         insets = UIEdgeInsetsMake(6, 6, 6, 6);
     } else if (self.direction == MessageDirectionOutgoing) {
         bubbleImage = [UIImage imageNamed:@"bubbleNewOutgoing"];
