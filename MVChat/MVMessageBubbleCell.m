@@ -52,6 +52,7 @@ static CGFloat MVBubbleMinTailessSize = 30;
 
 #pragma mark - Build views
 - (void)setupViews {
+    self.backgroundColor = [UIColor clearColor];
     self.bubbleImageView = [self buildBubbleImageView];
     self.timeLabel = [self buildTimeLabel];
     
@@ -249,8 +250,12 @@ static CGFloat MVBubbleMinTailessSize = 30;
     
     __weak typeof(self) weakCell = self;
     [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        NSString *avatarName = note.userInfo[@"Avatar"];
-        weakCell.avatarImage.image = [UIImage imageNamed:avatarName];
+        NSString *avatarId = note.userInfo[@"Id"];
+        if ([avatarId isEqualToString:messageModel.contact.id]) {
+            [[MVFileManager sharedInstance] loadThumbnailAvatarForContact:messageModel.contact maxWidth:50 completion:^(UIImage *image) {
+                weakCell.avatarImage.image = image;
+            }];
+        }
     }];
 }
 
