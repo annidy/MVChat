@@ -35,6 +35,9 @@
 
 + (instancetype)loadFromStoryboardWithMode:(MVContactsListControllerMode)mode andDoneAction:(void (^)(NSArray <MVContactModel *> *))doneAction excludingContacts:(NSArray <MVContactModel *> *)excludingContacts {
     MVContactsListController *instance = [super loadFromStoryboard];
+    if (mode == MVContactsListControllerModeSelectable) {
+        instance.hidesBottomBarWhenPushed = YES;
+    }
     instance.mode = mode;
     instance.doneAction = doneAction;
     instance.excludingContacts = excludingContacts;
@@ -51,16 +54,6 @@
 }
 
 #pragma mark - View lifecycle
-- (void)viewWillAppear:(BOOL)animated {
-    if (self.mode == MVContactsListControllerModeSelectable) {
-        [self.navigationController setNavigationBarHidden:NO animated:YES];
-    } else {
-        [self.navigationController.navigationController setNavigationBarHidden:YES animated:YES];
-    }
-    
-    [super viewWillAppear:animated];
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -233,6 +226,6 @@
 
 - (void)showChatViewWithChat:(MVChatModel *)chat {
     MVChatViewController *chatVC = [MVChatViewController loadFromStoryboardWithChat:chat];
-    [self.navigationController.navigationController pushViewController:chatVC animated:YES];
+    [self.navigationController pushViewController:chatVC animated:YES];
 }
 @end

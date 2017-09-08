@@ -31,11 +31,6 @@
 
 @implementation MVChatsListViewController
 #pragma mark - View lifecycle
-- (void)viewWillAppear:(BOOL)animated {
-    [self.navigationController.navigationController setNavigationBarHidden:YES animated:YES];
-    [super viewWillAppear:animated];
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -181,20 +176,20 @@
 
 #pragma mark - Create chat
 - (void)createNewChat {
-    UINavigationController *rootNavigationController = self.navigationController.navigationController;
+//    UINavigationController *rootNavigationController = self.navigationController.navigationController;
     MVContactsListController *contactsList = [MVContactsListController loadFromStoryboardWithMode:MVContactsListControllerModeSelectable andDoneAction:^(NSArray<MVContactModel *> *selectedContacts) {
         MVChatSettingsViewController *settings = [MVChatSettingsViewController loadFromStoryboardWithContacts:selectedContacts andDoneAction:^(NSArray<MVContactModel *> *chatContacts, NSString *chatTitle, DBAttachment *avatarImage) {
             [[MVChatManager sharedInstance] createChatWithContacts:chatContacts title:chatTitle andCompletion:^(MVChatModel *chat) {
                 if (avatarImage) {
                     [[MVFileManager sharedInstance] saveChatAvatar:chat attachment:avatarImage];
                 }
-                [rootNavigationController popToRootViewControllerAnimated:YES];
+                [self.navigationController popToRootViewControllerAnimated:YES];
                 [self showChatViewWithChat:chat];
             }];
         }];
-        [rootNavigationController pushViewController:settings animated:YES];
+        [self.navigationController pushViewController:settings animated:YES];
     }];
-    [rootNavigationController pushViewController:contactsList animated:YES];
+    [self.navigationController pushViewController:contactsList animated:YES];
 }
 
 #pragma mark - MVForceTouchPresentaionDelegate
@@ -224,7 +219,7 @@
 #pragma mark - Helpers
 - (void)showChatViewWithChat:(MVChatModel *)chat {
     MVChatViewController *chatVC = [MVChatViewController loadFromStoryboardWithChat:[chat copy]];
-    [self.navigationController.navigationController pushViewController:chatVC animated:YES];
+    [self.navigationController pushViewController:chatVC animated:YES];
 }
 
 - (NSInteger)indexOfChatWithId:(NSString *)chatId {

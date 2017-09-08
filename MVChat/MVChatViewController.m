@@ -35,6 +35,7 @@
 + (instancetype)loadFromStoryboardWithChat:(MVChatModel *)chat {
     MVChatViewController *instance = [super loadFromStoryboard];
     instance.chat = chat;
+    instance.hidesBottomBarWhenPushed = YES;
     
     return instance;
 }
@@ -186,11 +187,6 @@
     }
     MVContactProfileViewController *contactProfile = [MVContactProfileViewController loadFromStoryboardWithContact:peer];
     [self.navigationController pushViewController:contactProfile animated:YES];
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-    [self.navigationController setNavigationBarHidden:NO animated:YES];
-    [super viewWillAppear:animated];
 }
 
 #pragma mark - Segues
