@@ -25,6 +25,7 @@
 @property (weak, nonatomic) MVMessagesViewController *MessagesController;
 @property (weak, nonatomic) MVFooterViewController *FooterController;
 @property (strong, nonatomic) UILabel *navigationItemTitleLabel;
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *messagesListTop;
 @property (strong, nonatomic) UIImageView *avatarImageView;
 @property (strong, nonatomic) IBOutlet NSLayoutConstraint *inputPanelBottom;
 @end
@@ -46,6 +47,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setupNavigationBar];
+    
+    CGFloat navbarHeight = self.navigationController.navigationBar.frame.size.height;
+    self.messagesListTop.constant = -navbarHeight;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];

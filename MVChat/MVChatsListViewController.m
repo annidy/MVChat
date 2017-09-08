@@ -24,6 +24,7 @@
 @property (strong, nonatomic) IBOutlet UITableView *chatsList;
 @property (strong, nonatomic) NSArray <MVChatModel *> *chats;
 @property (strong, nonatomic) MVChatsListSearchViewController *searchResultsController;
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *chatsListTop;
 @property (strong, nonatomic) UISearchController *searchController;
 @property (strong, nonatomic) UIButton *createChatButton;
 @end
@@ -41,8 +42,11 @@
     [MVChatManager sharedInstance].chatsListener = self;
     self.chats = [[MVChatManager sharedInstance] chatsList];
     self.chatsList.tableFooterView = [UIView new];
-    CGFloat topHeight = [UIApplication sharedApplication].statusBarFrame.size.height + [self navigationController].navigationBar.frame.size.height;
-    self.chatsList.contentInset = UIEdgeInsetsMake(topHeight, 0, 0, 0);
+    
+    CGFloat navbarHeight = self.navigationController.navigationBar.frame.size.height;
+    self.chatsListTop.constant = -navbarHeight;
+    self.chatsList.contentInset = UIEdgeInsetsMake(navbarHeight, 0, 0, 0);
+    
     self.chatsList.delegate = self;
     self.chatsList.dataSource = self;
     

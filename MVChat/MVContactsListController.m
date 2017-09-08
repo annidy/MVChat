@@ -22,6 +22,7 @@
 @property (weak, nonatomic) MVContactsListSearchViewController *searchResultsController;
 @property (strong, nonatomic) UISearchController *searchController;
 @property (strong, nonatomic) NSMutableArray *selectedContacts;
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *contactsListTop;
 @property (strong, nonatomic) UIBarButtonItem *doneButtonItem;
 @property (strong, nonatomic) NSArray *excludingContacts;
 @end
@@ -65,8 +66,10 @@
     
     [self setupNavigationBar];
     self.contactsList.tableFooterView = [UIView new];
-    CGFloat topHeight = [UIApplication sharedApplication].statusBarFrame.size.height + [self navigationController].navigationBar.frame.size.height;
-    self.contactsList.contentInset = UIEdgeInsetsMake(topHeight, 0, 0, 0);
+    
+    CGFloat navBarHeight = [self navigationController].navigationBar.frame.size.height;
+    self.contactsListTop.constant = - navBarHeight;
+    self.contactsList.contentInset = UIEdgeInsetsMake(navBarHeight, 0, 0, 0);
     [self.contactsList registerClass:[MVTableViewHeader class] forHeaderFooterViewReuseIdentifier:@"MVTableViewHeader"];
     
     if (self.mode == MVContactsListControllerModeDefault) {
