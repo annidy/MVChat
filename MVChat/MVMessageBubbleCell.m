@@ -108,7 +108,7 @@ static CGFloat MVBubbleMinTailessSize = 30;
 - (UILabel *)buildTimeLabel {
     UILabel *timeLabel = [UILabel new];
     timeLabel.font = [UIFont systemFontOfSize:11];
-    timeLabel.textColor = [UIColor darkTextColor];
+    timeLabel.textColor = [UIColor darkGrayColor];
     timeLabel.translatesAutoresizingMaskIntoConstraints = NO;
     
     return timeLabel;

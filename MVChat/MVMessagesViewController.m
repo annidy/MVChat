@@ -26,6 +26,7 @@
 @property (strong, nonatomic) NSMutableDictionary <NSString *, NSMutableArray <MVMessageModel *>*> *messages;
 @property (assign, nonatomic) CGFloat sliderOffset;
 @property (assign, nonatomic) BOOL autoscrollEnabled;
+@property (assign, nonatomic) BOOL processingNewPage;
 @property (assign, nonatomic) NSInteger loadedPageIndex;
 @property (assign, nonatomic) BOOL processingMessages;
 @property (assign, nonatomic) BOOL initialLoadComplete;
@@ -120,6 +121,8 @@
     
     self.messages = [messages mutableCopy];
     self.sections = [sections mutableCopy];
+    self.autoscrollEnabled = (self.messagesTableView.contentOffset.y >= (self.messagesTableView.contentSize.height - self.messagesTableView.frame.size.height - 50));
+    self.processingNewPage = YES;
     [self.messagesTableView reloadData];
     [[MVChatManager sharedInstance] markChatAsRead:self.chatId];
 }
@@ -144,6 +147,8 @@
     self.messages = [messages mutableCopy];
     self.sections = [sections mutableCopy];
     self.shouldAnimateContentOffset = YES;
+    self.autoscrollEnabled = (self.messagesTableView.contentOffset.y >= (self.messagesTableView.contentSize.height - self.messagesTableView.frame.size.height - 50));
+    self.processingNewPage = NO;
     if (insertedSection) {
         [self.messagesTableView insertSections:[NSIndexSet indexSetWithIndex:self.sections.count - 1] withRowAnimation:UITableViewRowAnimationBottom];
     } else {
@@ -156,6 +161,7 @@
 }
 
 - (void)insertNewMessage:(MVMessageModel *)message {
+    
     self.processingMessages = YES;
     [self handleNewMessage:message];
     self.processingMessages = NO;
@@ -268,9 +274,7 @@
 
 #pragma mark - Scroll View
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    self.autoscrollEnabled = (self.messagesTableView.contentOffset.y >= (self.messagesTableView.contentSize.height - self.messagesTableView.frame.size.height));
-    
-    if(self.initialLoadComplete && self.messagesTableView.contentOffset.y <= 200) {
+    if(self.initialLoadComplete && self.messagesTableView.contentOffset.y <= 50) {
         [self tryToLoadNextPage];
     }
 }
@@ -281,7 +285,7 @@
         CGSize oldSize = [[change objectForKey:NSKeyValueChangeOldKey] CGSizeValue];
         CGSize newSize = [[change objectForKey:NSKeyValueChangeNewKey] CGSizeValue];
         
-        [UIView animateWithDuration:self.shouldAnimateContentOffset? 0.2 : 0 animations:^{
+        [UIView animateWithDuration:(self.shouldAnimateContentOffset && self.autoscrollEnabled)? 0.2 : 0 animations:^{
             [self updateContentOffsetForOldContent:oldSize andNewContent:newSize];
             [self updateContentInsetForNewContent:newSize];
         }];
@@ -313,12 +317,11 @@
         offset.y = 0;
     } else if (self.autoscrollEnabled) {
         offset.y = newSize.height - self.messagesTableView.frame.size.height;
-    } else {
+    } else if (self.processingNewPage) {
         offset.y += newSize.height - oldSize.height;
     }
     
     if (offset.y != self.messagesTableView.contentOffset.y) {
-        //[self.messagesTableView setContentOffset:offset animated:self.shouldAnimateContentOffset];
         self.messagesTableView.contentOffset = offset;
     }
 }
@@ -423,6 +426,8 @@
 }
 
 - (void)cellTapped:(UITableViewCell *)cell {
+    [self.view.superview.superview endEditing:YES];
+    
     if (![cell isKindOfClass:[MVMessageMediaCell class]]) {
         return;
     }
