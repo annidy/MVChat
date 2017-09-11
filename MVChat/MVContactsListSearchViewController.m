@@ -9,16 +9,21 @@
 #import "MVContactsListSearchViewController.h"
 #import "MVTableViewHeader.h"
 #import "MVContactsListCell.h"
+#import <ReactiveObjC.h>
+#import "MVContactsListViewModel.h"
+#import "MVChatManager.h"
+#import "MVChatViewController.h"
 
 @interface MVContactsListSearchViewController () <UITableViewDataSource, UITableViewDelegate>
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
-@property (strong, nonatomic) id <MVSearchProviderDelegate> delegate;
+@property (strong, nonatomic) MVContactsListViewModel *viewModel;
 @end
 
 @implementation MVContactsListSearchViewController
-+ (instancetype)loadFromStoryboardWithDelegate:(id <MVSearchProviderDelegate>)delegate {
++ (instancetype)loadFromStoryboardWithViewModel:(MVContactsListViewModel *)viewModel {
     MVContactsListSearchViewController *instance = [super loadFromStoryboard];
-    instance.delegate = delegate;
+    instance.viewModel = viewModel;
+    
     return instance;
 }
 
@@ -28,14 +33,12 @@
     
     self.tableView.tableFooterView = [UIView new];
     [self.tableView registerClass:[MVTableViewHeader class] forHeaderFooterViewReuseIdentifier:@"MVTableViewHeader"];
-    [self addObserver:self forKeyPath:@"filteredContacts" options:NSKeyValueObservingOptionNew context:nil];
-}
-
-#pragma mark - KVO
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
-    if ([keyPath isEqualToString:@"filteredContacts"]) {
+    
+    @weakify(self);
+    [RACObserve(self.viewModel, filteredRows) subscribeNext:^(id  _Nullable x) {
+        @strongify(self);
         [self.tableView reloadData];
-    }
+    }];
 }
 
 #pragma mark - Table view
@@ -44,12 +47,13 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.filteredContacts.count;
+    return self.viewModel.filteredRows.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     MVContactsListCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ContactsListCell"];
-    [cell fillWithContact:self.filteredContacts[indexPath.row]];
+    [cell fillWithModel:self.viewModel.filteredRows[indexPath.row]];
+    
     return cell;
 }
 
@@ -60,8 +64,9 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    MVContactsListCellViewModel *model = self.viewModel.filteredRows[indexPath.row];
+    [self showChatViewWithContact:model.contact];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    [self.delegate didSelectCellWithModel:self.filteredContacts[indexPath.row]];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -70,5 +75,17 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return 60;
+}
+
+#pragma mark - Helpers
+- (void)showChatViewWithContact:(MVContactModel *)contact {
+    [[MVChatManager sharedInstance] chatWithContact:contact andCompeltion:^(MVChatModel *chat) {
+        [self showChatViewWithChat:chat];
+    }];
+}
+
+- (void)showChatViewWithChat:(MVChatModel *)chat {
+    MVChatViewController *chatVC = [MVChatViewController loadFromStoryboardWithChat:chat];
+    [self.presentingViewController.navigationController pushViewController:chatVC animated:YES];
 }
 @end

@@ -9,15 +9,8 @@
 #import <UIKit/UIKit.h>
 #import "MVViewController.h"
 @class MVContactModel;
-
-typedef enum : NSUInteger {
-    MVContactsListControllerModeDefault,
-    MVContactsListControllerModeSelectable
-} MVContactsListControllerMode;
+@class MVContactsListViewModel;
 
 @interface MVContactsListController : MVViewController
-@property (assign, nonatomic) MVContactsListControllerMode mode;
-@property (nonatomic, copy) void (^doneAction)(NSArray <MVContactModel *> *);
-+ (instancetype)loadFromStoryboardWithMode:(MVContactsListControllerMode)mode andDoneAction:(void (^)(NSArray <MVContactModel *> *))doneAction;
-+ (instancetype)loadFromStoryboardWithMode:(MVContactsListControllerMode)mode andDoneAction:(void (^)(NSArray <MVContactModel *> *))doneAction excludingContacts:(NSArray <MVContactModel *> *)excludingContacts;
++ (instancetype)loadFromStoryboardWithViewModel:(MVContactsListViewModel *)viewModel;
 @end

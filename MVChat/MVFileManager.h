@@ -12,10 +12,26 @@
 @class MVChatModel;
 @class MVMessageModel;
 @class DBAttachment;
+@class RACSignal;
+
+typedef enum : NSUInteger {
+    MVAvatarUpdateTypeContact,
+    MVAvatarUpdateTypeChat,
+} MVAvatarUpdateType;
+
+@interface MVAvatarUpdate : NSObject
+@property (assign, nonatomic) MVAvatarUpdateType type;
+@property (strong, nonatomic) NSString *id;
+@property (strong, nonatomic) UIImage *avatar;
+- (instancetype)initWithType:(MVAvatarUpdateType)type id:(NSString *)id avatar:(UIImage *)avatar;
+@end
 
 @interface MVFileManager : NSObject
 #pragma mark - Initialization
 + (instancetype)sharedInstance;
+
+#pragma mark - Signals
+@property (strong, nonatomic) RACSignal *avatarUpdateSignal;
 
 #pragma mark - Caching
 - (NSArray <DBAttachment *> *)attachmentsForChatWithId:(NSString *)chatId;

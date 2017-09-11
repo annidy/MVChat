@@ -18,6 +18,8 @@
 #import "MVContactProfileViewController.h"
 #import "NSString+Helpers.h"
 #import "MVChatSharedMediaListController.h"
+#import "MVContactsListViewModel.h"
+#import <ReactiveObjC.h>
 
 typedef enum : NSUInteger {
     MVChatSettingsModeNew,
@@ -314,20 +316,21 @@ static NSString *MediaFilesCellID = @"MVChatSettingsMediaCell";
 }
 
 - (void)showContactsSelectController {
-    MVContactsListController *contactsListController = [MVContactsListController loadFromStoryboardWithMode:MVContactsListControllerModeSelectable andDoneAction:^(NSArray<MVContactModel *> *selectedContacts) {
+    //TODO: ViewModel
+    MVContactsListViewModel *viewModel = [[MVContactsListViewModel alloc] initWithMode:MVContactsListModeSelectable excludingContacts:[self.contacts copy]];
+    MVContactsListController *controller = [MVContactsListController loadFromStoryboardWithViewModel:viewModel];
+    
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
+    [self presentViewController:navigationController animated:YES completion:nil];
+    
+    @weakify(self);
+    [[viewModel.doneCommand.executionSignals flatten] subscribeNext:^(NSArray *selectedContacts) {
+        @strongify(self);
         [self.contacts addObjectsFromArray:selectedContacts];
         [self.tableView reloadData];
         [self dismissViewControllerAnimated:YES completion:nil];
         self.doneButton.enabled = [self canProceed];
-    } excludingContacts:[self.contacts copy]];
-    
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:contactsListController];
-    contactsListController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStyleDone target:self action:@selector(dismissContactsSelectController)];
-    [self presentViewController:navigationController animated:YES completion:nil];
-}
-
-- (void)dismissContactsSelectController {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    }];
 }
 
 - (void)showDeleteAlert {

@@ -10,10 +10,12 @@
 #import "MVContactModel.h"
 #import "MVDatabaseManager.h"
 #import "MVRandomGenerator.h"
+#import <ReactiveObjC.h>
 
 @interface MVContactManager()
 @property (strong, nonatomic) dispatch_queue_t managerQueue;
 @property (strong, nonatomic) NSArray <MVContactModel *> *contacts;
+@property (strong, nonatomic) RACSubject *lastSeenTimeSubject;
 @end
 
 @implementation MVContactManager
@@ -31,6 +33,8 @@
     if (self = [super init]) {
         _managerQueue = dispatch_queue_create("com.markvasiv.contactsManager", DISPATCH_QUEUE_SERIAL);
         _contacts = [NSArray new];
+        self.lastSeenTimeSubject = [RACSubject subject];
+        self.lastSeenTimeSignal = [self.lastSeenTimeSubject deliverOnMainThread];
     }
     
     return self;
@@ -58,8 +62,7 @@
         for (MVContactModel *oldContact in self.contacts) {
             if ([oldContact.id isEqualToString:contact.id]) {
                 oldContact.lastSeenDate = contact.lastSeenDate;
-                NSNotification *update = [[NSNotification alloc] initWithName:@"ContactLastSeenTimeUpdate" object:nil userInfo:@{@"Id" : contact.id, @"LastSeenTime" : contact.lastSeenDate}];
-                [[NSNotificationCenter defaultCenter] postNotification:update];
+                [self.lastSeenTimeSubject sendNext:RACTuplePack(contact.id, contact.lastSeenDate)];
             }
         }
     }

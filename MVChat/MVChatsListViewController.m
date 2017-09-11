@@ -19,6 +19,8 @@
 #import "MVFileManager.h"
 #import "MVOverlayMenuController.h"
 #import "MVUpdatesProvider.h"
+#import <ReactiveObjC.h>
+#import "MVContactsListViewModel.h"
 
 @interface MVChatsListViewController () <UITableViewDelegate, UITableViewDataSource, MVChatsUpdatesListener, UISearchResultsUpdating, MVSearchProviderDelegate, MVForceTouchPresentaionDelegate>
 @property (strong, nonatomic) IBOutlet UITableView *chatsList;
@@ -176,8 +178,12 @@
 
 #pragma mark - Create chat
 - (void)createNewChat {
-//    UINavigationController *rootNavigationController = self.navigationController.navigationController;
-    MVContactsListController *contactsList = [MVContactsListController loadFromStoryboardWithMode:MVContactsListControllerModeSelectable andDoneAction:^(NSArray<MVContactModel *> *selectedContacts) {
+//TODO: ViewModels
+    
+    MVContactsListViewModel *viewModel = [[MVContactsListViewModel alloc] initWithMode:MVContactsListModeSelectable];
+    MVContactsListController *contactsList = [MVContactsListController loadFromStoryboardWithViewModel:viewModel];
+    
+    [[viewModel.doneCommand.executionSignals flatten] subscribeNext:^(NSArray *selectedContacts) {
         MVChatSettingsViewController *settings = [MVChatSettingsViewController loadFromStoryboardWithContacts:selectedContacts andDoneAction:^(NSArray<MVContactModel *> *chatContacts, NSString *chatTitle, DBAttachment *avatarImage) {
             [[MVChatManager sharedInstance] createChatWithContacts:chatContacts title:chatTitle andCompletion:^(MVChatModel *chat) {
                 if (avatarImage) {
@@ -189,6 +195,7 @@
         }];
         [self.navigationController pushViewController:settings animated:YES];
     }];
+    
     [self.navigationController pushViewController:contactsList animated:YES];
 }
 

@@ -19,11 +19,25 @@
 #import <ImageIO/ImageIO.h>
 #import "MVChatManager.h"
 #import "MVDatabaseManager.h"
+#import <ReactiveObjC.h>
+
+@implementation MVAvatarUpdate
+- (instancetype)initWithType:(MVAvatarUpdateType)type id:(NSString *)id avatar:(UIImage *)avatar {
+    if (self = [super init]) {
+        _type = type;
+        _id = id;
+        _avatar = avatar;
+    }
+    
+    return self;
+}
+@end
 
 @interface MVFileManager()
 @property (strong, nonatomic) dispatch_queue_t managerQueue;
 @property (strong, nonatomic) NSCache *imagesCache;
 @property (strong, nonatomic) NSMutableDictionary *messageAttachments;
+@property (strong, nonatomic) RACSubject *avatarUpdateSubject;
 @end
 
 @implementation MVFileManager
@@ -43,6 +57,8 @@ static MVFileManager *instance;
         _managerQueue = dispatch_queue_create("com.markvasiv.fileManager", DISPATCH_QUEUE_SERIAL);
         _imagesCache = [NSCache new];
         _messageAttachments = [NSMutableDictionary new];
+        _avatarUpdateSubject = [RACSubject subject];
+        _avatarUpdateSignal = [_avatarUpdateSubject deliverOnMainThread];
         [self cacheMediaMessages];
     }
     
@@ -98,15 +114,19 @@ static MVFileManager *instance;
 
 - (void)saveChatAvatar:(MVChatModel *)chat attachment:(DBAttachment *)attachment {
     [self saveAttachment:attachment atRelativePath:[self relativePathForChatAvatar:chat] completion:^(DBAttachment *urlAttachment) {
-        NSNotification *notification = [[NSNotification alloc] initWithName:@"ChatAvatarUpdate" object:nil userInfo:@{@"Id" : chat.id, @"Image" : [attachment loadOriginalImageSync]}];
-        [[NSNotificationCenter defaultCenter] postNotification:notification];
+        [attachment originalImageWithCompletion:^(UIImage *resultImage) {
+            MVAvatarUpdate *update = [[MVAvatarUpdate alloc] initWithType:MVAvatarUpdateTypeChat id:chat.id avatar:resultImage];
+            [self.avatarUpdateSubject sendNext:update];
+        }];
     }];
 }
 
 - (void)saveContactAvatar:(MVContactModel *)contact attachment:(DBAttachment *)attachment {
     [self saveAttachment:attachment atRelativePath:[self relativePathForContactAvatar:contact] completion:^(DBAttachment *urlAttachment) {
-        NSNotification *notification = [[NSNotification alloc] initWithName:@"ContactAvatarUpdate" object:nil userInfo:@{@"Id" : contact.id, @"Image" : [attachment loadOriginalImageSync]}];
-        [[NSNotificationCenter defaultCenter] postNotification:notification];
+        [attachment originalImageWithCompletion:^(UIImage *resultImage) {
+            MVAvatarUpdate *update = [[MVAvatarUpdate alloc] initWithType:MVAvatarUpdateTypeContact id:contact.id avatar:resultImage];
+            [self.avatarUpdateSubject sendNext:update];
+        }];
     }];
 }
 
