@@ -13,6 +13,8 @@
 #import "MVContactManager.h"
 #import "MVFileManager.h"
 #import <DBAttachment.h>
+#import "MVChatsListCellViewModel.h"
+#import <ReactiveObjC.h>
 
 static NSDateFormatter *defaultDateFormatter;
 static NSDateFormatter *todayDateFormatter;
@@ -41,22 +43,6 @@ static NSDateFormatter *todayDateFormatter;
     self.avatarImageView.layer.masksToBounds = YES;
     self.unreadCountButton.layer.cornerRadius = 9;
     self.unreadCountButton.layer.masksToBounds = YES;
-    
-    [[NSNotificationCenter defaultCenter] addObserverForName:@"ChatAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        NSString *chatId = note.userInfo[@"Id"];
-        UIImage *image = note.userInfo[@"Image"];
-        if (!self.chatModel.isPeerToPeer && [self.chatModel.id isEqualToString:chatId]) {
-            self.avatarImageView.image = image;
-        }
-    }];
-    
-    [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        NSString *contactId = note.userInfo[@"Id"];
-        UIImage *image = note.userInfo[@"Image"];
-        if (self.chatModel.isPeerToPeer && [self.chatModel.getPeer.id isEqualToString:contactId]) {
-            self.avatarImageView.image = image;
-        }
-    }];
 }
 
 - (void)prepareForReuse {
@@ -65,60 +51,20 @@ static NSDateFormatter *todayDateFormatter;
 }
 
 #pragma mark - Fill with data
-- (void)fillWithChat:(MVChatModel *)chat {
-    if (chat.isPeerToPeer) {
-        self.titleLabel.text = chat.getPeer.name;
-    } else {
-        self.titleLabel.text = chat.title;
-    }
+- (void)fillWithModel:(MVChatsListCellViewModel *)model {
+    self.titleLabel.text = model.title;
+    self.messageLabel.text = model.message;
+    self.dateLabel.text = model.updateDate;
     
-    if (chat.lastMessage.type == MVMessageTypeMedia) {
-        self.messageLabel.text = @"Media message";
-    } else {
-        self.messageLabel.text = chat.lastMessage.text;
-    }
-    
-    NSDateFormatter *formatter;
-    if ([[NSCalendar currentCalendar] isDateInToday:chat.lastUpdateDate]) {
-        formatter = self.todayDateFormatter;
-    } else {
-        formatter = self.defaultDateFormatter;
-    }
-    self.dateLabel.text = [formatter stringFromDate:chat.lastUpdateDate];
-    
-    if (chat.unreadCount != 0) {
-        [self.unreadCountButton setTitle:[NSString stringWithFormat:@"%lu", (unsigned long)chat.unreadCount] forState:UIControlStateNormal];
+    if (model.unreadCount) {
+        [self.unreadCountButton setTitle:model.unreadCount forState:UIControlStateNormal];
         self.unreadCountButton.hidden = NO;
     } else {
         self.unreadCountButton.hidden = YES;
     }
     
-    [[MVFileManager sharedInstance] loadThumbnailAvatarForChat:chat maxWidth:60 completion:^(UIImage *image) {
-        self.avatarImageView.image = image;
-    }];
+    RAC(self.avatarImageView, image) = [[RACObserve(model, avatar) deliverOnMainThread] takeUntil:self.rac_prepareForReuseSignal];
     
-    self.chatModel = chat;
-}
-
-#pragma mark - Helpers
-- (NSDateFormatter *)defaultDateFormatter {
-    if (!defaultDateFormatter) {
-        defaultDateFormatter = [NSDateFormatter new];
-        [defaultDateFormatter setDateStyle:NSDateFormatterShortStyle];
-        [defaultDateFormatter setDoesRelativeDateFormatting:YES];
-    }
-    
-    return defaultDateFormatter;
-}
-
-- (NSDateFormatter *)todayDateFormatter {
-    if (!todayDateFormatter) {
-        todayDateFormatter = [NSDateFormatter new];
-        [todayDateFormatter setDateStyle:NSDateFormatterNoStyle];
-        [todayDateFormatter setTimeStyle:NSDateFormatterShortStyle];
-        [todayDateFormatter setDoesRelativeDateFormatting:YES];
-    }
-    
-    return todayDateFormatter;
+    self.chatModel = model.chat;
 }
 @end

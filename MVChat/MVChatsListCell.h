@@ -7,8 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-@class MVChatModel;
+@class MVChatsListCellViewModel;
 
 @interface MVChatsListCell : UITableViewCell
-- (void)fillWithChat:(MVChatModel *)chat;
+- (void)fillWithModel:(MVChatsListCellViewModel *)model;
 @end

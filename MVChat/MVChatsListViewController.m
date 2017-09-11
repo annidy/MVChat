@@ -21,105 +21,91 @@
 #import "MVUpdatesProvider.h"
 #import <ReactiveObjC.h>
 #import "MVContactsListViewModel.h"
+#import "MVChatsListViewModel.h"
+#import "MVChatsListCellViewModel.h"
 
-@interface MVChatsListViewController () <UITableViewDelegate, UITableViewDataSource, MVChatsUpdatesListener, UISearchResultsUpdating, MVSearchProviderDelegate, MVForceTouchPresentaionDelegate>
+@interface MVChatsListViewController () <UITableViewDelegate, UITableViewDataSource, MVForceTouchPresentaionDelegate, UICollectionViewDelegate>
 @property (strong, nonatomic) IBOutlet UITableView *chatsList;
-@property (strong, nonatomic) NSArray <MVChatModel *> *chats;
-@property (strong, nonatomic) MVChatsListSearchViewController *searchResultsController;
 @property (strong, nonatomic) IBOutlet NSLayoutConstraint *chatsListTop;
+@property (strong, nonatomic) IBOutlet UIButton *createChatButton;
+@property (strong, nonatomic) MVChatsListSearchViewController *searchResultsController;
 @property (strong, nonatomic) UISearchController *searchController;
-@property (strong, nonatomic) UIButton *createChatButton;
+@property (strong, nonatomic) MVChatsListViewModel *viewModel;
 @end
 
 @implementation MVChatsListViewController
+#pragma mark - Initialisation 
+- (instancetype)initWithCoder:(NSCoder *)aDecoder {
+    if (self = [super initWithCoder:aDecoder]) {
+        _viewModel = [MVChatsListViewModel new];
+    }
+    
+    return self;
+}
+
 #pragma mark - View lifecycle
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    [MVChatManager sharedInstance].chatsListener = self;
-    self.chats = [[MVChatManager sharedInstance] chatsList];
-    self.chatsList.tableFooterView = [UIView new];
     
     CGFloat navbarHeight = self.navigationController.navigationBar.frame.size.height;
     self.chatsListTop.constant = -navbarHeight;
     self.chatsList.contentInset = UIEdgeInsetsMake(navbarHeight, 0, 0, 0);
     
+    self.chatsList.tableFooterView = [UIView new];
     self.chatsList.delegate = self;
     self.chatsList.dataSource = self;
     
-    [self setupNavigationBar];
     [self setupSearchController];
     [self registerForceTouchControllerWithDelegate:self andSourceView:self.createChatButton];
+    [self bindAll];
 }
 
-- (void)setupNavigationBar {
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
-    [button setTitle:@"" forState:UIControlStateNormal];
-    [button setImage:[UIImage imageNamed:@"iconPlus"] forState:UIControlStateNormal];
-    button.frame = CGRectMake(0, 0, 30, 30);
-    [button addTarget:self action:@selector(createNewChat) forControlEvents:UIControlEventTouchUpInside];
-    self.createChatButton = button;
+- (void)bindAll {
+    @weakify(self);
+    [self.viewModel.updateSignal subscribeNext:^(MVChatsListUpdate *update) {
+        @strongify(self);
+        switch (update.updateType) {
+            case MVChatsListUpdateTypeReloadAll:
+                [self.chatsList reloadData];
+                break;
+                
+            case MVChatsListUpdateTypeInsert:
+                [self.chatsList insertRowsAtIndexPaths:@[update.startIndexPath] withRowAnimation:UITableViewRowAnimationBottom];
+                break;
+                
+            case MVChatsListUpdateTypeDelete:
+                [self.chatsList deleteRowsAtIndexPaths:@[update.startIndexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+                break;
+
+            case MVChatsListUpdateTypeMove:
+                [self.chatsList moveRowAtIndexPath:update.startIndexPath toIndexPath:update.endIndexPath];
+                break;
+                
+            case MVChatsListUpdateTypeReload:
+                [UIView setAnimationsEnabled:NO];
+                [self.chatsList reloadRowsAtIndexPaths:@[update.startIndexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+                [UIView setAnimationsEnabled:YES];
+                break;
+                
+            default:
+                break;
+        }
+    }];
     
-    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithCustomView:button];
-    self.navigationItem.rightBarButtonItem = item;
-    self.navigationItem.title = @"Chats";
+    [[self.createChatButton rac_signalForControlEvents:UIControlEventTouchUpInside] subscribeNext:^(__kindof UIControl *x) {
+        @strongify(self);
+        [self createNewChat];
+    }];
 }
 
 - (void)setupSearchController {
-    self.searchResultsController = [MVChatsListSearchViewController loadFromStoryboardWithDelegate:self];
-    
+    self.searchResultsController = [MVChatsListSearchViewController loadFromStoryboardWithViewModel:self.viewModel rootViewController:self];
     self.searchController = [[UISearchController alloc] initWithSearchResultsController:self.searchResultsController];
-    self.searchController.searchResultsUpdater = self;
+    self.searchController.searchResultsUpdater = self.viewModel;
     self.searchController.dimsBackgroundDuringPresentation = NO;
     self.searchController.searchBar.searchBarStyle = UISearchBarStyleMinimal;
     self.chatsList.tableHeaderView = self.searchController.searchBar;
     self.definesPresentationContext = YES;
-}
-
-#pragma mark - Data handling
-- (void)insertNewChat:(MVChatModel *)chat {
-    NSMutableArray *chats = [self.chats mutableCopy];
-    [chats insertObject:chat atIndex:0];
-    self.chats = [chats copy];
-    NSIndexPath *insertPath = [NSIndexPath indexPathForRow:0 inSection:0];
-    [self.chatsList insertRowsAtIndexPaths:@[insertPath] withRowAnimation:UITableViewRowAnimationBottom];
-}
-
-- (void)updateChats {
-    self.chats = [[MVChatManager sharedInstance] chatsList];
-    [self.chatsList reloadData];
-}
-
-- (void)removeChat:(MVChatModel *)chat {
-    NSUInteger index = [self indexOfChatWithId:chat.id];
-    NSMutableArray *mutableChats = [self.chats mutableCopy];
-    [mutableChats removeObjectAtIndex:index];
-    self.chats = [mutableChats copy];
-    if (index != NSNotFound) {
-        [self.chatsList deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
-    }
-}
-
-- (void)updateChat:(MVChatModel *)chat withSorting:(BOOL)sorting newIndex:(NSUInteger)newIndex {
-    NSUInteger index = [self indexOfChatWithId:chat.id];
-    NSMutableArray *mutableChats = [self.chats mutableCopy];
-    if (sorting) {
-        [mutableChats removeObjectAtIndex:index];
-        [mutableChats insertObject:chat atIndex:newIndex];
-    } else {
-        [mutableChats replaceObjectAtIndex:index withObject:chat];
-    }
-    
-    self.chats = [mutableChats copy];
-    
-    if (sorting) {
-        [self.chatsList moveRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0] toIndexPath:[NSIndexPath indexPathForRow:newIndex inSection:0]];
-    }
-    
-    NSInteger rowToReload = sorting? newIndex : index;
-    [UIView setAnimationsEnabled:NO];
-    [self.chatsList reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:rowToReload inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
-    [UIView setAnimationsEnabled:YES];
 }
 
 #pragma mark - Table view
@@ -128,7 +114,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.chats.count;
+    return self.viewModel.chats.count;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -137,43 +123,27 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     MVChatsListCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ChatsListCell"];
-    MVChatModel *chat = self.chats[indexPath.row];
-    [cell fillWithChat:chat];
+    MVChatsListCellViewModel *model = self.viewModel.chats[indexPath.row];
+    [cell fillWithModel:model];
     
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSArray <MVChatsListCellViewModel *> *chats = (tableView == self.chatsList)? self.viewModel.chats : self.viewModel.filteredChats;
+    MVChatsListCellViewModel *model = chats[indexPath.row];
+    [self showChatViewWithChat:model.chat];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    MVChatModel *selectedChat = (tableView == self.chatsList)? self.chats[indexPath.row] : self.searchResultsController.filteredChats[indexPath.row];
-    [self showChatViewWithChat:selectedChat];
-}
-
-#pragma mark - Search filter
-- (void)updateSearchResultsForSearchController:(UISearchController *)searchController {
-    if (searchController.isActive) {
-        NSArray *chats = [self filterChatsWithString:searchController.searchBar.text];
-        self.searchResultsController.filteredChats = chats;
-        self.searchResultsController.popularChats = [self.chats subarrayWithRange:NSMakeRange(0, self.chats.count>5? 5:self.chats.count)];
-        self.searchController.searchResultsController.view.hidden = NO;
+    if (tableView != self.chatsList) {
+        self.viewModel.recentSearchChat = model;
     }
-    
 }
 
-- (void)didSelectCellWithModel:(id)model {
-    MVChatModel *chat = (MVChatModel *)model;
-    [self showChatViewWithChat:chat];
-    self.searchResultsController.resentSearchChat = chat;
-}
-
-- (NSArray *)filterChatsWithString:(NSString *)string {
-    if (!string.length) {
-        return [NSArray new];
-    } else {
-        return [self.chats filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(MVChatModel *evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
-            return [[evaluatedObject.title uppercaseString] containsString:[string uppercaseString]];
-        }]];
-    }
+#pragma mark - Search controller collection view
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    MVChatsListCellViewModel *model = self.viewModel.popularChats[indexPath.row];
+    [self showChatViewWithChat:model.chat];
+    self.viewModel.recentSearchChat = model;
 }
 
 #pragma mark - Create chat
@@ -227,15 +197,5 @@
 - (void)showChatViewWithChat:(MVChatModel *)chat {
     MVChatViewController *chatVC = [MVChatViewController loadFromStoryboardWithChat:[chat copy]];
     [self.navigationController pushViewController:chatVC animated:YES];
-}
-
-- (NSInteger)indexOfChatWithId:(NSString *)chatId {
-    for (MVChatModel *chat in self.chats) {
-        if ([chat.id isEqualToString:chatId]) {
-            return [self.chats indexOfObject:chat];
-        }
-    }
-    
-    return NSNotFound;
 }
 @end

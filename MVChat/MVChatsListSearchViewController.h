@@ -10,10 +10,8 @@
 #import "MVSearchProviderDelegate.h"
 #import "MVViewController.h"
 @class MVChatModel;
+@class MVChatsListViewModel;
 
 @interface MVChatsListSearchViewController : MVViewController
-@property (strong, nonatomic) MVChatModel *resentSearchChat;
-@property (strong, nonatomic) NSArray *popularChats;
-@property (strong, nonatomic) NSArray *filteredChats;
-+ (instancetype)loadFromStoryboardWithDelegate:(id <MVSearchProviderDelegate>)delegate;
++ (instancetype)loadFromStoryboardWithViewModel:(MVChatsListViewModel *)viewModel rootViewController:(UIViewController <UITableViewDelegate, UICollectionViewDelegate> *)root;
 @end
