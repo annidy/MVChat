@@ -286,9 +286,9 @@ static MVChatManager *sharedManager;
             }
         }
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.chatsListener updateChats];
-        });
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            [self.chatsListener updateChats];
+//        });
     });
 }
 

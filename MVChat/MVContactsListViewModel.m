@@ -153,7 +153,7 @@
     @weakify(self);
     return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
         @strongify(self);
-        NSArray *contacts = [[[self.selectedContacts.rac_sequence signalWithScheduler:[RACScheduler mainThreadScheduler]] map:^id (MVContactsListCellViewModel *model) {
+        NSArray *contacts = [[self.selectedContacts.rac_sequence.signal map:^id (MVContactsListCellViewModel *model) {
             return model.contact;
         }] toArray];
         

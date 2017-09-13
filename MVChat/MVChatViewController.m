@@ -20,6 +20,7 @@
 #import "MVOverlayMenuController.h"
 #import <DBAttachment.h>
 #import "MVUpdatesProvider.h"
+#import "MVChatSettingsViewModel.h"
 
 @interface MVChatViewController () <MVForceTouchPresentaionDelegate>
 @property (weak, nonatomic) MVMessagesViewController *MessagesController;
@@ -164,18 +165,21 @@
 }
 
 - (void)showChatSettings {
-    MVChatSettingsViewController *settings = [MVChatSettingsViewController loadFromStoryboardWithChat:self.chat andDoneAction:^(NSArray<MVContactModel *> *contacts, NSString *title, DBAttachment *attachment) {
-        self.chat.participants = [contacts arrayByAddingObject:MVContactManager.myContact];
-        self.chat.title = title;
-        [[MVChatManager sharedInstance] updateChat:self.chat];
-        self.navigationItemTitleLabel.text = title;
-        [self.navigationController popViewControllerAnimated:YES];
-        if (attachment) {
-            [[MVFileManager sharedInstance] saveChatAvatar:self.chat attachment:attachment];
-        }
-    }];
+    MVChatSettingsViewModel *viewModel = [[MVChatSettingsViewModel alloc] initWithChat:self.chat];
+    MVChatSettingsViewController *controller = [MVChatSettingsViewController loadFromStoryboardWithViewModel:viewModel];
     
-    [self.navigationController pushViewController:settings animated:YES];
+//    MVChatSettingsViewController *settings = [MVChatSettingsViewController loadFromStoryboardWithChat:self.chat andDoneAction:^(NSArray<MVContactModel *> *contacts, NSString *title, DBAttachment *attachment) {
+////        self.chat.participants = [contacts arrayByAddingObject:MVContactManager.myContact];
+////        self.chat.title = title;
+////        [[MVChatManager sharedInstance] updateChat:self.chat];
+////        self.navigationItemTitleLabel.text = title;
+////        [self.navigationController popViewControllerAnimated:YES];
+////        if (attachment) {
+////            [[MVFileManager sharedInstance] saveChatAvatar:self.chat attachment:attachment];
+////        }
+//    }];
+    
+    [self.navigationController pushViewController:controller animated:YES];
 }
 
 - (void)showContactProfile {

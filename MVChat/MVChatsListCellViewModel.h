@@ -14,7 +14,7 @@
 @property (strong, nonatomic) MVChatModel *chat;
 @property (strong, nonatomic) NSString *title;
 @property (strong, nonatomic) NSString *message;
-@property (assign, nonatomic) NSString *unreadCount;
-@property (assign, nonatomic) NSString *updateDate;
+@property (strong, nonatomic) NSString *unreadCount;
+@property (strong, nonatomic) NSString *updateDate;
 @property (strong, nonatomic) UIImage *avatar;
 @end

@@ -23,6 +23,7 @@
 #import "MVContactsListViewModel.h"
 #import "MVChatsListViewModel.h"
 #import "MVChatsListCellViewModel.h"
+#import "MVChatSettingsViewModel.h"
 
 @interface MVChatsListViewController () <UITableViewDelegate, UITableViewDataSource, MVForceTouchPresentaionDelegate, UICollectionViewDelegate>
 @property (strong, nonatomic) IBOutlet UITableView *chatsList;
@@ -148,21 +149,14 @@
 
 #pragma mark - Create chat
 - (void)createNewChat {
-//TODO: ViewModels
+    MVContactsListViewModel *contactsListModel = [[MVContactsListViewModel alloc] initWithMode:MVContactsListModeSelectable];
+    MVContactsListController *contactsList = [MVContactsListController loadFromStoryboardWithViewModel:contactsListModel];
     
-    MVContactsListViewModel *viewModel = [[MVContactsListViewModel alloc] initWithMode:MVContactsListModeSelectable];
-    MVContactsListController *contactsList = [MVContactsListController loadFromStoryboardWithViewModel:viewModel];
-    
-    [[viewModel.doneCommand.executionSignals flatten] subscribeNext:^(NSArray *selectedContacts) {
-        MVChatSettingsViewController *settings = [MVChatSettingsViewController loadFromStoryboardWithContacts:selectedContacts andDoneAction:^(NSArray<MVContactModel *> *chatContacts, NSString *chatTitle, DBAttachment *avatarImage) {
-            [[MVChatManager sharedInstance] createChatWithContacts:chatContacts title:chatTitle andCompletion:^(MVChatModel *chat) {
-                if (avatarImage) {
-                    [[MVFileManager sharedInstance] saveChatAvatar:chat attachment:avatarImage];
-                }
-                [self.navigationController popToRootViewControllerAnimated:YES];
-                [self showChatViewWithChat:chat];
-            }];
-        }];
+    @weakify(self);
+    [[contactsListModel.doneCommand.executionSignals flatten] subscribeNext:^(NSArray *selectedContacts) {
+        @strongify(self);
+        MVChatSettingsViewModel *settingsModel = [[MVChatSettingsViewModel alloc] initWithContacts:selectedContacts];
+        MVChatSettingsViewController *settings = [MVChatSettingsViewController loadFromStoryboardWithViewModel:settingsModel];
         [self.navigationController pushViewController:settings animated:YES];
     }];
     
