@@ -27,7 +27,6 @@
 
 @interface MVChatsListViewController () <UITableViewDelegate, UITableViewDataSource, MVForceTouchPresentaionDelegate, UICollectionViewDelegate>
 @property (strong, nonatomic) IBOutlet UITableView *chatsList;
-@property (strong, nonatomic) IBOutlet NSLayoutConstraint *chatsListTop;
 @property (strong, nonatomic) IBOutlet UIButton *createChatButton;
 @property (strong, nonatomic) MVChatsListSearchViewController *searchResultsController;
 @property (strong, nonatomic) UISearchController *searchController;
@@ -48,13 +47,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    CGFloat navbarHeight = self.navigationController.navigationBar.frame.size.height;
-    self.chatsListTop.constant = -navbarHeight;
-    self.chatsList.contentInset = UIEdgeInsetsMake(navbarHeight, 0, 0, 0);
-    
+    self.definesPresentationContext = YES;
     self.chatsList.tableFooterView = [UIView new];
-    self.chatsList.delegate = self;
-    self.chatsList.dataSource = self;
     
     [self setupSearchController];
     [self registerForceTouchControllerWithDelegate:self andSourceView:self.createChatButton];
@@ -105,6 +99,7 @@
     self.searchController.searchResultsUpdater = self.viewModel;
     self.searchController.dimsBackgroundDuringPresentation = NO;
     self.searchController.searchBar.searchBarStyle = UISearchBarStyleMinimal;
+    self.searchController.hidesNavigationBarDuringPresentation = YES;
     self.chatsList.tableHeaderView = self.searchController.searchBar;
     self.definesPresentationContext = YES;
 }

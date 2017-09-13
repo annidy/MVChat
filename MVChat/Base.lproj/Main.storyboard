@@ -31,17 +31,17 @@
         <!--Contacts-->
         <scene sceneID="fas-jx-XoW">
             <objects>
-                <viewController storyboardIdentifier="MVContactsListController" automaticallyAdjustsScrollViewInsets="NO" id="6EY-Gn-Lhi" customClass="MVContactsListController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MVContactsListController" id="6EY-Gn-Lhi" customClass="MVContactsListController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="PoB-dC-dAZ"/>
                         <viewControllerLayoutGuide type="bottom" id="XYh-Yd-69i"/>
                     </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" misplaced="YES" id="EyQ-Zr-l90">
+                    <view key="view" contentMode="scaleToFill" id="EyQ-Zr-l90">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="8kr-qb-vSe">
-                                <rect key="frame" x="0.0" y="64" width="375" height="539"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ContactsListCell" rowHeight="60" id="bIO-H0-smu" customClass="MVContactsListCell">
@@ -98,8 +98,8 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="8kr-qb-vSe" secondAttribute="trailing" id="7dy-NR-xgJ"/>
-                            <constraint firstItem="8kr-qb-vSe" firstAttribute="top" secondItem="PoB-dC-dAZ" secondAttribute="bottom" id="OHh-JZ-1zf"/>
                             <constraint firstItem="XYh-Yd-69i" firstAttribute="top" secondItem="8kr-qb-vSe" secondAttribute="bottom" id="SLS-IS-PSw"/>
+                            <constraint firstItem="8kr-qb-vSe" firstAttribute="top" secondItem="EyQ-Zr-l90" secondAttribute="top" id="ttA-Qg-9pT"/>
                             <constraint firstItem="8kr-qb-vSe" firstAttribute="leading" secondItem="EyQ-Zr-l90" secondAttribute="leading" id="xGG-oG-IWS"/>
                         </constraints>
                     </view>
@@ -109,7 +109,6 @@
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="contactsList" destination="8kr-qb-vSe" id="vk7-A9-PX8"/>
-                        <outlet property="contactsListTop" destination="OHh-JZ-1zf" id="OwI-D5-lHu"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="utu-w5-p8Y" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -401,7 +400,7 @@
         <!--Chats-->
         <scene sceneID="eYF-01-euX">
             <objects>
-                <viewController storyboardIdentifier="MVChatsListViewController" automaticallyAdjustsScrollViewInsets="NO" id="Oy1-wc-JZB" customClass="MVChatsListViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MVChatsListViewController" id="Oy1-wc-JZB" customClass="MVChatsListViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3Z-Vf-Brj"/>
                         <viewControllerLayoutGuide type="bottom" id="a13-x5-PJE"/>
@@ -411,7 +410,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="60" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="jTo-Wi-sBa">
-                                <rect key="frame" x="0.0" y="64" width="375" height="603"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ChatsListCell" rowHeight="80" id="VmU-Sg-tfD" customClass="MVChatsListCell">
@@ -484,12 +483,16 @@
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
+                                <connections>
+                                    <outlet property="dataSource" destination="Oy1-wc-JZB" id="Oih-wm-xqU"/>
+                                    <outlet property="delegate" destination="Oy1-wc-JZB" id="4nv-Fy-dur"/>
+                                </connections>
                             </tableView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="a13-x5-PJE" firstAttribute="top" secondItem="jTo-Wi-sBa" secondAttribute="bottom" id="F1y-eZ-Dzf"/>
-                            <constraint firstItem="jTo-Wi-sBa" firstAttribute="top" secondItem="y3Z-Vf-Brj" secondAttribute="bottom" id="MWa-k7-ytO"/>
+                            <constraint firstItem="jTo-Wi-sBa" firstAttribute="top" secondItem="lyn-4H-BC1" secondAttribute="top" id="gga-5c-H0q"/>
                             <constraint firstAttribute="trailing" secondItem="jTo-Wi-sBa" secondAttribute="trailing" id="iDj-nQ-8Fd"/>
                             <constraint firstItem="jTo-Wi-sBa" firstAttribute="leading" secondItem="lyn-4H-BC1" secondAttribute="leading" id="zWJ-Ta-G20"/>
                         </constraints>
@@ -508,7 +511,6 @@
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="chatsList" destination="jTo-Wi-sBa" id="AFf-xk-0nT"/>
-                        <outlet property="chatsListTop" destination="MWa-k7-ytO" id="u7h-5r-mYH"/>
                         <outlet property="createChatButton" destination="HeG-oa-I1e" id="ORW-RS-45A"/>
                     </connections>
                 </viewController>
@@ -564,8 +566,14 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="chatBackground" translatesAutoresizingMaskIntoConstraints="NO" id="NQg-8Q-OfD">
-                                <rect key="frame" x="0.0" y="64" width="375" height="667"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                             </imageView>
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="F9u-2U-iMk">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="617"/>
+                                <connections>
+                                    <segue destination="e0v-Ll-oyT" kind="embed" identifier="EmbedMessages" id="Myl-mA-sCt"/>
+                                </connections>
+                            </containerView>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1cy-4A-UOo">
                                 <rect key="frame" x="0.0" y="617" width="375" height="50"/>
                                 <constraints>
@@ -575,33 +583,25 @@
                                     <segue destination="xyr-sn-PIh" kind="embed" identifier="EmbedFooter" id="14a-c5-UgZ"/>
                                 </connections>
                             </containerView>
-                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="F9u-2U-iMk">
-                                <rect key="frame" x="0.0" y="64" width="375" height="553"/>
-                                <connections>
-                                    <segue destination="e0v-Ll-oyT" kind="embed" identifier="EmbedMessages" id="Myl-mA-sCt"/>
-                                </connections>
-                            </containerView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="NQg-8Q-OfD" firstAttribute="height" secondItem="8bC-Xf-vdC" secondAttribute="height" id="08r-Yo-o8g"/>
-                            <constraint firstItem="NQg-8Q-OfD" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="0RH-u2-HjR"/>
                             <constraint firstItem="1cy-4A-UOo" firstAttribute="top" secondItem="F9u-2U-iMk" secondAttribute="bottom" id="RrG-aQ-67O"/>
                             <constraint firstAttribute="trailing" secondItem="F9u-2U-iMk" secondAttribute="trailing" id="WrY-pV-hIm"/>
                             <constraint firstItem="1cy-4A-UOo" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="XUn-9y-V1W"/>
-                            <constraint firstAttribute="bottom" secondItem="1cy-4A-UOo" secondAttribute="bottom" id="ei1-UV-LZi"/>
+                            <constraint firstItem="F9u-2U-iMk" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="b5J-AU-8Kw"/>
+                            <constraint firstItem="NQg-8Q-OfD" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="fJ7-uv-5uK"/>
+                            <constraint firstAttribute="bottom" secondItem="NQg-8Q-OfD" secondAttribute="bottom" id="fgU-3S-Vui"/>
                             <constraint firstItem="F9u-2U-iMk" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="jgJ-6l-dUL"/>
                             <constraint firstAttribute="trailing" secondItem="NQg-8Q-OfD" secondAttribute="trailing" id="l6y-Ez-ZZZ"/>
+                            <constraint firstAttribute="bottom" secondItem="1cy-4A-UOo" secondAttribute="bottom" id="naZ-EU-5Vg"/>
                             <constraint firstItem="NQg-8Q-OfD" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="neE-gz-dkc"/>
-                            <constraint firstItem="F9u-2U-iMk" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="p0X-55-9YX"/>
                             <constraint firstAttribute="trailing" secondItem="1cy-4A-UOo" secondAttribute="trailing" id="roY-cz-0Lw"/>
                         </constraints>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout" top="YES"/>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
-                    <connections>
-                        <outlet property="inputPanelBottom" destination="ei1-UV-LZi" id="zG5-Ig-wiG"/>
-                        <outlet property="messagesListTop" destination="p0X-55-9YX" id="0xb-bu-kVv"/>
-                    </connections>
+                    <nil key="simulatedBottomBarMetrics"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
@@ -610,7 +610,7 @@
         <!--Footer View Controller-->
         <scene sceneID="hDp-Km-xFt">
             <objects>
-                <viewController storyboardIdentifier="MVFooterViewController" id="xyr-sn-PIh" customClass="MVFooterViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MVFooterViewController" automaticallyAdjustsScrollViewInsets="NO" id="xyr-sn-PIh" customClass="MVFooterViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Ndm-lc-Ltl"/>
                         <viewControllerLayoutGuide type="bottom" id="BVj-7p-20I"/>
@@ -680,6 +680,7 @@
                             <constraint firstItem="B82-BU-TS2" firstAttribute="trailing" secondItem="NHf-wI-Dbb" secondAttribute="trailing" constant="15" id="zz2-O6-fLI"/>
                         </constraints>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout"/>
                     <connections>
                         <outlet property="attatchButton" destination="PFx-dx-qSv" id="qv5-re-Ztl"/>
                         <outlet property="messageTextField" destination="NHf-wI-Dbb" id="E95-IQ-cZX"/>
@@ -761,17 +762,17 @@
         <!--Messages View Controller-->
         <scene sceneID="zRc-v6-Mai">
             <objects>
-                <viewController storyboardIdentifier="MVMessagesViewController" id="e0v-Ll-oyT" customClass="MVMessagesViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MVMessagesViewController" automaticallyAdjustsScrollViewInsets="NO" id="e0v-Ll-oyT" customClass="MVMessagesViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="VwF-g9-z6T"/>
                         <viewControllerLayoutGuide type="bottom" id="g1W-ar-IzZ"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="9sj-hO-NKE">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="553"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="617"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="ySx-5M-MSu">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="553"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="617"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <connections>
                                     <outlet property="dataSource" destination="e0v-Ll-oyT" id="9Zx-dP-U6d"/>
@@ -792,7 +793,7 @@
                             <outletCollection property="gestureRecognizers" destination="15O-cY-kWJ" appends="YES" id="xQG-wQ-rXu"/>
                         </connections>
                     </view>
-                    <extendedEdge key="edgesForExtendedLayout" top="YES"/>
+                    <extendedEdge key="edgesForExtendedLayout"/>
                     <connections>
                         <outlet property="messagesTableView" destination="ySx-5M-MSu" id="dpW-1G-d06"/>
                     </connections>

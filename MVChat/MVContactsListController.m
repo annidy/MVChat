@@ -19,7 +19,6 @@
 
 @interface MVContactsListController () <UITableViewDelegate, UITableViewDataSource>
 @property (strong, nonatomic) IBOutlet UITableView *contactsList;
-@property (strong, nonatomic) IBOutlet NSLayoutConstraint *contactsListTop;
 @property (strong, nonatomic) UISearchController *searchController;
 @property (strong, nonatomic) MVContactsListViewModel *viewModel;
 @end
@@ -55,9 +54,6 @@
     
     self.contactsList.tableFooterView = [UIView new];
     [self.contactsList registerClass:[MVTableViewHeader class] forHeaderFooterViewReuseIdentifier:@"MVTableViewHeader"];
-    CGFloat navBarHeight = [self navigationController].navigationBar.frame.size.height;
-    self.contactsListTop.constant = - navBarHeight;
-    self.contactsList.contentInset = UIEdgeInsetsMake(navBarHeight, 0, 0, 0);
 }
 
 - (void)setupSearchController {

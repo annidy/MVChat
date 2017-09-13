@@ -27,7 +27,6 @@
 @property (weak, nonatomic) MVMessagesViewController *MessagesController;
 @property (weak, nonatomic) MVFooterViewController *FooterController;
 @property (strong, nonatomic) UILabel *navigationItemTitleLabel;
-@property (strong, nonatomic) IBOutlet NSLayoutConstraint *messagesListTop;
 @property (strong, nonatomic) UIImageView *avatarImageView;
 @property (strong, nonatomic) IBOutlet NSLayoutConstraint *inputPanelBottom;
 @end
@@ -50,9 +49,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setupNavigationBar];
-    
-    CGFloat navbarHeight = self.navigationController.navigationBar.frame.size.height;
-    self.messagesListTop.constant = -navbarHeight;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
@@ -80,31 +76,31 @@
 }
 
 - (void)setupNavigationBar {
-    //title label
-    UILabel *titleLabel = [UILabel new];
-    titleLabel.font = [UIFont fontWithName:@"HelveticaNeue-Medium" size:17];
-    titleLabel.text = self.chat.title;
-    CGFloat labelWidth = [titleLabel sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)].width;
-    titleLabel.frame = CGRectMake(0,0, labelWidth, 500);
-    titleLabel.userInteractionEnabled = YES;
-    self.navigationItemTitleLabel = titleLabel;
-    self.navigationItem.titleView = titleLabel;
-    
-    //buttons
-    UIImageView *imageView = [UIImageView new];
-    imageView.frame = CGRectMake(0, 0, 34, 34);
-    imageView.layer.cornerRadius = 17;
-    imageView.layer.masksToBounds = YES;
-    imageView.contentMode = UIViewContentModeScaleAspectFill;
-    imageView.layer.borderWidth = 0.3f;
-    imageView.layer.borderColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:0.4].CGColor;
-    
-    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithCustomView:imageView];
-    self.navigationItem.rightBarButtonItem = item;
-    self.avatarImageView = imageView;
-    
-    [[imageView.widthAnchor constraintEqualToConstant:34] setActive:YES];
-    [[imageView.heightAnchor constraintEqualToConstant:34] setActive:YES];
+//    //title label
+//    UILabel *titleLabel = [UILabel new];
+//    titleLabel.font = [UIFont fontWithName:@"HelveticaNeue-Medium" size:17];
+//    titleLabel.text = self.chat.title;
+//    CGFloat labelWidth = [titleLabel sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)].width;
+//    titleLabel.frame = CGRectMake(0,0, labelWidth, 500);
+//    titleLabel.userInteractionEnabled = YES;
+//    self.navigationItemTitleLabel = titleLabel;
+//    self.navigationItem.titleView = titleLabel;
+//    
+//    //buttons
+//    UIImageView *imageView = [UIImageView new];
+//    imageView.frame = CGRectMake(0, 0, 34, 34);
+//    imageView.layer.cornerRadius = 17;
+//    imageView.layer.masksToBounds = YES;
+//    imageView.contentMode = UIViewContentModeScaleAspectFill;
+//    imageView.layer.borderWidth = 0.3f;
+//    imageView.layer.borderColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:0.4].CGColor;
+//    
+//    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithCustomView:imageView];
+//    self.navigationItem.rightBarButtonItem = item;
+//    self.avatarImageView = imageView;
+//    
+//    [[imageView.widthAnchor constraintEqualToConstant:34] setActive:YES];
+//    [[imageView.heightAnchor constraintEqualToConstant:34] setActive:YES];
     
     [[MVFileManager sharedInstance] loadThumbnailAvatarForChat:self.chat maxWidth:50 completion:^(UIImage *image) {
         self.avatarImageView.image = image;
