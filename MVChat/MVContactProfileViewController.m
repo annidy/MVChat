@@ -7,34 +7,21 @@
 //
 
 #import "MVContactProfileViewController.h"
-#import "MVChatModel.h"
-#import "MVContactModel.h"
-#import "MVContactManager.h"
+#import "MVContactProfileViewModel.h"
 #import "MVChatViewController.h"
-#import "MVChatManager.h"
 #import "MVChatSharedMediaListController.h"
-#import "MVFileManager.h"
-#import <DBAttachment.h>
-#import "NSString+Helpers.h"
+#import <ReactiveObjC.h>
 
 @interface MVContactProfileViewController () <UITableViewDataSource, UITableViewDelegate>
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
-@property (strong, nonatomic) MVContactModel *contact;
-@property (weak, nonatomic) UILabel *statusLabel;
-@property (weak, nonatomic) UIImageView *avatarImageView;
-@property (strong, nonatomic) UIImage *avatarImage;
+@property (strong, nonatomic) MVContactProfileViewModel *viewModel;
 @end
-
-static NSString *AvatarTitleCellId = @"MVContactProfileAvatarTitleCell";
-static NSString *PhoneCellId = @"MVContactProfilePhoneCell";
-static NSString *MediaCellId = @"MVContactProfileMediaCell";
-static NSString *ChatCellId = @"MVContactProfileChatCell";
 
 @implementation MVContactProfileViewController
 #pragma mark - Initialization
-+ (instancetype)loadFromStoryboardWithContact:(MVContactModel *)contact {
++ (instancetype)loadFromStoryboardWithViewModel:(MVContactProfileViewModel *)viewModel {
     MVContactProfileViewController *instance = [super loadFromStoryboard];
-    instance.contact = contact;
+    instance.viewModel = viewModel;
     
     return instance;
 }
@@ -45,27 +32,7 @@ static NSString *ChatCellId = @"MVContactProfileChatCell";
 #pragma mark - View Lifecycle
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactLastSeenTimeUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        NSString *contactId = note.userInfo[@"Id"];
-        if ([contactId isEqualToString:self.contact.id]) {
-            NSDate *lastSeenDate = note.userInfo[@"LastSeenTime"];
-            self.contact.lastSeenDate = lastSeenDate;
-            self.statusLabel.text = [NSString lastSeenTimeStringForDate:lastSeenDate];
-        }
-    }];
-    
-    [[MVFileManager sharedInstance] loadThumbnailAvatarForContact:self.contact maxWidth:50 completion:^(UIImage *image) {
-        self.avatarImage = image;
-        self.avatarImageView.image = image;
-    }];
-    
-    [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        NSString *contactId = note.userInfo[@"Id"];
-        UIImage *image = note.userInfo[@"Image"];
-        if ([self.contact.id isEqualToString:contactId]) {
-            self.avatarImageView.image = image;
-        }
-    }];
+    self.navigationItem.title = @"Contact";
 }
 
 #pragma mark - Table View
@@ -77,7 +44,7 @@ static NSString *ChatCellId = @"MVContactProfileChatCell";
     if (section == 0) {
         return 1;
     } else if (section == 1) {
-        return self.contact.phoneNumbers.count;
+        return self.viewModel.phoneNumbers.count;
     } else {
         return 2;
     }
@@ -102,19 +69,14 @@ static NSString *ChatCellId = @"MVContactProfileChatCell";
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell;
-    if (indexPath.section == 0) {
-        cell = [tableView dequeueReusableCellWithIdentifier:AvatarTitleCellId];
+    MVContactProfileCellType cellType = [self.viewModel cellTypeForIndexPath:indexPath];
+    NSString *cellId = [self.viewModel cellIdForCellType:cellType];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
+    
+    if (cellType == MVContactProfileCellTypeContact) {
         [self fillAvatarCell:cell];
-    } else if (indexPath.section == 1) {
-        cell = [tableView dequeueReusableCellWithIdentifier:PhoneCellId];
+    } else if (cellType == MVContactProfileCellTypePhone) {
         [self fillPhoneCell:cell withIndex:indexPath.row];
-    } else if (indexPath.section == 2) {
-        if (indexPath.row == 0) {
-            cell = [tableView dequeueReusableCellWithIdentifier:MediaCellId];
-        } else {
-            cell = [tableView dequeueReusableCellWithIdentifier:ChatCellId];
-        }
     }
     
     return cell;
@@ -122,68 +84,55 @@ static NSString *ChatCellId = @"MVContactProfileChatCell";
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    MVContactProfileCellType cellType = [self.viewModel cellTypeForIndexPath:indexPath];
     
-    if (indexPath.section == 0) {
-        [self showFullAvatar];
-    } else if (indexPath.section == 1) {
-        [self showCallMenu];
-    } else if (indexPath.section == 2) {
-        if (indexPath.row == 0) {
+    switch (cellType) {
+        case MVContactProfileCellTypeSharedMedia:
             [self showAllSharedMedia];
-        } else {
+            break;
+            
+        case MVContactProfileCellTypeChat:
             [self showChat];
-        }
+            break;
+            
+        default:
+            break;
     }
 }
 
 - (void)fillAvatarCell:(UITableViewCell *)cell {
     UIImageView *avatarImageView = [cell viewWithTag:1];
-    UILabel *nameLabel = [cell viewWithTag:2];
-    UILabel *statusLabel = [cell viewWithTag:3];
-    
-    nameLabel.text = self.contact.name;
-    statusLabel.text = [NSString lastSeenTimeStringForDate:self.contact.lastSeenDate];
-    self.statusLabel = statusLabel;
     avatarImageView.layer.cornerRadius = 30;
     avatarImageView.layer.borderWidth = 0.3f;
     avatarImageView.layer.borderColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:0.4].CGColor;
     avatarImageView.layer.masksToBounds = YES;
-    avatarImageView.image = self.avatarImage;
-    self.avatarImageView = avatarImageView;
+    RAC(avatarImageView, image) = [RACObserve(self.viewModel, avatar) takeUntil:cell.rac_prepareForReuseSignal];
+    
+    UILabel *nameLabel = [cell viewWithTag:2];
+    nameLabel.text = self.viewModel.name;
+    
+    UILabel *lastSeenLabel = [cell viewWithTag:3];
+    RAC(lastSeenLabel, text) = [RACObserve(self.viewModel, lastSeen) takeUntil:cell.rac_prepareForReuseSignal];
 }
 
 - (void)fillPhoneCell:(UITableViewCell *)cell withIndex:(NSUInteger)index {
     UILabel *phoneLabel = [cell viewWithTag:2];
-    phoneLabel.text = self.contact.phoneNumbers[index];
+    phoneLabel.text = self.viewModel.phoneNumbers[index];
 }
 
-- (void)showFullAvatar {
-    
-}
-
-- (void)showCallMenu {
-    
-}
 
 - (void)showAllSharedMedia {
-    [[MVChatManager sharedInstance] chatWithContact:self.contact andCompeltion:^(MVChatModel *chat) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            MVChatSharedMediaListController *vc = [MVChatSharedMediaListController loadFromStoryboardWithChatId:chat.id];
-            [self.navigationController pushViewController:vc animated:YES];
-        });
+    [self.viewModel sharedMediaController:^(MVChatSharedMediaListController *controller) {
+        [self.navigationController pushViewController:controller animated:YES];
     }];
-    
 }
 
 - (void)showChat {
     if ([self canPopToShowChat]) {
         [self.navigationController popViewControllerAnimated:YES];
     } else {
-        [[MVChatManager sharedInstance] chatWithContact:self.contact andCompeltion:^(MVChatModel *chat) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                MVChatViewController *chatViewController = [MVChatViewController loadFromStoryboardWithChat:chat];
-                [self.navigationController pushViewController:chatViewController animated:YES];
-            });
+        [self.viewModel chatController:^(MVChatViewController *controller) {
+            [self.navigationController pushViewController:controller animated:YES];
         }];
     }
 }
@@ -193,18 +142,7 @@ static NSString *ChatCellId = @"MVContactProfileChatCell";
     if (viewControllers.count > 1) {
         UIViewController *previousViewController = viewControllers[viewControllers.count-2];
         if ([previousViewController isKindOfClass:[MVChatViewController class]]) {
-            MVChatViewController *previousChatView = (MVChatViewController *)previousViewController;
-            NSArray *previousChatContacts = previousChatView.chat.participants;
-            if (previousChatContacts.count == 2) {
-                BOOL validChat = YES;
-                for (MVContactModel *contact in previousChatContacts) {
-                    if (!contact.iam && ![contact.id isEqualToString:self.contact.id]) {
-                        validChat = NO;
-                    }
-                }
-                
-                return validChat;
-            }
+            return YES;
         }
     }
     

@@ -15,6 +15,8 @@
 #import "MVChatSettingsViewModel.h"
 #import "MVContactsListCellViewModel.h"
 #import "MVChatViewController.h"
+#import "MVContactProfileViewModel.h"
+#import "MVContactsListController.h"
 
 @interface MVChatSettingsViewController () <UITableViewDataSource, UITableViewDelegate>
 @property (strong, nonatomic) MVChatSettingsViewModel *viewModel;
@@ -240,7 +242,8 @@
 }
 
 - (void)showContactProfileForContact:(MVContactModel *)contact {
-    MVContactProfileViewController *contactProfile = [MVContactProfileViewController loadFromStoryboardWithContact:contact];
+    MVContactProfileViewModel *viewModel = [[MVContactProfileViewModel alloc] initWithContact:contact];
+    MVContactProfileViewController *contactProfile = [MVContactProfileViewController loadFromStoryboardWithViewModel:viewModel];
     [self.navigationController pushViewController:contactProfile animated:YES];
 }
 @end

@@ -54,9 +54,6 @@ static NSDateFormatter *todayDateFormatter;
 - (void)fillWithModel:(MVChatsListCellViewModel *)model {
     self.titleLabel.text = model.title;
     self.messageLabel.text = model.message;
-    if (![model.updateDate isKindOfClass:[NSString class]]) {
-        NSString *b;
-    }
     self.dateLabel.text = model.updateDate;
     
     if (model.unreadCount) {

@@ -21,6 +21,7 @@
 #import <DBAttachment.h>
 #import "MVUpdatesProvider.h"
 #import "MVChatSettingsViewModel.h"
+#import "MVContactProfileViewModel.h"
 
 @interface MVChatViewController () <MVForceTouchPresentaionDelegate>
 @property (weak, nonatomic) MVMessagesViewController *MessagesController;
@@ -183,13 +184,8 @@
 }
 
 - (void)showContactProfile {
-    MVContactModel *peer;
-    for (MVContactModel *contact in self.chat.participants) {
-        if (!contact.iam) {
-            peer = contact;
-        }
-    }
-    MVContactProfileViewController *contactProfile = [MVContactProfileViewController loadFromStoryboardWithContact:peer];
+    MVContactProfileViewModel *viewModel = [[MVContactProfileViewModel alloc] initWithContact:self.chat.getPeer];
+    MVContactProfileViewController *contactProfile = [MVContactProfileViewController loadFromStoryboardWithViewModel:viewModel];
     [self.navigationController pushViewController:contactProfile animated:YES];
 }
 

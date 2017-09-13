@@ -60,6 +60,7 @@
 		CDD582921F66CCF700A43983 /* MVChatsListViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD582911F66CCF700A43983 /* MVChatsListViewModel.m */; };
 		CDD582951F66CD1A00A43983 /* MVChatsListCellViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD582941F66CD1A00A43983 /* MVChatsListCellViewModel.m */; };
 		CDD582981F6808B900A43983 /* MVChatSettingsViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD582971F6808B900A43983 /* MVChatSettingsViewModel.m */; };
+		CDD5829B1F6951CF00A43983 /* MVContactProfileViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD5829A1F6951CF00A43983 /* MVContactProfileViewModel.m */; };
 		CDE4B46A1F61C13B00014DE0 /* MVSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE4B4691F61C13B00014DE0 /* MVSettingsViewController.m */; };
 		CDE4B46F1F61DF0100014DE0 /* name.csv in Resources */ = {isa = PBXBuildFile; fileRef = CDE4B46C1F61DF0100014DE0 /* name.csv */; };
 		CDE4B4701F61DF0100014DE0 /* syllable.csv in Resources */ = {isa = PBXBuildFile; fileRef = CDE4B46D1F61DF0100014DE0 /* syllable.csv */; };
@@ -185,6 +186,8 @@
 		CDD582941F66CD1A00A43983 /* MVChatsListCellViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVChatsListCellViewModel.m; sourceTree = "<group>"; };
 		CDD582961F6808B900A43983 /* MVChatSettingsViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVChatSettingsViewModel.h; sourceTree = "<group>"; };
 		CDD582971F6808B900A43983 /* MVChatSettingsViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVChatSettingsViewModel.m; sourceTree = "<group>"; };
+		CDD582991F6951CF00A43983 /* MVContactProfileViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVContactProfileViewModel.h; sourceTree = "<group>"; };
+		CDD5829A1F6951CF00A43983 /* MVContactProfileViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVContactProfileViewModel.m; sourceTree = "<group>"; };
 		CDE4B4681F61C13B00014DE0 /* MVSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVSettingsViewController.h; sourceTree = "<group>"; };
 		CDE4B4691F61C13B00014DE0 /* MVSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVSettingsViewController.m; sourceTree = "<group>"; };
 		CDE4B46C1F61DF0100014DE0 /* name.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = name.csv; sourceTree = "<group>"; };
@@ -266,6 +269,8 @@
 			children = (
 				CD6FAF671F45EE70001E110C /* MVContactProfileViewController.h */,
 				CD6FAF681F45EE70001E110C /* MVContactProfileViewController.m */,
+				CDD582991F6951CF00A43983 /* MVContactProfileViewModel.h */,
+				CDD5829A1F6951CF00A43983 /* MVContactProfileViewModel.m */,
 			);
 			name = "Contact Profile";
 			sourceTree = "<group>";
@@ -809,6 +814,7 @@
 				CD4059C01F4DAC4A00808D3A /* MVOverlayMenuController.m in Sources */,
 				CD9BF8881F59B93200FDA378 /* MVUpdatesProvider.m in Sources */,
 				CD75F6631F5465C8004119A3 /* MVChatSharedMediaListController.m in Sources */,
+				CDD5829B1F6951CF00A43983 /* MVContactProfileViewModel.m in Sources */,
 				CD75F6661F546658004119A3 /* MVChatSharedMediaListCell.m in Sources */,
 				CD28B3611EB6A63300BFFCAA /* MVContactModel.m in Sources */,
 				CD28B3601EB6A63300BFFCAA /* MVChatManager.m in Sources */,
