@@ -24,6 +24,7 @@
 #import "MVChatsListViewModel.h"
 #import "MVChatsListCellViewModel.h"
 #import "MVChatSettingsViewModel.h"
+#import "MVChatViewModel.h"
 
 @interface MVChatsListViewController () <UITableViewDelegate, UITableViewDataSource, MVForceTouchPresentaionDelegate, UICollectionViewDelegate>
 @property (strong, nonatomic) IBOutlet UITableView *chatsList;
@@ -47,9 +48,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.definesPresentationContext = YES;
     self.chatsList.tableFooterView = [UIView new];
-    
     [self setupSearchController];
     [self registerForceTouchControllerWithDelegate:self andSourceView:self.createChatButton];
     [self bindAll];
@@ -184,7 +183,8 @@
 
 #pragma mark - Helpers
 - (void)showChatViewWithChat:(MVChatModel *)chat {
-    MVChatViewController *chatVC = [MVChatViewController loadFromStoryboardWithChat:[chat copy]];
+    MVChatViewModel *viewModel = [[MVChatViewModel alloc] initWithChat:[chat copy]];
+    MVChatViewController *chatVC = [MVChatViewController loadFromStoryboardWithViewModel:viewModel];
     [self.navigationController pushViewController:chatVC animated:YES];
 }
 @end

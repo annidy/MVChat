@@ -17,6 +17,7 @@
 #import "MVChatViewController.h"
 #import "MVContactProfileViewModel.h"
 #import "MVContactsListController.h"
+#import "MVChatViewModel.h"
 
 @interface MVChatSettingsViewController () <UITableViewDataSource, UITableViewDelegate>
 @property (strong, nonatomic) MVChatSettingsViewModel *viewModel;
@@ -63,7 +64,8 @@
     [[self.viewModel.doneCommand.executionSignals flatten] subscribeNext:^(MVChatModel *chat) {
         @strongify(self);
         if (self.viewModel.mode == MVChatSettingsModeNew) {
-            NSArray *viewControllers = @[self.navigationController.viewControllers[0], [MVChatViewController loadFromStoryboardWithChat:chat]];
+            MVChatViewModel *viewModel = [[MVChatViewModel alloc] initWithChat:chat];
+            NSArray *viewControllers = @[self.navigationController.viewControllers[0], [MVChatViewController loadFromStoryboardWithViewModel:viewModel]];
             [self.navigationController setViewControllers:viewControllers animated:YES];
         } else {
             [self.navigationController popViewControllerAnimated:YES];

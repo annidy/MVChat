@@ -16,6 +16,7 @@
 #import "MVChatSharedMediaListController.h"
 #import "MVChatViewController.h"
 #import "MVChatModel.h"
+#import "MVChatViewModel.h"
 
 static NSString *ContactCellId = @"MVContactProfileAvatarTitleCell";
 static NSString *PhoneCellId = @"MVContactProfilePhoneCell";
@@ -117,8 +118,9 @@ static NSString *ChatCellId = @"MVContactProfileChatCell";
 
 - (void)chatController:(void (^)(MVChatViewController *controller))callback {
     [[MVChatManager sharedInstance] chatWithContact:self.contact andCompeltion:^(MVChatModel *chat) {
-        MVChatViewController *vc = [MVChatViewController loadFromStoryboardWithChat:chat];
-        callback(vc);
+        MVChatViewModel *viewModel = [[MVChatViewModel alloc] initWithChat:chat];
+        MVChatViewController *chatVC = [MVChatViewController loadFromStoryboardWithViewModel:viewModel];
+        callback(chatVC);
     }];
 }
 @end

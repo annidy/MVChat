@@ -7,9 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "MVMessageCell.h"
 
-@interface MVMessagePlainCell : UITableViewCell
-@property (strong, nonatomic) UIView *container;
-+ (CGFloat)heightWithText:(NSString *)text;
-- (void)fillWithText:(NSString *)text;
+@interface MVMessagePlainCell : UITableViewCell <MVMessageCell>
 @end

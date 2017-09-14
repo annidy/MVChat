@@ -1,146 +1,375 @@
 //
-//  MVChatViewController.m
+//  MVMessagesViewController.m
 //  MVChat
 //
-//  Created by Mark Vasiv on 30/04/2017.
+//  Created by Mark Vasiv on 01/05/2017.
 //  Copyright © 2017 Mark Vasiv. All rights reserved.
 //
 
 #import "MVChatViewController.h"
-#import "MVMessagesViewController.h"
-#import "MVFooterViewController.h"
-#import "MVChatModel.h"
-#import "MVChatManager.h"
-#import "MVChatSettingsViewController.h"
-#import "MVDatabaseManager.h"
-#import "MVFileManager.h"
-#import "MVContactProfileViewController.h"
-#import "MVContactModel.h"
-#import "MVContactManager.h"
+#import "MVChatViewModel.h"
+#import "MVMessageTextCell.h"
+#import "MVMessageMediaCell.h"
+#import "MVMessagePlainCell.h"
 #import "MVOverlayMenuController.h"
-#import <DBAttachment.h>
 #import "MVUpdatesProvider.h"
-#import "MVChatSettingsViewModel.h"
-#import "MVContactProfileViewModel.h"
+#import <ReactiveObjC.h>
+#import "DBAttachmentPickerController.h"
+#import "MVMessagesListUpdate.h"
 
-@interface MVChatViewController () <MVForceTouchPresentaionDelegate>
-@property (weak, nonatomic) MVMessagesViewController *MessagesController;
-@property (weak, nonatomic) MVFooterViewController *FooterController;
-@property (strong, nonatomic) UILabel *navigationItemTitleLabel;
-@property (strong, nonatomic) UIImageView *avatarImageView;
+@interface MVChatViewController () <UITableViewDelegate, UITableViewDataSource, UIGestureRecognizerDelegate, MVForceTouchPresentaionDelegate>
+@property (strong, nonatomic) MVChatViewModel *viewModel;
+@property (strong, nonatomic) IBOutlet UITableView *messagesTableView;
+@property (strong, nonatomic) IBOutlet UIButton *avatarButton;
+@property (strong, nonatomic) IBOutlet UIView *footerView;
 @property (strong, nonatomic) IBOutlet NSLayoutConstraint *inputPanelBottom;
+@property (strong, nonatomic) IBOutlet UITextField *messageTextField;
+@property (strong, nonatomic) IBOutlet UIView *messageTextFieldMask;
+@property (strong, nonatomic) IBOutlet UIButton *sendButton;
+@property (strong, nonatomic) IBOutlet UIButton *attatchButton;
 @end
 
 @implementation MVChatViewController
-#pragma mark - Initialization
-+ (instancetype)loadFromStoryboardWithChat:(MVChatModel *)chat {
+#pragma mark - Lifecycle
++ (instancetype)loadFromStoryboardWithViewModel:(MVChatViewModel *)viewModel {
     MVChatViewController *instance = [super loadFromStoryboard];
-    instance.chat = chat;
-    instance.hidesBottomBarWhenPushed = YES;
+    instance.viewModel = viewModel;
     
     return instance;
 }
 
-#pragma mark - Lifecycle
-- (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
+#pragma mark - View lifecycle
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self setupNavigationBar];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+    [self setupNavigationBar];
+    [self setupFooter];
+    [self setupTableView];
+    [self bindAll];
 }
 
-- (void)keyboardWillShow:(NSNotification *)notification {
-    [self adjustInputPanelPositionDuringKeyabordAppear:YES withNotification:notification];
+#pragma mark - Setup views
+- (void)setupNavigationBar {
+    self.navigationItem.title = self.viewModel.title;
+    self.avatarButton.layer.cornerRadius = 15;
+    self.avatarButton.layer.masksToBounds = YES;
+    self.avatarButton.layer.borderWidth = 0.3f;
+    self.avatarButton.layer.borderColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:0.4].CGColor;
+    [self registerForceTouchControllerWithDelegate:self andSourceView:self.avatarButton];
 }
 
-- (void)keyboardWillHide:(NSNotification *)notification {
-    [self adjustInputPanelPositionDuringKeyabordAppear:NO withNotification:notification];
+- (void)setupTableView {
+    [self.messagesTableView setTableFooterView:[UIView new]];
+    [self.messagesTableView registerClass:[MVMessagePlainCell class] forCellReuseIdentifier:@"MVMessagePlainCell"];
+    [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageTextTailTypeDefaultIncomingCell"];
+    [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageTextTailTypeTailessIncomingCell"];
+    [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageTextTailTypeLastTailessIncomingCell"];
+    [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageTextTailTypeFirstTailessIncomingCell"];
+    [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageTextTailTypeDefaultOutgoingCell"];
+    [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageTextTailTypeTailessOutgoingCell"];
+    [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageTextTailTypeLastTailessOutgoingCell"];
+    [self.messagesTableView registerClass:[MVMessageTextCell class] forCellReuseIdentifier:@"MVMessageTextTailTypeFirstTailessOutgoingCell"];
+    [self.messagesTableView registerClass:[MVMessageMediaCell class] forCellReuseIdentifier:@"MVMessageMediaTailTypeDefaultIncomingCell"];
+    [self.messagesTableView registerClass:[MVMessageMediaCell class] forCellReuseIdentifier:@"MVMessageMediaTailTypeTailessIncomingCell"];
+    [self.messagesTableView registerClass:[MVMessageMediaCell class] forCellReuseIdentifier:@"MVMessageMediaTailTypeLastTailessIncomingCell"];
+    [self.messagesTableView registerClass:[MVMessageMediaCell class] forCellReuseIdentifier:@"MVMessageMediaTailTypeFirstTailessIncomingCell"];
+    [self.messagesTableView registerClass:[MVMessageMediaCell class] forCellReuseIdentifier:@"MVMessageMediaTailTypeDefaultOutgoingCell"];
+    [self.messagesTableView registerClass:[MVMessageMediaCell class] forCellReuseIdentifier:@"MVMessageMediaTailTypeTailessOutgoingCell"];
+    [self.messagesTableView registerClass:[MVMessageMediaCell class] forCellReuseIdentifier:@"MVMessageMediaTailTypeLastTailessOutgoingCell"];
+    [self.messagesTableView registerClass:[MVMessageMediaCell class] forCellReuseIdentifier:@"MVMessageMediaTailTypeFirstTailessOutgoingCell"];
 }
 
-- (void)adjustInputPanelPositionDuringKeyabordAppear:(BOOL)appear withNotification:(NSNotification *)notification {
+- (void)setupFooter {
+    self.sendButton.enabled = NO;
+    self.footerView.backgroundColor = [UIColor colorWithRed:0.95 green:0.95 blue:0.95 alpha:1];
+    self.messageTextFieldMask.layer.cornerRadius = 15;
+    self.messageTextFieldMask.layer.borderWidth = 1;
+    self.messageTextFieldMask.layer.borderColor = [UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1].CGColor;
+    self.messageTextFieldMask.layer.masksToBounds = YES;
+}
+
+#pragma mark - Bind
+- (void)bindAll {
+    RAC(self.navigationItem, title) = RACObserve(self.viewModel, title);
+    RAC(self.viewModel, messageText) = [self.messageTextField rac_textSignal];
+    
+    self.sendButton.rac_command = self.viewModel.sendCommand;
+    
+    @weakify(self);
+    [[[self.attatchButton rac_signalForControlEvents:UIControlEventTouchUpInside] 
+        map:^id (UIControl *value) {
+            @strongify(self);
+            return self.viewModel.attachmentPicker;
+        }] 
+        subscribeNext:^(DBAttachmentPickerController *controller) {
+            @strongify(self);
+            [controller presentOnViewController:self];
+        }];
+    
+    [RACObserve(self.viewModel, messageText) subscribeNext:^(NSString *text) {
+        @strongify(self);
+        self.messageTextField.text = text;
+    }];
+    
+    [RACObserve(self.viewModel, avatar) subscribeNext:^(UIImage *image) {
+        @strongify(self);
+        [self.avatarButton setImage:image forState:UIControlStateNormal];
+    }];
+    
+    [[[self.avatarButton rac_signalForControlEvents:UIControlEventTouchUpInside]
+        map:^id (UIControl *value) {
+            @strongify(self);
+            return [self.viewModel relevantSettingsController];
+        }]
+        subscribeNext:^(UIViewController *viewController) {
+            @strongify(self);
+            [self.navigationController pushViewController:viewController animated:YES];
+        }];
+
+    __block BOOL processingNewPage;
+    __block BOOL autoscroll = YES;
+    __block NSValue *oldSize;
+    __block BOOL keyboardShown = NO;
+    
+    [[[[NSNotificationCenter defaultCenter] rac_addObserverForName:UIKeyboardWillShowNotification object:nil]
+        filter:^BOOL(NSNotification *value) {
+            return !keyboardShown;
+        }]
+        subscribeNext:^(NSNotification *x) {
+            @strongify(self);
+            keyboardShown = YES;
+            autoscroll = NO;
+            [self adjustContentOffsetDuringKeyboardAppear:YES withNotification:x];
+        }];
+    
+    [[[[NSNotificationCenter defaultCenter] rac_addObserverForName:UIKeyboardWillHideNotification object:nil]
+        filter:^BOOL(NSNotification *value) {
+            return keyboardShown;
+        }]
+        subscribeNext:^(NSNotification *x) {
+            @strongify(self);
+            keyboardShown = NO;
+            autoscroll = NO;
+            [self adjustContentOffsetDuringKeyboardAppear:NO withNotification:x];
+        }];
+    
+    
+
+    [RACObserve(self.messagesTableView, contentSize)
+        subscribeNext:^(NSValue *newSize) {
+            @strongify(self);
+            
+            [UIView animateWithDuration:(!processingNewPage && autoscroll)? 0.2 : 0 animations:^{
+                [self updateContentOffsetForOldContent:oldSize.CGSizeValue
+                                         andNewContent:newSize.CGSizeValue
+                                     processingNewPage:processingNewPage
+                                     autoScrollEnabled:autoscroll];
+            
+                [self updateContentInsetForNewContent:newSize.CGSizeValue];
+            }];
+            
+            oldSize = newSize;
+        }];
+    
+    [self.viewModel.updateSignal subscribeNext:^(MVMessagesListUpdate *update) {
+        @strongify(self);
+        processingNewPage = (update.type == MVMessagesListUpdateTypeReloadAll);
+        autoscroll = (self.messagesTableView.contentOffset.y >= (self.messagesTableView.contentSize.height - self.messagesTableView.frame.size.height - 50));
+        
+        if (update.type == MVMessagesListUpdateTypeReloadAll) {
+            [self.messagesTableView reloadData];
+        } else if (update.type == MVMessagesListUpdateTypeInsertRow) {
+            [UIView performWithoutAnimation:^{
+                NSIndexPath *previousIndexPath = [NSIndexPath indexPathForRow:update.indexPath.row-1 inSection:0];
+                NSArray *insertIndexPaths = @[update.indexPath];
+                if (update.shouldInsertHeader) insertIndexPaths = @[update.indexPath, previousIndexPath];
+                
+                [self.messagesTableView insertRowsAtIndexPaths:insertIndexPaths withRowAnimation:UITableViewRowAnimationBottom];
+                if (update.shouldReloadPrevious) {
+                    [self.messagesTableView reloadRowsAtIndexPaths:@[previousIndexPath] withRowAnimation:UITableViewRowAnimationNone];
+                }
+            }];
+        }
+    }];
+    
+    
+}
+
+#pragma mark - Table view
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return self.viewModel.messages.count;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return self.viewModel.messages[indexPath.row].height;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    MVMessageCellModel *model = self.viewModel.messages[indexPath.row];
+    UITableViewCell <MVMessageCell> *cell = [tableView dequeueReusableCellWithIdentifier:model.cellId];
+    
+    [cell fillWithModel:model];
+    
+    @weakify(self);
+    [[[[cell.tapRecognizer.rac_gestureSignal
+        map:^id (UIGestureRecognizer *value) {
+            return cell.model;
+        }]
+        doNext:^(id  _Nullable x) {
+            @strongify(self);
+            [self.view.superview.superview endEditing:YES];
+        }]
+        filter:^BOOL(MVMessageCellModel *model) {
+            return model.type == MVMessageCellModelTypeMediaMessage;
+        }]
+        subscribeNext:^(MVMessageCellModel *model) {
+            @strongify(self);
+            MVMessageMediaCell *mediaCell = (MVMessageMediaCell *)cell;
+            [self showImageViewerForMessage:model fromImageView:mediaCell.mediaImageView];
+        }];
+    
+    return cell;
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (![cell conformsToProtocol:NSProtocolFromString(@"MVSlidingCell")]) {
+        return;
+    }
+    
+    UITableViewCell <MVSlidingCell> *slidingCell = (UITableViewCell <MVSlidingCell> *)cell;
+    CGFloat oldSlidingConstraint = slidingCell.slidingConstraint;
+    
+    if (oldSlidingConstraint != self.viewModel.sliderOffset) {
+        [slidingCell setSlidingConstraint:self.viewModel.sliderOffset];
+        [slidingCell.contentView layoutIfNeeded];
+    }
+}
+
+#pragma mark - Scroll View
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    if(self.messagesTableView.contentOffset.y <= 50) {
+        [self.viewModel tryToLoadNextPage];
+    }
+}
+
+#pragma mark - Content inset/offset
+- (void)updateContentInsetForNewContent:(CGSize)contentSize {
+    if (contentSize.height == 0) {
+        return;
+    }
+    
+    UIEdgeInsets tableViewInsets = self.messagesTableView.contentInset;
+    CGFloat inset = self.messagesTableView.frame.size.height - contentSize.height;
+    if (inset < 64) {
+        inset = 64;
+    }
+    
+    if (inset != tableViewInsets.top) {
+        tableViewInsets.top = inset;
+        self.messagesTableView.contentInset = tableViewInsets;
+    }
+}
+
+- (void)updateContentOffsetForOldContent:(CGSize)oldSize andNewContent:(CGSize)newSize processingNewPage:(BOOL)processingNewPage autoScrollEnabled:(BOOL)autoScroll {
+    CGPoint offset = self.messagesTableView.contentOffset;
+    
+    if (newSize.height == 0) {
+        offset.y = 0;
+    } else if (autoScroll) {
+        offset.y = newSize.height - self.messagesTableView.frame.size.height;
+    } else if (processingNewPage) {
+        offset.y += newSize.height - oldSize.height;
+    }
+    
+    if (offset.y != self.messagesTableView.contentOffset.y) {
+        self.messagesTableView.contentOffset = offset;
+    }
+}
+
+#pragma mark - Keyboard
+- (void)adjustContentOffsetDuringKeyboardAppear:(BOOL)appear withNotification:(NSNotification *)notification {
     NSTimeInterval duration = [notification.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     UIViewAnimationCurve curve = [notification.userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue];
-    CGRect keyboardFrameEnd = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    CGFloat keyboardHeight = CGRectGetHeight(keyboardFrameEnd);
     
+    CGRect keyboardEndFrame = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    CGFloat keyboardHeight = CGRectGetHeight(keyboardEndFrame);
+    
+    CGPoint offset = self.messagesTableView.contentOffset;
+    if (appear) {
+        offset.y += keyboardHeight;
+    } else {
+        offset.y -= keyboardHeight;
+    }
     self.inputPanelBottom.constant = appear? keyboardHeight : 0;
-    
     [UIView animateWithDuration:duration delay:0 options:UIViewAnimationOptionBeginFromCurrentState | curve animations:^{
+        self.messagesTableView.contentOffset = offset;
         [self.view layoutIfNeeded];
     } completion:nil];
 }
 
-- (void)setupNavigationBar {
-//    //title label
-//    UILabel *titleLabel = [UILabel new];
-//    titleLabel.font = [UIFont fontWithName:@"HelveticaNeue-Medium" size:17];
-//    titleLabel.text = self.chat.title;
-//    CGFloat labelWidth = [titleLabel sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)].width;
-//    titleLabel.frame = CGRectMake(0,0, labelWidth, 500);
-//    titleLabel.userInteractionEnabled = YES;
-//    self.navigationItemTitleLabel = titleLabel;
-//    self.navigationItem.titleView = titleLabel;
-//    
-//    //buttons
-//    UIImageView *imageView = [UIImageView new];
-//    imageView.frame = CGRectMake(0, 0, 34, 34);
-//    imageView.layer.cornerRadius = 17;
-//    imageView.layer.masksToBounds = YES;
-//    imageView.contentMode = UIViewContentModeScaleAspectFill;
-//    imageView.layer.borderWidth = 0.3f;
-//    imageView.layer.borderColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:0.4].CGColor;
-//    
-//    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithCustomView:imageView];
-//    self.navigationItem.rightBarButtonItem = item;
-//    self.avatarImageView = imageView;
-//    
-//    [[imageView.widthAnchor constraintEqualToConstant:34] setActive:YES];
-//    [[imageView.heightAnchor constraintEqualToConstant:34] setActive:YES];
-    
-    [[MVFileManager sharedInstance] loadThumbnailAvatarForChat:self.chat maxWidth:50 completion:^(UIImage *image) {
-        self.avatarImageView.image = image;
-    }];
-    
-    __weak typeof(self) weakSelf = self;
-    if (self.chat.isPeerToPeer) {
-        [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-            NSString *contactId = note.userInfo[@"Id"];
-            UIImage *image = note.userInfo[@"Image"];
-            if (weakSelf.chat.isPeerToPeer && [weakSelf.chat.getPeer.id isEqualToString:contactId]) {
-                [weakSelf.avatarImageView setImage:image];
-            }
-        }];
-    } else {
-        [[NSNotificationCenter defaultCenter] addObserverForName:@"ChatAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-            NSString *chatId = note.userInfo[@"Id"];
-            UIImage *image = note.userInfo[@"Image"];
-            if (!weakSelf.chat.isPeerToPeer && [weakSelf.chat.id isEqualToString:chatId]) {
-                [weakSelf.avatarImageView setImage:image];
-            }
-        }];
-    }
-    
-    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(navigationItemTitleTappedAction)];
-    [self.avatarImageView addGestureRecognizer:tapGesture];
-    
-    [self registerForceTouchControllerWithDelegate:self andSourceView:self.avatarImageView];
-    
+#pragma mark - Gesture recognizers
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    CGPoint translation = [(UIPanGestureRecognizer *)gestureRecognizer translationInView:self.view];
+    return ABS(translation.y) < 1;
 }
 
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    return YES;
+}
+
+- (IBAction)handlePanGesture:(UIPanGestureRecognizer *)panRecognizer {
+    CGFloat constant = 0;
+    NSTimeInterval animationDuration = 0.2;
+
+    if (panRecognizer.state != UIGestureRecognizerStateEnded &&
+        panRecognizer.state != UIGestureRecognizerStateFailed &&
+        panRecognizer.state != UIGestureRecognizerStateCancelled &&
+        panRecognizer.state != UIGestureRecognizerStateRecognized) {
+        
+        constant = [panRecognizer translationInView:self.view].x;
+        if (constant > 0) constant = 0;
+        if (constant < -40) constant = -40;
+
+        CGFloat velocityX = [panRecognizer velocityInView:self.view].x;
+        CGFloat oldConstant = self.viewModel.sliderOffset;
+        CGFloat path = ABS(oldConstant - constant);
+        animationDuration = path / velocityX;
+    }
+    
+    @weakify(self);
+    [[[[self.messagesTableView.visibleCells.rac_sequence
+        filter:^BOOL(UITableViewCell *cell) {
+            return [cell conformsToProtocol:NSProtocolFromString(@"MVSlidingCell")];
+        }]
+        filter:^BOOL(UITableViewCell <MVSlidingCell>*cell) {
+            return (cell.slidingConstraint != constant);
+        }]
+        signalWithScheduler:[RACScheduler mainThreadScheduler]]
+        subscribeNext:^(UITableViewCell <MVSlidingCell>*cell) {
+            [cell setSlidingConstraint:constant];
+        } completed:^{
+            @strongify(self);
+            self.viewModel.sliderOffset = constant;
+            [UIView animateWithDuration:animationDuration animations:^{
+                [self.messagesTableView layoutIfNeeded];
+            }];
+        }];
+}
+
+- (IBAction)tableViewTapped:(id)sender {
+    [self.view.superview.superview endEditing:YES];
+}
+
+#pragma mark - Force touch
 - (UIViewController<MVForceTouchControllerProtocol> *)forceTouchViewControllerForContext:(NSString *)context {
     MVOverlayMenuController *menu = [MVOverlayMenuController loadFromStoryboard];
     NSMutableArray *items = [NSMutableArray new];
-    [items addObject:[MVOverlayMenuElement elementWithTitle:@"Open profile" action:^{
-        [self navigationItemTitleTappedAction];
+    [items addObject:[MVOverlayMenuElement elementWithTitle:@"Open settings" action:^{
+        [self.navigationController pushViewController:[self.viewModel relevantSettingsController] animated:YES];
     }]];
     
-    NSString *chatId = [self.chat.id copy];
-    NSArray *contacts = [self.chat.participants copy];
+    NSString *chatId = [self.viewModel.chatId copy];
+    NSArray *contacts = [self.viewModel.chatParticipants copy];
     [items addObject:[MVOverlayMenuElement elementWithTitle:@"Generate message" action:^{
         [[MVUpdatesProvider sharedInstance] generateMessageForChatWithId:chatId];
     }]];
@@ -153,46 +382,10 @@
     return menu;
 }
 
-- (void)navigationItemTitleTappedAction {
-    if (self.chat.isPeerToPeer) {
-        [self showContactProfile];
-    } else {
-        [self showChatSettings];
-    }
-}
-
-- (void)showChatSettings {
-    MVChatSettingsViewModel *viewModel = [[MVChatSettingsViewModel alloc] initWithChat:self.chat];
-    MVChatSettingsViewController *controller = [MVChatSettingsViewController loadFromStoryboardWithViewModel:viewModel];
-    
-//    MVChatSettingsViewController *settings = [MVChatSettingsViewController loadFromStoryboardWithChat:self.chat andDoneAction:^(NSArray<MVContactModel *> *contacts, NSString *title, DBAttachment *attachment) {
-////        self.chat.participants = [contacts arrayByAddingObject:MVContactManager.myContact];
-////        self.chat.title = title;
-////        [[MVChatManager sharedInstance] updateChat:self.chat];
-////        self.navigationItemTitleLabel.text = title;
-////        [self.navigationController popViewControllerAnimated:YES];
-////        if (attachment) {
-////            [[MVFileManager sharedInstance] saveChatAvatar:self.chat attachment:attachment];
-////        }
-//    }];
-    
-    [self.navigationController pushViewController:controller animated:YES];
-}
-
-- (void)showContactProfile {
-    MVContactProfileViewModel *viewModel = [[MVContactProfileViewModel alloc] initWithContact:self.chat.getPeer];
-    MVContactProfileViewController *contactProfile = [MVContactProfileViewController loadFromStoryboardWithViewModel:viewModel];
-    [self.navigationController pushViewController:contactProfile animated:YES];
-}
-
-#pragma mark - Segues
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    if ([segue.identifier isEqualToString:@"EmbedMessages"]) {
-        self.MessagesController = segue.destinationViewController;
-        self.MessagesController.chatId = self.chat.id;
-    } else if ([segue.identifier isEqualToString:@"EmbedFooter"]) {
-        self.FooterController = segue.destinationViewController;
-        self.FooterController.chatId = self.chat.id;
-    }
+#pragma mark - Image viewer
+- (void)showImageViewerForMessage:(MVMessageCellModel *)model fromImageView:(UIImageView *)imageView {
+    [self.viewModel imageViewerForMessage:model fromImageView:imageView completion:^(UIViewController *imageViewer) {
+        [self presentViewController:imageViewer animated:YES completion:nil];
+    }];
 }
 @end

@@ -13,6 +13,7 @@
 #import "MVContactsListViewModel.h"
 #import "MVChatManager.h"
 #import "MVChatViewController.h"
+#import "MVChatViewModel.h"
 
 @interface MVContactsListSearchViewController () <UITableViewDataSource, UITableViewDelegate>
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
@@ -85,7 +86,8 @@
 }
 
 - (void)showChatViewWithChat:(MVChatModel *)chat {
-    MVChatViewController *chatVC = [MVChatViewController loadFromStoryboardWithChat:chat];
+    MVChatViewModel *viewModel = [[MVChatViewModel alloc] initWithChat:chat];
+    MVChatViewController *chatVC = [MVChatViewController loadFromStoryboardWithViewModel:viewModel];
     [self.presentingViewController.navigationController pushViewController:chatVC animated:YES];
 }
 @end
