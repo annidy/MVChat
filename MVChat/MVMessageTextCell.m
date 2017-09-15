@@ -29,7 +29,7 @@
 - (UILabel *)buildMessageLabel {
     UILabel *messageLabel = [UILabel new];
     messageLabel.numberOfLines = 0;
-    messageLabel.font = [UIFont systemFontOfSize:18];
+    messageLabel.font = [UIFont systemFontOfSize:17];
     messageLabel.translatesAutoresizingMaskIntoConstraints = NO;
     messageLabel.textColor = [UIColor darkTextColor];
     [messageLabel setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];

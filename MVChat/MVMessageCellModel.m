@@ -69,7 +69,7 @@ static UILabel *referenceMessageLabel;
 - (UILabel *)referenceMessageLabel {
     if (!referenceMessageLabel) {
         referenceMessageLabel = [UILabel new];
-        referenceMessageLabel.font = [UIFont systemFontOfSize:18];
+        referenceMessageLabel.font = [UIFont systemFontOfSize:17];
         referenceMessageLabel.numberOfLines = 0;
     }
     

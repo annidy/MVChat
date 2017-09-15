@@ -88,6 +88,15 @@
     self.messageTextFieldMask.layer.borderWidth = 1;
     self.messageTextFieldMask.layer.borderColor = [UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1].CGColor;
     self.messageTextFieldMask.layer.masksToBounds = YES;
+    
+    UITapGestureRecognizer *tapRecognizer = [UITapGestureRecognizer new];
+    [self.messageTextFieldMask addGestureRecognizer:tapRecognizer];
+    [self.messageTextFieldMask setUserInteractionEnabled:YES];
+    @weakify(self);
+    [tapRecognizer.rac_gestureSignal subscribeNext:^(UIGestureRecognizer *x) {
+        @strongify(self);
+        [self.messageTextField becomeFirstResponder];
+    }];
 }
 
 #pragma mark - Bind
@@ -227,7 +236,7 @@
         }]
         doNext:^(id  _Nullable x) {
             @strongify(self);
-            [self.view.superview.superview endEditing:YES];
+            [self.messageTextField resignFirstResponder];
         }]
         filter:^BOOL(MVMessageCellModel *model) {
             return model.type == MVMessageCellModelTypeMediaMessage;
@@ -367,7 +376,7 @@
 }
 
 - (IBAction)tableViewTapped:(id)sender {
-    [self.view.superview.superview endEditing:YES];
+    [self.messageTextField resignFirstResponder];
 }
 
 #pragma mark - Force touch
