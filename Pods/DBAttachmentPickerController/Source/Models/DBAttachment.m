@@ -217,7 +217,8 @@
             return;
         }
         
-        CGFloat height = 0;
+        CGFloat originalHeight = 0;
+        CGFloat originalWidth = 0;
         
         NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:NO] forKey:(NSString *)kCGImageSourceShouldCache];
         CFDictionaryRef properties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, (CFDictionaryRef)options);
@@ -225,15 +226,20 @@
         if (properties) {
             NSDictionary *pr = (__bridge NSDictionary *)properties;
             NSNumber *heightNum = [pr objectForKey:(NSString *)kCGImagePropertyPixelHeight];
+            NSNumber *widthNum = [pr objectForKey:(NSString *)kCGImagePropertyPixelWidth];
             if (heightNum) {
-                height = [heightNum floatValue];
+                originalHeight = [heightNum floatValue];
+            }
+            if (widthNum) {
+                originalWidth = [widthNum floatValue];
             }
             CFRelease(properties);
         }
         
         CGFloat scale = UIScreen.mainScreen.scale;
         CGFloat width = maxWidth * scale;
-        height = height * scale;
+        CGFloat transform = width / originalWidth;
+        CGFloat height = originalHeight * transform;
         
         NSDictionary *dict = @{(id)kCGImageSourceShouldAllowFloat:@YES, (id)kCGImageSourceCreateThumbnailWithTransform:@YES, (id)kCGImageSourceCreateThumbnailFromImageAlways:@YES, (id)kCGImageSourceThumbnailMaxPixelSize:@(MAX(width, height)/2)};
         CGImageRef imageRef = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, (CFDictionaryRef)dict);

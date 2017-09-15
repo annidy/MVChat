@@ -51,6 +51,8 @@
 #pragma mark - Setup views
 - (void)setupNavigationBar {
     self.navigationItem.title = self.viewModel.title;
+    self.avatarButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentFill;
+    self.avatarButton.contentVerticalAlignment = UIControlContentVerticalAlignmentFill;
     self.avatarButton.layer.cornerRadius = 15;
     self.avatarButton.layer.masksToBounds = YES;
     self.avatarButton.layer.borderWidth = 0.3f;
