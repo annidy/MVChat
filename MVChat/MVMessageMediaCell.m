@@ -35,7 +35,7 @@
 - (UIImageView *)buildMediaImageView {
     UIImageView *mediaImageView = [UIImageView new];
     mediaImageView.translatesAutoresizingMaskIntoConstraints = NO;
-    mediaImageView.layer.cornerRadius = 8;
+    mediaImageView.layer.cornerRadius = 14;
     mediaImageView.layer.masksToBounds = YES;
     mediaImageView.contentMode = UIViewContentModeScaleAspectFill;
     

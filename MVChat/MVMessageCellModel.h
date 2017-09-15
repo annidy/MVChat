@@ -31,13 +31,12 @@ typedef enum : NSUInteger {
 
 static CGFloat MVBubbleWidthMultiplierOutgoing = 0.8;
 static CGFloat MVBubbleWidthMultiplierIncoming = 0.7;
-static CGFloat MVBubbleVerticalOffsetDefault = 7;
-static CGFloat MVBubbleVerticalOffsetTailess = 2;
+static CGFloat MVBubbleVerticalOffsetDefault = 3;
+static CGFloat MVBubbleVerticalOffsetTailess = 0.5f;
 static CGFloat MVAvatarImageSide = 40;
 static CGFloat MVAvatarImageOffset = 5;
 static CGFloat MVBubbleDefaultHorizontalOffset = 10;
-static CGFloat MVBubbleMinSize = 36;
-static CGFloat MVBubbleMinTailessSize = 30;
+static CGFloat MVBubbleMinSize = 50;
 static CGFloat MVBubbleTailSize = 5;
 static CGFloat MVTextContentVerticalOffset = 6;
 static CGFloat MVTextContentHorizontalOffset = 9;

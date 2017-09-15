@@ -43,7 +43,6 @@
 - (CGSize)calculateBubbleSize {
     CGFloat bubbleHeight = [[self class] bubbleTopOffsetForTailType:self.tailType] + [[self class] bubbleBottomOffsetForTailType:self.tailType];
     CGFloat maxBubbleWidth = [[self class] screenWidth] * [[self class] bubbleWidthMultiplierForDirection:self.direction];
-    if (self.tailType == MVMessageCellTailTypeDefault || self.tailType == MVMessageCellTailTypeLastTailess) maxBubbleWidth += MVBubbleTailSize;
     
     CGFloat contentHorizontalOffset = [[self class] contentOffsetForMessageType:self.type tailType:self.tailType tailSide:YES] + [[self class] contentOffsetForMessageType:self.type tailType:self.tailType tailSide:NO];
     CGFloat maxContentWidth = maxBubbleWidth - contentHorizontalOffset;
@@ -59,27 +58,18 @@
     }
     
     CGFloat width = contentSize.width + contentHorizontalOffset;
-    CGFloat minWidth = [[self class] minBubbleWidthWithTailType:self.tailType];
-    if (width < minWidth) width = minWidth;
+    if (width < MVBubbleMinSize) width = MVBubbleMinSize;
 
     CGFloat height = contentSize.height + contentVerticalOffset + bubbleHeight;
     
     return CGSizeMake(width, height);
 }
 
-+ (CGFloat)minBubbleWidthWithTailType:(MVMessageCellTailType)tailType {
-    if (tailType == MVMessageCellTailTypeDefault || tailType == MVMessageCellTailTypeLastTailess) {
-        return MVBubbleMinSize;
-    } else {
-        return MVBubbleMinTailessSize;
-    }
-}
-
 static UILabel *referenceMessageLabel;
 - (UILabel *)referenceMessageLabel {
     if (!referenceMessageLabel) {
         referenceMessageLabel = [UILabel new];
-        referenceMessageLabel.font = [UIFont systemFontOfSize:17];
+        referenceMessageLabel.font = [UIFont systemFontOfSize:18];
         referenceMessageLabel.numberOfLines = 0;
     }
     
@@ -162,7 +152,7 @@ static UILabel *referencePlainLabel;
         defaultOffset = MVMediaContentHorizontalOffset;
     }
     
-    if (tailSide && (tailType == MVMessageCellTailTypeDefault || tailType == MVMessageCellTailTypeLastTailess)) {
+    if (tailSide) {
         defaultOffset += MVBubbleTailSize;
     }
     

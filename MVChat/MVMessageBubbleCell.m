@@ -12,6 +12,23 @@
 #import "MVFileManager.h"
 #import <ReactiveObjC.h>
 
+#define MVCacheBubbleImageDef(name, incoming, fileName) \
+    static UIImage *name() \
+    { \
+        static UIImage *image = nil; \
+        static dispatch_once_t onceToken; \
+        dispatch_once(&onceToken, ^ \
+        { \
+            image = [[UIImage imageNamed:fileName] stretchableImageWithLeftCapWidth:incoming ? 23 : (40 - 23) topCapHeight:16]; \
+        }); \
+        return image; \
+    }
+
+MVCacheBubbleImageDef(incomingImage, true, @"bubbleIncoming")
+MVCacheBubbleImageDef(incomingTaillessImage, true, @"bubbleIncomingTailless")
+MVCacheBubbleImageDef(outgoingImage, false, @"bubbleOutgoing")
+MVCacheBubbleImageDef(outgoingTaillessImage, false, @"bubbleOutgoingTailless")
+
 @interface MVMessageBubbleCell()
 @property (strong, nonatomic) NSLayoutConstraint *timeLeftConstraint;
 @property (strong, nonatomic) NSLayoutConstraint *bubbleWidthConstraint;
@@ -120,32 +137,19 @@
 }
 
 - (UIImage *)bubbleImage {
-    UIImage *bubbleImage;
-    UIEdgeInsets insets;
+    
     if (self.tailType == MVMessageCellTailTypeTailess || self.tailType == MVMessageCellTailTypeFirstTailess) {
         if (self.direction == MessageDirectionIncoming) {
-            bubbleImage = [UIImage imageNamed:@"bubbleNewIncomingTailess"];
+            return incomingTaillessImage();
         } else {
-            bubbleImage = [UIImage imageNamed:@"bubbleNewOutgoingTailess"];
+            return outgoingTaillessImage();
         }
         
-        insets = UIEdgeInsetsMake(6, 6, 6, 6);
     } else if (self.direction == MessageDirectionOutgoing) {
-        bubbleImage = [UIImage imageNamed:@"bubbleNewOutgoing"];
-        insets = UIEdgeInsetsMake(6, 6, 6, 11);
+        return outgoingImage();
     } else {
-        bubbleImage = [UIImage imageNamed:@"bubbleNewIncoming"];
-        insets = UIEdgeInsetsMake(6, 11, 6, 6);
+        return incomingImage();
     }
-    CGFloat scale = [UIScreen mainScreen].scale;
-    insets.top *= scale;
-    insets.left *= scale;
-    insets.right *= scale;
-    insets.bottom *= scale;
-    
-    bubbleImage = [[bubbleImage resizableImageWithCapInsets:insets resizingMode:UIImageResizingModeStretch] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-    
-    return bubbleImage;
 }
 
 #pragma mark - Offsets
@@ -162,20 +166,12 @@
 }
 
 - (CGFloat)bubbleHorizontalOffset {
-    CGFloat margin = 0;
     if (self.direction == MessageDirectionIncoming) {
-        margin = MVAvatarImageSide + 2 * MVAvatarImageOffset;
+        return MVAvatarImageSide + 2 * MVAvatarImageOffset;
     } else {
-        margin = MVBubbleDefaultHorizontalOffset;
+        return MVBubbleDefaultHorizontalOffset;
     }
-    
-    if (self.tailType == MVMessageCellTailTypeDefault || self.tailType == MVMessageCellTailTypeLastTailess) {
-        margin -= MVBubbleTailSize;
-    }
-    
-    return margin;
 }
-
 
 #pragma mark - MVSlidingCell protocol
 - (void)setSlidingConstraint:(CGFloat)constant {
@@ -197,7 +193,6 @@
         @strongify(self);
         self.bubbleWidthConstraint.constant = width.floatValue;
     }];
-    
     
     if (self.direction == MessageDirectionIncoming) {
         RAC(self.avatarImage, image) = [RACObserve(self.model, avatar) takeUntil:self.rac_prepareForReuseSignal];
