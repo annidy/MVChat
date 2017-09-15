@@ -128,10 +128,18 @@
             [self.navigationController pushViewController:viewController animated:YES];
         }];
 
+
     __block BOOL processingNewPage;
     __block BOOL autoscroll = YES;
     __block NSValue *oldSize;
     __block BOOL keyboardShown = NO;
+    
+    [[[[NSNotificationCenter defaultCenter] rac_addObserverForName:UIDeviceOrientationDidChangeNotification object:nil] delay:0.3] subscribeNext:^(NSNotification * _Nullable x) {
+        @strongify(self);
+        processingNewPage = YES;
+        [self.viewModel recalculateHeights];
+        [self.messagesTableView reloadData];
+    }];
     
     [[[[NSNotificationCenter defaultCenter] rac_addObserverForName:UIKeyboardWillShowNotification object:nil]
         filter:^BOOL(NSNotification *value) {

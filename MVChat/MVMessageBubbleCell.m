@@ -190,7 +190,14 @@
 - (void)fillWithModel:(MVMessageCellModel *)model {
     self.model = model;
     self.timeLabel.text = model.sendDateString;
-    self.bubbleWidthConstraint.constant = model.width;
+    
+    self.bubbleWidthConstraint.constant = self.model.width;
+    @weakify(self);
+    [[[RACObserve(model, width) distinctUntilChanged] takeUntil:self.rac_prepareForReuseSignal] subscribeNext:^(NSNumber *width) {
+        @strongify(self);
+        self.bubbleWidthConstraint.constant = width.floatValue;
+    }];
+    
     
     if (self.direction == MessageDirectionIncoming) {
         RAC(self.avatarImage, image) = [RACObserve(self.model, avatar) takeUntil:self.rac_prepareForReuseSignal];

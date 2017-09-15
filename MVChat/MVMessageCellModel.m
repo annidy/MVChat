@@ -29,7 +29,7 @@
 }
 
 - (CGSize)calculatePlainSize {
-    CGFloat maxWidth = UIScreen.mainScreen.bounds.size.width - 2 * (MVPlainCellContainerHorizontalOffset + MVPlainCellContentHorizontalOffset);
+    CGFloat maxWidth = [[self class] screenWidth] - 2 * (MVPlainCellContainerHorizontalOffset + MVPlainCellContentHorizontalOffset);
     
     CGFloat contentVerticalOffset = 2 * (MVPlainCellContentVerticalOffset + MVPlainCellContainerVerticalOffset);
     CGSize contentSize = [self plainHeightWithMaxWidth:maxWidth];
@@ -42,7 +42,7 @@
 
 - (CGSize)calculateBubbleSize {
     CGFloat bubbleHeight = [[self class] bubbleTopOffsetForTailType:self.tailType] + [[self class] bubbleBottomOffsetForTailType:self.tailType];
-    CGFloat maxBubbleWidth = UIScreen.mainScreen.bounds.size.width * [[self class] bubbleWidthMultiplierForDirection:self.direction];
+    CGFloat maxBubbleWidth = [[self class] screenWidth] * [[self class] bubbleWidthMultiplierForDirection:self.direction];
     if (self.tailType == MVMessageCellTailTypeDefault || self.tailType == MVMessageCellTailTypeLastTailess) maxBubbleWidth += MVBubbleTailSize;
     
     CGFloat contentHorizontalOffset = [[self class] contentOffsetForMessageType:self.type tailType:self.tailType tailSide:YES] + [[self class] contentOffsetForMessageType:self.type tailType:self.tailType tailSide:NO];
@@ -189,6 +189,14 @@ static UILabel *referencePlainLabel;
     }
 }
 
++ (CGFloat)screenWidth {
+    return UIScreen.mainScreen.bounds.size.width;
+//    if (UIDeviceOrientationIsPortrait([UIDevice currentDevice].orientation)) {
+//        return UIScreen.mainScreen.bounds.size.width;
+//    } else {
+//        return UIScreen.mainScreen.bounds.size.height;
+//    }
+}
 #pragma mark - Helpers
 - (NSString *)cellId {
     if (!_cellId) {

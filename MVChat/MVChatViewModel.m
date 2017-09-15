@@ -120,26 +120,26 @@
     MVMessageModel *beforeLastLoadedMessage = [messages optionalObjectAtIndex:2].message;
     RACTuple *firstTuple = RACTuplePack(beforeLastLoadedMessage, lastLoadedMessage);
     
-    
     //Here we iterate models array using 4-spaced RACTuple (previousModel, currentModel, nextModel, index) where index corresponds to currentModel index in the array
     RACSignal *modelsSignal =
     [[[models.rac_sequence
-       scanWithStart:firstTuple reduceWithIndex:^id (RACTuple *running, MVMessageModel *next, NSUInteger index) {
-           if (index == 0) {
-               return RACTuplePack(running.first, running.second, next, @(index));
-           } else {
-               return RACTuplePack(running.second, running.third, next, @(index));
-           }
+        scanWithStart:firstTuple reduceWithIndex:^id (RACTuple *running, MVMessageModel *next, NSUInteger index) {
+            if (index == 0) {
+                return RACTuplePack(running.first, running.second, next, @(index));
+            } else {
+                return RACTuplePack(running.second, running.third, next, @(index));
+            }
            
-       }]
-      map:^id (RACTuple *tuple) {
-          return RACTuplePack(messages, tuple.first, tuple.second, tuple.third, tuple.fourth);
-      }]
-     signalWithScheduler:[RACScheduler mainThreadScheduler]];
+        }]
+        map:^id (RACTuple *tuple) {
+            return RACTuplePack(messages, tuple.first, tuple.second, tuple.third, tuple.fourth);
+        }]
+        signalWithScheduler:[RACScheduler mainThreadScheduler]];
     
     
     @weakify(self);
-    void (^processMessage)(MVMessageModel *, MVMessageModel *,  MVMessageModel *, NSMutableArray <MVMessageCellModel *> *) = ^void (MVMessageModel *previous, MVMessageModel *current, MVMessageModel *next, NSMutableArray <MVMessageCellModel *> *rows) {
+    void (^processMessage)(MVMessageModel *, MVMessageModel *,  MVMessageModel *, NSMutableArray <MVMessageCellModel *> *) =
+    ^void (MVMessageModel *previous, MVMessageModel *current, MVMessageModel *next, NSMutableArray <MVMessageCellModel *> *rows) {
         @strongify(self);
         NSString *sectionKey = [self headerTitleFromMessage:current processingPage:YES];
         MVMessageCellModel *viewModel = [self viewModelForMessage:current previousMessage:previous nextMessage:next];
@@ -168,7 +168,6 @@
         if (idx.integerValue == models.count - 1) {
             processMessage(nil, previousModel, currentModel, rows);
         }
-        
     } completed:^{
         @strongify(self);
         self.messages = [messages mutableCopy];
@@ -256,7 +255,7 @@
     
     viewModel.sendDateString = [NSString messageTimeFromDate:message.sendDate];
     
-    [viewModel calculateHeight];
+    [viewModel calculateSize];
     
     if (message.direction == MessageDirectionIncoming) {
         [[MVFileManager sharedInstance] loadThumbnailAvatarForContact:message.contact maxWidth:50 completion:^(UIImage *image) {
@@ -290,7 +289,7 @@
     MVMessageCellModel *viewModel = [MVMessageCellModel new];
     viewModel.text = section;
     viewModel.type = MVMessageCellModelTypeHeader;
-    [viewModel calculateHeight];
+    [viewModel calculateSize];
     
     return viewModel;
 }
@@ -365,6 +364,11 @@ static NSDateFormatter *dateFormatter;
     return NO;
 }
 
+- (void)recalculateHeights {
+    for (MVMessageCellModel *model in self.messages) {
+        [model calculateSize];
+    }
+}
 #pragma mark - Send command
 - (RACSignal *)sendCommandSignal {
     @weakify(self);

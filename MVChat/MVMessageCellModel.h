@@ -60,7 +60,7 @@ static CGFloat MVPlainCellContentVerticalOffset = 3;
 @property (strong, nonatomic) NSString *sendDateString;
 @property (strong, nonatomic) UIImage *avatar;
 @property (strong, nonatomic) UIImage *mediaImage;
-- (void)calculateHeight;
+- (void)calculateSize;
 - (NSString *)cellId;
 
 + (CGFloat)bubbleWidthMultiplierForDirection:(MVMessageCellModelDirection)direction;

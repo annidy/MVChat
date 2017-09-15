@@ -29,4 +29,5 @@
 - (UIViewController *)relevantSettingsController;
 - (UIViewController *)attachmentPicker;
 - (void)imageViewerForMessage:(MVMessageCellModel *)model fromImageView:(UIImageView *)imageView completion:(void (^)(UIViewController *))completion;
+- (void)recalculateHeights;
 @end
