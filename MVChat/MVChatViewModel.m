@@ -29,6 +29,7 @@
 @property (assign, nonatomic) BOOL initialLoadComplete;
 @property (assign, nonatomic) BOOL hasUnreadMessages;
 @property (assign, nonatomic) NSInteger loadedPageIndex;
+@property (assign, nonatomic) NSInteger numberOfProcessedMessages;
 @property (strong, nonatomic) RACSubject *updateSubject;
 @property (strong, nonatomic) MVChatModel *chat;
 @end
@@ -107,6 +108,7 @@
             [self handleNewMessagesPage:messages];
             self.processingMessages = NO;
             self.initialLoadComplete = YES;
+            self.numberOfProcessedMessages += messages.count;
         }];
     }
 }
@@ -182,6 +184,10 @@
 - (void)insertNewMessage:(MVMessageModel *)message {
     self.processingMessages = YES;
     [self handleNewMessage:message];
+    self.numberOfProcessedMessages ++;
+    if (self.numberOfProcessedMessages % MVMessagesPageSize == 0) {
+        self.loadedPageIndex++;
+    }
     self.processingMessages = NO;
 }
 
