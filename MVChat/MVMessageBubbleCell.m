@@ -14,6 +14,7 @@
 
 @interface MVMessageBubbleCell()
 @property (strong, nonatomic) NSLayoutConstraint *timeLeftConstraint;
+@property (strong, nonatomic) NSLayoutConstraint *bubbleWidthConstraint;
 @property (strong, nonatomic) UIImageView *avatarImage;
 @property (strong, nonatomic) UITapGestureRecognizer *tapRecognizer;
 @end
@@ -45,16 +46,8 @@
     
     [self.contentView addSubview:self.bubbleImageView];
     [self.contentView addSubview:self.timeLabel];
-    
-    if (self.tailType == MVMessageCellTailTypeDefault || self.tailType == MVMessageCellTailTypeLastTailess) {
-        [[self.bubbleImageView.widthAnchor constraintLessThanOrEqualToAnchor:self.contentView.widthAnchor multiplier:[self bubbleWidthMultiplier] constant:MVBubbleTailSize] setActive:YES];
-    } else {
-        [[self.bubbleImageView.widthAnchor constraintLessThanOrEqualToAnchor:self.contentView.widthAnchor multiplier:[self bubbleWidthMultiplier]] setActive:YES];
-    }
-    
-    CGFloat minBubbleWidth = (self.tailType == MVMessageCellTailTypeTailess || self.tailType == MVMessageCellTailTypeFirstTailess)? MVBubbleMinTailessSize : MVBubbleMinSize;
-    [[self.bubbleImageView.widthAnchor constraintGreaterThanOrEqualToConstant:minBubbleWidth] setActive:YES];
-    
+        
+    [self.bubbleWidthConstraint = [self.bubbleImageView.widthAnchor constraintEqualToConstant:100] setActive:YES];
     [[self.bubbleImageView.topAnchor constraintEqualToAnchor:self.contentView.topAnchor constant:[self bubbleTopOffset]] setActive:YES];
     [[self.bubbleImageView.bottomAnchor constraintEqualToAnchor:self.contentView.bottomAnchor constant:-[self bubbleBottomOffset]] setActive:YES];
     
@@ -197,6 +190,7 @@
 - (void)fillWithModel:(MVMessageCellModel *)model {
     self.model = model;
     self.timeLabel.text = model.sendDateString;
+    self.bubbleWidthConstraint.constant = model.width;
     
     if (self.direction == MessageDirectionIncoming) {
         RAC(self.avatarImage, image) = [RACObserve(self.model, avatar) takeUntil:self.rac_prepareForReuseSignal];

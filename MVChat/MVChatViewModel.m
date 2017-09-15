@@ -256,6 +256,8 @@
     
     viewModel.sendDateString = [NSString messageTimeFromDate:message.sendDate];
     
+    [viewModel calculateHeight];
+    
     if (message.direction == MessageDirectionIncoming) {
         [[MVFileManager sharedInstance] loadThumbnailAvatarForContact:message.contact maxWidth:50 completion:^(UIImage *image) {
             viewModel.avatar = image;
@@ -273,12 +275,12 @@
         //TODO: calculate width?
         //CGFloat maxContentWidth = [MVMessageCellModel maxContentWidthWithDirection:messageModel.direction] - MVMediaContentHorizontalOffset * 2 - MVBubbleTailSize;
         
-        [[MVFileManager sharedInstance] loadThumbnailAttachmentForMessage:message maxWidth:200 completion:^(UIImage *image) {
+        [[MVFileManager sharedInstance] loadThumbnailAttachmentForMessage:message maxWidth:viewModel.width completion:^(UIImage *image) {
             viewModel.mediaImage = image;
         }];
     }
     
-    [viewModel calculateHeight];
+    
     
     
     return viewModel;

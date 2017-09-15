@@ -8,6 +8,7 @@
 
 #import "MVMessageCellModel.h"
 #import "MVFileManager.h"
+#import <AVFoundation/AVFoundation.h>
 
 @interface MVMessageCellModel()
 @property (strong, nonatomic) NSString *cellId;
@@ -15,42 +16,63 @@
 
 @implementation MVMessageCellModel
 #pragma mark - Height calculation
-- (void)calculateHeight {
+- (void)calculateSize {
+    CGSize size;
     if (self.type == MVMessageCellModelTypeTextMessage || self.type == MVMessageCellModelTypeMediaMessage) {
-        [self calculateComplexHeight];
+        size = [self calculateBubbleSize];
     } else {
-        [self calculateSimpleHeight];
-    }
-}
-
-- (void)calculateSimpleHeight {
-    CGFloat width = UIScreen.mainScreen.bounds.size.width - 2 * (MVPlainCellContainerHorizontalOffset + MVPlainCellContentHorizontalOffset);
-    CGFloat height = 2 * (MVPlainCellContentVerticalOffset + MVPlainCellContainerVerticalOffset);
-    height += [self plainHeightWithMaxWidth:width];
-    self.height = height;
-}
-
-- (void)calculateComplexHeight {
-    CGFloat width = UIScreen.mainScreen.bounds.size.width * [[self class] bubbleWidthMultiplierForDirection:self.direction];
-    
-    if (self.tailType == MVMessageCellTailTypeDefault || self.tailType == MVMessageCellTailTypeLastTailess) {
-        width += MVBubbleTailSize;
+        size = [self calculatePlainSize];
     }
     
-    width -= [[self class] contentOffsetForMessageType:self.type tailType:self.tailType tailSide:YES];
-    width -= [[self class] contentOffsetForMessageType:self.type tailType:self.tailType tailSide:NO];
+    self.width = size.width;
+    self.height = size.height;
+}
+
+- (CGSize)calculatePlainSize {
+    CGFloat maxWidth = UIScreen.mainScreen.bounds.size.width - 2 * (MVPlainCellContainerHorizontalOffset + MVPlainCellContentHorizontalOffset);
     
-    CGFloat height = [[self class] bubbleTopOffsetForTailType:self.tailType] + [[self class] bubbleBottomOffsetForTailType:self.tailType];
+    CGFloat contentVerticalOffset = 2 * (MVPlainCellContentVerticalOffset + MVPlainCellContainerVerticalOffset);
+    CGSize contentSize = [self plainHeightWithMaxWidth:maxWidth];
     
+    CGFloat height = contentSize.height + contentVerticalOffset;
+    CGFloat width = contentSize.width + 2 * MVPlainCellContentHorizontalOffset;
+    
+    return CGSizeMake(width, height);
+}
+
+- (CGSize)calculateBubbleSize {
+    CGFloat bubbleHeight = [[self class] bubbleTopOffsetForTailType:self.tailType] + [[self class] bubbleBottomOffsetForTailType:self.tailType];
+    CGFloat maxBubbleWidth = UIScreen.mainScreen.bounds.size.width * [[self class] bubbleWidthMultiplierForDirection:self.direction];
+    if (self.tailType == MVMessageCellTailTypeDefault || self.tailType == MVMessageCellTailTypeLastTailess) maxBubbleWidth += MVBubbleTailSize;
+    
+    CGFloat contentHorizontalOffset = [[self class] contentOffsetForMessageType:self.type tailType:self.tailType tailSide:YES] + [[self class] contentOffsetForMessageType:self.type tailType:self.tailType tailSide:NO];
+    CGFloat maxContentWidth = maxBubbleWidth - contentHorizontalOffset;
+    
+    CGFloat contentVerticalOffset = 0;
+    CGSize contentSize;
     if (self.type == MVMessageCellModelTypeTextMessage) {
-        height += 2 * MVTextContentVerticalOffset;
-        height += [self textHeightWithMaxWidth:width];
+        contentSize = [self textHeightWithMaxWidth:maxContentWidth];
+        contentVerticalOffset += 2 * MVTextContentVerticalOffset;
     } else if (self.type == MVMessageCellModelTypeMediaMessage) {
-        height += [self mediaHeightWithMaxWidth:width];
-        height += 2 * MVMediaContentVerticalOffset;
+        contentSize = [self mediaHeightWithMaxWidth:maxContentWidth];
+        contentVerticalOffset += 2 * MVMediaContentVerticalOffset;
     }
     
-    self.height = height;
+    CGFloat width = contentSize.width + contentHorizontalOffset;
+    CGFloat minWidth = [[self class] minBubbleWidthWithTailType:self.tailType];
+    if (width < minWidth) width = minWidth;
+
+    CGFloat height = contentSize.height + contentVerticalOffset + bubbleHeight;
+    
+    return CGSizeMake(width, height);
+}
+
++ (CGFloat)minBubbleWidthWithTailType:(MVMessageCellTailType)tailType {
+    if (tailType == MVMessageCellTailTypeDefault || tailType == MVMessageCellTailTypeLastTailess) {
+        return MVBubbleMinSize;
+    } else {
+        return MVBubbleMinTailessSize;
+    }
 }
 
 static UILabel *referenceMessageLabel;
@@ -64,12 +86,13 @@ static UILabel *referenceMessageLabel;
     return referenceMessageLabel;
 }
 
-- (CGFloat)textHeightWithMaxWidth:(CGFloat)maxWidth {
+- (CGSize)textHeightWithMaxWidth:(CGFloat)maxWidth {
     [self.referenceMessageLabel setText:self.text];
-    return [self.referenceMessageLabel sizeThatFits:CGSizeMake(maxWidth, CGFLOAT_MAX)].height;
+    return [self.referenceMessageLabel sizeThatFits:CGSizeMake(maxWidth, CGFLOAT_MAX)];
 }
 
-- (CGFloat)mediaHeightWithMaxWidth:(CGFloat)maxWidth {
+- (CGSize)mediaHeightWithMaxWidth:(CGFloat)maxWidth {
+    CGFloat maxHeight = 200;
     CGSize actualSize = [[MVFileManager sharedInstance] sizeOfAttachmentForMessage:self.message];
     CGSize scaledSize;
     if (maxWidth > actualSize.width) {
@@ -81,12 +104,15 @@ static UILabel *referenceMessageLabel;
         scaledSize.height = actualSize.height * scale;
     }
     
-    return scaledSize.height;
+    return  AVMakeRectWithAspectRatioInsideRect(actualSize, CGRectMake(0, 0, maxWidth, maxHeight)).size;
+    
+    
+    //return scaledSize.height;
 }
 
-- (CGFloat)plainHeightWithMaxWidth:(CGFloat)maxWidth {
+- (CGSize)plainHeightWithMaxWidth:(CGFloat)maxWidth {
     [self.referencePlainLabel setText:self.text];
-    return [self.referencePlainLabel sizeThatFits:CGSizeMake(maxWidth, CGFLOAT_MAX)].height;
+    return [self.referencePlainLabel sizeThatFits:CGSizeMake(maxWidth, CGFLOAT_MAX)];
 }
 
 static UILabel *referencePlainLabel;
