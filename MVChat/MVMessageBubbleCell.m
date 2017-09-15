@@ -137,7 +137,6 @@ MVCacheBubbleImageDef(outgoingTaillessImage, false, @"bubbleOutgoingTailless")
 }
 
 - (UIImage *)bubbleImage {
-    
     if (self.tailType == MVMessageCellTailTypeTailess || self.tailType == MVMessageCellTailTypeFirstTailess) {
         if (self.direction == MessageDirectionIncoming) {
             return incomingTaillessImage();
@@ -167,7 +166,7 @@ MVCacheBubbleImageDef(outgoingTaillessImage, false, @"bubbleOutgoingTailless")
 
 - (CGFloat)bubbleHorizontalOffset {
     if (self.direction == MessageDirectionIncoming) {
-        return MVAvatarImageSide + 2 * MVAvatarImageOffset;
+        return MVAvatarImageSide + 2 * MVAvatarImageOffset - MVBubbleTailSize;
     } else {
         return MVBubbleDefaultHorizontalOffset;
     }
