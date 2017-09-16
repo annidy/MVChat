@@ -138,7 +138,7 @@
         }];
 
 
-    __block BOOL processingNewPage;
+    __block BOOL processingNewPage = YES;
     __block BOOL autoscroll = YES;
     __block NSValue *oldSize;
     __block BOOL keyboardShown = NO;

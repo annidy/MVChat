@@ -27,11 +27,13 @@
 @interface MVChatViewModel() <MVMessagesUpdatesListener>
 @property (assign, nonatomic) BOOL processingMessages;
 @property (assign, nonatomic) BOOL initialLoadComplete;
-@property (assign, nonatomic) BOOL hasUnreadMessages;
 @property (assign, nonatomic) NSInteger loadedPageIndex;
 @property (assign, nonatomic) NSInteger numberOfProcessedMessages;
 @property (strong, nonatomic) RACSubject *updateSubject;
 @property (strong, nonatomic) MVChatModel *chat;
+@property (strong, nonatomic) RACScheduler *scheduler;
+@property (strong, nonatomic) dispatch_queue_t queue;
+@property (nonatomic, copy) BOOL (^insertMessage)(MVMessageModel *, MVMessageModel *,  MVMessageModel *, NSMutableArray <MVMessageCellModel *> *, BOOL);
 @end
 
 @implementation MVChatViewModel
@@ -43,8 +45,38 @@
         _chat = chat;
         _messages = [NSMutableArray new];
         _updateSubject = [RACSubject subject];
-        [self setupAll];
+        _scheduler = [MVChatManager sharedInstance].viewModelScheduler;
+        _queue = [MVChatManager sharedInstance].viewModelQueue;
+        _chatId = chat.id;
+        _updateSignal = [_updateSubject deliverOnMainThread];
+        
+        @weakify(self);
+        self.insertMessage = ^BOOL (MVMessageModel *previous, MVMessageModel *current, MVMessageModel *next, NSMutableArray <MVMessageCellModel *> *rows, BOOL reverse) {
+            @strongify(self);
+            if (previous && !previous.read && !reverse) {
+                current.read = NO;
+            }
+            
+            NSString *sectionKey = [self headerTitleFromMessage:current];
+            NSString *previousSectionKey = [self headerTitleFromMessage:previous];
+            MVMessageCellModel *viewModel = [self viewModelForMessage:current previousMessage:previous nextMessage:next];
+            MVMessageCellModel *headerViewModel = [self viewModelForSection:sectionKey];
+            BOOL shouldInsertHeader = ![previousSectionKey isEqualToString:sectionKey];
+            
+            NSInteger messageIndex = reverse? 0 : rows.count;
+            NSInteger headerIndex = reverse? 0 : rows.count;
+            
+            [rows insertObject:viewModel atIndex:messageIndex];
+            if (shouldInsertHeader) {
+                [rows insertObject:headerViewModel atIndex:headerIndex];
+            }
+            
+            return shouldInsertHeader;
+        };
+        
         [self tryToLoadNextPage];
+        [self setupAll];
+        
     }
     
     return self;
@@ -53,9 +85,7 @@
 - (void)setupAll {
     MVChatManager.sharedInstance.messagesListener = self;
     self.title = self.chat.title;
-    self.chatId = self.chat.id;
     self.chatParticipants = self.chat.participants;
-    self.updateSignal = self.updateSubject;
     
     [[MVFileManager sharedInstance] loadThumbnailAvatarForChat:self.chat maxWidth:50 completion:^(UIImage *image) {
         self.avatar = image;
@@ -99,16 +129,12 @@
         return;
     }
     
-    NSInteger numberOfPages = [[MVChatManager sharedInstance] numberOfPagesInChatWithId:self.chatId];
-    BOOL shouldLoad = (numberOfPages > self.loadedPageIndex + 1) || (numberOfPages == 0 && !self.initialLoadComplete);
+    BOOL shouldLoad = (!self.initialLoadComplete || ([[MVChatManager sharedInstance] numberOfPagesInChatWithId:self.chatId]) > self.loadedPageIndex + 1);
     
     if (shouldLoad) {
         self.processingMessages = YES;
         [[MVChatManager sharedInstance] messagesPage:++self.loadedPageIndex forChatWithId:self.chatId withCallback:^(NSArray<MVMessageModel *> *messages) {
             [self handleNewMessagesPage:messages];
-            self.processingMessages = NO;
-            self.initialLoadComplete = YES;
-            self.numberOfProcessedMessages += messages.count;
         }];
     }
 }
@@ -120,9 +146,8 @@
     MVMessageModel *beforeLastLoadedMessage = [messages optionalObjectAtIndex:2].message;
     RACTuple *firstTuple = RACTuplePack(beforeLastLoadedMessage, lastLoadedMessage);
     
-    //Here we iterate models array using 4-spaced RACTuple (previousModel, currentModel, nextModel, index) where index corresponds to currentModel index in the array
-    RACSignal *modelsSignal =
-    [[[models.rac_sequence
+    @weakify(self);
+    [[[[models.rac_sequence
         scanWithStart:firstTuple reduceWithIndex:^id (RACTuple *running, MVMessageModel *next, NSUInteger index) {
             if (index == 0) {
                 return RACTuplePack(running.first, running.second, next, @(index));
@@ -134,46 +159,32 @@
         map:^id (RACTuple *tuple) {
             return RACTuplePack(messages, tuple.first, tuple.second, tuple.third, tuple.fourth);
         }]
-        signalWithScheduler:[RACScheduler mainThreadScheduler]];
-    
-    
-    @weakify(self);
-    void (^processMessage)(MVMessageModel *, MVMessageModel *,  MVMessageModel *, NSMutableArray <MVMessageCellModel *> *) =
-    ^void (MVMessageModel *previous, MVMessageModel *current, MVMessageModel *next, NSMutableArray <MVMessageCellModel *> *rows) {
-        @strongify(self);
-        NSString *sectionKey = [self headerTitleFromMessage:current processingPage:YES];
-        MVMessageCellModel *viewModel = [self viewModelForMessage:current previousMessage:previous nextMessage:next];
-        [rows insertObject:viewModel atIndex:0];
-        
-        if (!previous || ![[self headerTitleFromMessage:previous processingPage:YES] isEqualToString:sectionKey]) {
-            [rows insertObject:[self viewModelForSection:sectionKey] atIndex:0];
-            if ([sectionKey isEqualToString:@"New Messages"]) {
-                self.hasUnreadMessages = YES;
+        signalWithScheduler:self.scheduler]
+        subscribeNext:^(RACTuple *tuple) {
+            RACTupleUnpack(NSMutableArray <MVMessageCellModel *> *rows, MVMessageModel *nextModel, MVMessageModel *currentModel, MVMessageModel *previousModel, NSNumber *idx) = tuple;
+            @strongify(self);
+            
+            if (idx.integerValue == 0 && currentModel) {
+                [rows removeObjectAtIndex:0];
+                [rows removeObjectAtIndex:0];
             }
-        }
-    };
-    
-    
-    [modelsSignal subscribeNext:^(RACTuple *tuple) {
-        RACTupleUnpack(NSMutableArray <MVMessageCellModel *> *rows, MVMessageModel *nextModel, MVMessageModel *currentModel, MVMessageModel *previousModel, NSNumber *idx) = tuple;
-        if (idx.integerValue == 0 && currentModel) {
-            [rows removeObjectAtIndex:0];
-            [rows removeObjectAtIndex:0];
-        }
         
-        if (currentModel) {
-            processMessage(previousModel, currentModel, nextModel, rows);
-        }
-        
-        if (idx.integerValue == models.count - 1) {
-            processMessage(nil, previousModel, currentModel, rows);
-        }
-    } completed:^{
-        @strongify(self);
-        self.messages = [messages mutableCopy];
-        MVMessagesListUpdate *update = [[MVMessagesListUpdate alloc] initWithType:MVMessagesListUpdateTypeReloadAll indexPath:nil];
-        [self.updateSubject sendNext:update];
-    }];
+            if (currentModel) {
+                self.insertMessage(previousModel, currentModel, nextModel, rows, YES);
+            }
+            
+            if (idx.integerValue == models.count - 1) {
+                self.insertMessage(nil, previousModel, currentModel, rows, YES);
+            }
+        } completed:^{
+            @strongify(self);
+            self.messages = [messages mutableCopy];
+            self.processingMessages = NO;
+            self.initialLoadComplete = YES;
+            self.numberOfProcessedMessages += messages.count;
+            MVMessagesListUpdate *update = [[MVMessagesListUpdate alloc] initWithType:MVMessagesListUpdateTypeReloadAll indexPath:nil];
+            [self.updateSubject sendNext:update];
+        }];
 }
 
 - (void)updateMessage:(MVMessageModel *)message {
@@ -181,46 +192,39 @@
 }
 
 - (void)insertNewMessage:(MVMessageModel *)message {
-    self.processingMessages = YES;
-    [self handleNewMessage:message];
-    self.numberOfProcessedMessages ++;
-    if (self.numberOfProcessedMessages % MVMessagesPageSize == 0) {
-        self.loadedPageIndex++;
-    }
-    self.processingMessages = NO;
+    dispatch_async(self.queue, ^{
+        self.processingMessages = YES;
+        [self handleNewMessage:message];
+        self.numberOfProcessedMessages ++;
+        if (self.numberOfProcessedMessages % MVMessagesPageSize == 0) {
+            self.loadedPageIndex++;
+        }
+        self.processingMessages = NO;
+    });
 }
 
 - (void)handleNewMessage:(MVMessageModel *)message {
     NSMutableArray <MVMessageCellModel *> *rows = [self.messages mutableCopy];
+    MVMessageCellModel *previousModel = rows.optionalLastObject;
     
-    MVMessageModel *optionalPreviousMessage = rows.optionalLastObject.message;
-    MVMessageModel *previousMessage;
-    NSString *header = self.hasUnreadMessages? @"New Messages" : [self headerTitleFromMessage:message processingPage:NO];
-    MVMessageCellModel *headerModel;
-    if (!self.hasUnreadMessages && ![header isEqualToString:[self headerTitleFromMessage:optionalPreviousMessage processingPage:NO]]) {
-        headerModel = [self viewModelForSection:header];
-        [rows addObject:headerModel];
-    } else if ([self messageModel:message hasEqualDirectionAndTypeWith:optionalPreviousMessage]){
-        previousMessage = optionalPreviousMessage;
-    }
-    
-    if (previousMessage) {
+    BOOL reloadPrevious = NO;
+    if (previousModel.message && [self messageModel:previousModel.message hasEqualDirectionAndTypeWith:message]) {
         MVMessageModel *beforeLastMessage = [rows optionalObjectAtIndex:rows.count - 2].message;
-        MVMessageCellModel *updatedModel = [self viewModelForMessage:previousMessage previousMessage:beforeLastMessage nextMessage:message];
-        [rows replaceObjectAtIndex:rows.count - 1 withObject:updatedModel];
+        MVMessageCellModel *updatedModel = [self viewModelForMessage:previousModel.message previousMessage:beforeLastMessage nextMessage:message];
+        if (updatedModel.tailType != previousModel.tailType) {
+            [rows replaceObjectAtIndex:rows.count - 1 withObject:updatedModel];
+            reloadPrevious = YES;
+        }
     }
     
-    MVMessageCellModel *viewModel = [self viewModelForMessage:message previousMessage:previousMessage nextMessage:nil];
-    [rows addObject:viewModel];
-    
+    BOOL insertHeader = self.insertMessage(previousModel.message, message, nil, rows, NO);
     self.messages = [rows mutableCopy];
     
     NSIndexPath *insertPath = [NSIndexPath indexPathForRow:rows.count - 1 inSection:0];
     MVMessagesListUpdate *insert = [[MVMessagesListUpdate alloc] initWithType:MVMessagesListUpdateTypeInsertRow indexPath:insertPath];
     
-    if (previousMessage) insert.shouldReloadPrevious = YES;
-    
-    if (headerModel) insert.shouldInsertHeader = YES;
+    insert.shouldReloadPrevious = reloadPrevious;
+    insert.shouldInsertHeader = insertHeader;
     
     [self.updateSubject sendNext:insert];
 }
@@ -270,10 +274,6 @@
     }
     
     if (message.type == MVMessageTypeMedia) {
-        //TODO: Improve
-        //TODO: calculate width?
-        //CGFloat maxContentWidth = [MVMessageCellModel maxContentWidthWithDirection:messageModel.direction] - MVMediaContentHorizontalOffset * 2 - MVBubbleTailSize;
-        
         [[MVFileManager sharedInstance] loadThumbnailAttachmentForMessage:message maxWidth:viewModel.width completion:^(UIImage *image) {
             viewModel.mediaImage = image;
         }];
@@ -342,7 +342,11 @@
 }
 
 static NSDateFormatter *dateFormatter;
-- (NSString *)headerTitleFromMessage:(MVMessageModel *)message processingPage:(BOOL)processingPage {
+- (NSString *)headerTitleFromMessage:(MVMessageModel *)message {
+    if (!message) {
+        return nil;
+    }
+    
     if (!dateFormatter) {
         dateFormatter = [NSDateFormatter new];
         dateFormatter.timeStyle = NSDateFormatterNoStyle;
@@ -350,7 +354,7 @@ static NSDateFormatter *dateFormatter;
         dateFormatter.doesRelativeDateFormatting = YES;
     }
     
-    if (processingPage && !message.read) {
+    if (!message.read) {
         return @"New Messages";
     } else {
         return [dateFormatter stringFromDate:message.sendDate];

@@ -15,13 +15,17 @@
 @class MVContactModel;
 @class UIImage;
 @class DBAttachment;
+@class RACScheduler;
 
-static NSUInteger MVMessagesPageSize = 15;
+static NSUInteger MVMessagesPageSize = 10;
 
 @interface MVChatManager : NSObject
 #pragma mark - Listeners
 @property (weak, nonatomic) id <MVMessagesUpdatesListener> messagesListener;
 @property (weak, nonatomic) id <MVChatsUpdatesListener> chatsListener;
+
+@property (strong, nonatomic) RACScheduler *viewModelScheduler;
+@property (strong, nonatomic) dispatch_queue_t viewModelQueue;
 
 #pragma mark - Initialization
 + (instancetype) sharedInstance;

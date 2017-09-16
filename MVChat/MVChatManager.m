@@ -14,6 +14,7 @@
 #import "MVMessageModel.h"
 #import "MVRandomGenerator.h"
 #import "NSString+Helpers.h"
+#import <ReactiveObjC.h>
 
 @interface MVChatManager()
 @property (strong, nonatomic) NSMutableArray *chats;
@@ -38,10 +39,12 @@ static MVChatManager *sharedManager;
 - (instancetype)init {
     if (self = [super init]) {
         _managerQueue = dispatch_queue_create("com.markvasiv.chatsManager", nil);
+        _viewModelQueue = dispatch_queue_create("com.markvasiv.chatsViewModel", nil);
         _chats = [NSMutableArray new];
         _chatsMessages = [NSMutableDictionary new];
         _chatsMessagesPages = [NSMutableDictionary new];
         _cachedChatIds = [NSMutableSet new];
+        _viewModelScheduler = [[RACTargetQueueScheduler alloc] initWithName:@"com.vm.Chat" queue:_viewModelQueue];
     }
     
     return self;
@@ -61,6 +64,19 @@ static MVChatManager *sharedManager;
 }
 
 - (void)loadMessagesForChatWithId:(NSString *)chatId withCallback:(void (^)())callback {
+    [[MVDatabaseManager sharedInstance] messagesFromChatWithId:chatId completion:^(NSArray<MVMessageModel *> *messages) {
+        dispatch_async(self.managerQueue, ^{
+            @synchronized (self.chatsMessages) {
+                [self.chatsMessages setObject:[messages mutableCopy] forKey:chatId];
+                [self.chatsMessagesPages setObject:@([self numberOfPages:messages]) forKey:chatId];
+                [self.cachedChatIds addObject:chatId];
+            }
+            if (callback) callback();
+        });
+    }];
+}
+
+- (void)syncLoadMessagesForChatWithId:(NSString *)chatId withCallback:(void (^)())callback {
     dispatch_async(self.managerQueue, ^{
         @synchronized (self.chatsMessages) {
             if ([self.chatsMessages objectForKey:chatId]) {
@@ -91,31 +107,33 @@ static MVChatManager *sharedManager;
 
 - (void)messagesPage:(NSUInteger)pageIndex forChatWithId:(NSString *)chatId withCallback:(void (^)(NSArray <MVMessageModel *> *))callback {
     dispatch_async(self.managerQueue, ^{
-        NSMutableArray *messages;
-        @synchronized (self.chatsMessages) {
-            messages = [self.chatsMessages objectForKey:chatId];
-        }
-        
-        NSArray *pagedMessages;
-        
-        if (!messages) {
-            [self loadMessagesForChatWithId:chatId withCallback:^() {
-                [self messagesPage:pageIndex forChatWithId:chatId withCallback:callback];
-            }];
-        } else {
-            NSUInteger startIndex = MVMessagesPageSize * pageIndex;
-            NSUInteger length = MVMessagesPageSize;
-            
-            if (MVMessagesPageSize * pageIndex + MVMessagesPageSize > messages.count) {
-                length = messages.count - MVMessagesPageSize * pageIndex;
-            }
-            
-            pagedMessages = [messages subarrayWithRange:NSMakeRange(startIndex, length)];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                callback(pagedMessages);
-            });
-        }
+        [self syncMessagesPage:pageIndex forChatWithId:chatId withCallback:callback];
     });
+}
+
+- (void)syncMessagesPage:(NSUInteger)pageIndex forChatWithId:(NSString *)chatId withCallback:(void (^)(NSArray <MVMessageModel *> *))callback {
+    NSMutableArray *messages;
+    @synchronized (self.chatsMessages) {
+        messages = [self.chatsMessages objectForKey:chatId];
+    }
+    
+    NSArray *pagedMessages;
+    
+    if (!messages) {
+        [self loadMessagesForChatWithId:chatId withCallback:^() {
+            [self syncMessagesPage:pageIndex forChatWithId:chatId withCallback:callback];
+        }];
+    } else {
+        NSUInteger startIndex = MVMessagesPageSize * pageIndex;
+        NSUInteger length = MVMessagesPageSize;
+        
+        if (MVMessagesPageSize * pageIndex + MVMessagesPageSize > messages.count) {
+            length = messages.count - MVMessagesPageSize * pageIndex;
+        }
+        
+        pagedMessages = [messages subarrayWithRange:NSMakeRange(startIndex, length)];
+        callback(pagedMessages);
+    }
 }
 
 - (NSUInteger)numberOfPagesInChatWithId:(NSString *)chatId {
@@ -183,9 +201,7 @@ static MVChatManager *sharedManager;
     }
 
     if ([self.messagesListener.chatId isEqualToString:message.chatId]) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.messagesListener insertNewMessage:message];
-        });
+        [self.messagesListener insertNewMessage:message];
     }
 }
 
@@ -197,9 +213,7 @@ static MVChatManager *sharedManager;
                 [[self.chatsMessages objectForKey:message.chatId] replaceObjectAtIndex:index withObject:message];
             }
             if ([self.messagesListener.chatId isEqualToString:message.chatId]) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self.messagesListener updateMessage:message];
-                });
+                [self.messagesListener updateMessage:message];
             }
         }
     });
