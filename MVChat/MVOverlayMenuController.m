@@ -10,6 +10,8 @@
 #import "MVOverlayMenuCell.h"
 #import <INTUAnimationEngine.h>
 
+#define IS_IOS10_AND_HIGHER ([[UIDevice currentDevice].systemVersion floatValue] >= 10.0)
+
 static NSString *textCellId = @"MVBarButtonMenuTextCell";
 
 @implementation MVOverlayMenuElement
@@ -76,9 +78,15 @@ static NSString *textCellId = @"MVBarButtonMenuTextCell";
 
 - (void)finilizeAppearance {
     self.finalized = YES;
-    [self.blurAnimator startAnimation];
+    if (IS_IOS10_AND_HIGHER) {
+        [self.blurAnimator startAnimation];
+    }
+    
     [self.view layoutIfNeeded];
     [UIView animateWithDuration:0.4 animations:^{
+        if (!IS_IOS10_AND_HIGHER) {
+            self.blurView.effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+        }
         self.cancelButton.alpha = 1;
         self.titleLabel.alpha = 1;
         [self.cancelButtonRight setActive:NO];

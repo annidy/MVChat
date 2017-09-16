@@ -52,14 +52,19 @@ static NSTimeInterval const kLongTapDefaultFinalInterval = 0.8f;
             [self forceTouchStartedWithTouch:aTouch];
         }
     } else {
-        self.initialTimer = [NSTimer scheduledTimerWithTimeInterval:kLongTapDefaultThresholdInterval repeats:NO block:^(NSTimer *timer) {
-            self.state = UIGestureRecognizerStatePossible;
-            [self forceTouchStartedWithTouch:nil];
-        }];
-        self.finalTimer = [NSTimer scheduledTimerWithTimeInterval:kLongTapDefaultFinalInterval repeats:NO block:^(NSTimer *timer) {
-            [self forceTouchFired:nil];
-        }];
+        
+        self.initialTimer = [NSTimer scheduledTimerWithTimeInterval:kLongTapDefaultThresholdInterval target:self selector:@selector(initialTimerFired) userInfo:nil repeats:NO];
+        self.finalTimer = [NSTimer scheduledTimerWithTimeInterval:kLongTapDefaultFinalInterval target:self selector:@selector(finalTimerFired) userInfo:nil repeats:NO];
     }
+}
+
+- (void)initialTimerFired {
+    self.state = UIGestureRecognizerStatePossible;
+    [self forceTouchStartedWithTouch:nil];
+}
+
+- (void)finalTimerFired {
+    [self forceTouchFired:nil];
 }
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
