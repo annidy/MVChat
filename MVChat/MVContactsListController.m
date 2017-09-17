@@ -87,7 +87,11 @@
         self.navigationItem.leftBarButtonItem = cancelButton;
     }
     if (@available(iOS 11.0, *)) {
-        self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeAlways;
+        if (self.viewModel.mode == MVContactsListModeDefault) {
+            self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeAlways;
+        } else {
+            self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeNever;
+        }
     }
 }
 
