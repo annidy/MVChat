@@ -105,6 +105,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)loadThumbnailImageWithTargetSize:(CGSize)targetSize completion:(void(^)(UIImage * _Nullable resultImage))completion;
 - (void)thumbnailImageWithMaxWidth:(CGFloat)maxWidth completion:(void(^)(UIImage *resultImage))completion;
 - (void)originalImageWithCompletion:(void(^)(UIImage *resultImage))completion;
+- (CGSize)imageSize;
 
 /*!
  @brief Load original image

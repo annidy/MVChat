@@ -19,7 +19,6 @@
 		CD05F68D1F2B67DD00721421 /* MVChatsListSearchCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05F68C1F2B67DD00721421 /* MVChatsListSearchCollectionViewCell.m */; };
 		CD2048A61EC4F17C00EDDFA8 /* MVChatModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD2048A51EC4F17C00EDDFA8 /* MVChatModel.m */; };
 		CD28B34A1EB6A5F800BFFCAA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD28B3491EB6A5F800BFFCAA /* AppDelegate.m */; };
-		CD28B34F1EB6A61000BFFCAA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CD28B34B1EB6A61000BFFCAA /* LaunchScreen.storyboard */; };
 		CD28B3501EB6A61000BFFCAA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CD28B34D1EB6A61000BFFCAA /* Main.storyboard */; };
 		CD28B3601EB6A63300BFFCAA /* MVChatManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CD28B35B1EB6A63300BFFCAA /* MVChatManager.m */; };
 		CD28B3611EB6A63300BFFCAA /* MVContactModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD28B35D1EB6A63300BFFCAA /* MVContactModel.m */; };
@@ -99,7 +98,6 @@
 		CD2048A51EC4F17C00EDDFA8 /* MVChatModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVChatModel.m; sourceTree = "<group>"; };
 		CD28B3481EB6A5F800BFFCAA /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		CD28B3491EB6A5F800BFFCAA /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		CD28B34C1EB6A61000BFFCAA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		CD28B34E1EB6A61000BFFCAA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		CD28B35A1EB6A63300BFFCAA /* MVChatManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVChatManager.h; sourceTree = "<group>"; };
 		CD28B35B1EB6A63300BFFCAA /* MVChatManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVChatManager.m; sourceTree = "<group>"; };
@@ -514,7 +512,6 @@
 				CDF479BC1EB68DE3003B3C8E /* Model */,
 				CDF479B81EB68DB4003B3C8E /* UI */,
 				CDAB09851E7DE2D800A142DC /* Supporting Files */,
-				CD28B34B1EB6A61000BFFCAA /* LaunchScreen.storyboard */,
 				CD28B34D1EB6A61000BFFCAA /* Main.storyboard */,
 				CDAB09961E7DE2D800A142DC /* Info.plist */,
 				CDAB09911E7DE2D800A142DC /* Assets.xcassets */,
@@ -700,7 +697,6 @@
 				CDE4B4701F61DF0100014DE0 /* syllable.csv in Resources */,
 				CD28B3501EB6A61000BFFCAA /* Main.storyboard in Resources */,
 				CDAB09921E7DE2D800A142DC /* Assets.xcassets in Resources */,
-				CD28B34F1EB6A61000BFFCAA /* LaunchScreen.storyboard in Resources */,
 				CDE4B46F1F61DF0100014DE0 /* name.csv in Resources */,
 				CDE4B4711F61DF0100014DE0 /* title.csv in Resources */,
 			);
@@ -834,14 +830,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		CD28B34B1EB6A61000BFFCAA /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				CD28B34C1EB6A61000BFFCAA /* Base */,
-			);
-			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
 		CD28B34D1EB6A61000BFFCAA /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (

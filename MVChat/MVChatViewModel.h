@@ -14,8 +14,7 @@
 
 @interface MVChatViewModel : NSObject
 - (instancetype)initWithChat:(MVChatModel *)chat;
-
-@property (strong, nonatomic) NSMutableArray <MVMessageCellModel *> *messages;
+@property (strong, nonatomic) NSArray <MVMessageCellModel *> *rows;
 @property (strong, nonatomic) UIImage *avatar;
 @property (strong, nonatomic) NSString *title;
 @property (strong, nonatomic) NSString *messageText;

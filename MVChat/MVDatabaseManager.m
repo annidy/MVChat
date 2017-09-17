@@ -42,7 +42,7 @@ static MVDatabaseManager *instance;
 
 - (instancetype)init {
     if (self = [super init]) {
-        _db = [[YapDatabase alloc] initWithPath:[[[MVFileManager sharedInstance] documentsPath] stringByAppendingPathComponent:@"yap"]];
+        _db = [[YapDatabase alloc] initWithPath:[[MVFileManager documentsPath] stringByAppendingPathComponent:@"yap"]];
         _contactsConnection = [_db newConnection];
         _chatsConnection = [_db newConnection];
         _messagesConnection = [_db newConnection];

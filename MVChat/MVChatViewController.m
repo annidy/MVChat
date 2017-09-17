@@ -27,6 +27,7 @@
 @property (strong, nonatomic) IBOutlet UIView *messageTextFieldMask;
 @property (strong, nonatomic) IBOutlet UIButton *sendButton;
 @property (strong, nonatomic) IBOutlet UIButton *attatchButton;
+
 @end
 
 @implementation MVChatViewController
@@ -195,6 +196,7 @@
         processingNewPage = (update.type == MVMessagesListUpdateTypeReloadAll);
         autoscroll = (self.messagesTableView.contentOffset.y >= (self.messagesTableView.contentSize.height - self.messagesTableView.frame.size.height - 50));
         
+        self.viewModel.rows = update.rows;
         if (update.type == MVMessagesListUpdateTypeReloadAll) {
             [self.messagesTableView reloadData];
         } else if (update.type == MVMessagesListUpdateTypeInsertRow) {
@@ -216,15 +218,15 @@
 
 #pragma mark - Table view
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.viewModel.messages.count;
+    return self.viewModel.rows.count;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return self.viewModel.messages[indexPath.row].height;
+    return self.viewModel.rows[indexPath.row].height;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    MVMessageCellModel *model = self.viewModel.messages[indexPath.row];
+    MVMessageCellModel *model = self.viewModel.rows[indexPath.row];
     UITableViewCell <MVMessageCell> *cell = [tableView dequeueReusableCellWithIdentifier:model.cellId];
     
     [cell fillWithModel:model];

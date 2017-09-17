@@ -25,6 +25,7 @@
 #import "MVMessagesListUpdate.h"
 
 @interface MVChatViewModel() <MVMessagesUpdatesListener>
+@property (strong, nonatomic) NSMutableArray <MVMessageCellModel *> *messages;
 @property (assign, nonatomic) BOOL processingMessages;
 @property (assign, nonatomic) BOOL initialLoadComplete;
 @property (assign, nonatomic) NSInteger loadedPageIndex;
@@ -140,7 +141,7 @@
 }
 
 - (void)handleNewMessagesPage:(NSArray <MVMessageModel *> *)models {
-    NSMutableArray <MVMessageCellModel *> *messages = [self.messages mutableCopy];
+    NSMutableArray <MVMessageCellModel *> *messages = self.messages;
     
     MVMessageModel *lastLoadedMessage = [messages optionalObjectAtIndex:1].message;
     MVMessageModel *beforeLastLoadedMessage = [messages optionalObjectAtIndex:2].message;
@@ -178,11 +179,10 @@
             }
         } completed:^{
             @strongify(self);
-            self.messages = [messages mutableCopy];
             self.processingMessages = NO;
             self.initialLoadComplete = YES;
             self.numberOfProcessedMessages += messages.count;
-            MVMessagesListUpdate *update = [[MVMessagesListUpdate alloc] initWithType:MVMessagesListUpdateTypeReloadAll indexPath:nil];
+            MVMessagesListUpdate *update = [[MVMessagesListUpdate alloc] initWithType:MVMessagesListUpdateTypeReloadAll indexPath:nil rows:[messages copy]];
             [self.updateSubject sendNext:update];
         }];
 }
@@ -204,7 +204,7 @@
 }
 
 - (void)handleNewMessage:(MVMessageModel *)message {
-    NSMutableArray <MVMessageCellModel *> *rows = [self.messages mutableCopy];
+    NSMutableArray <MVMessageCellModel *> *rows = self.messages;
     MVMessageCellModel *previousModel = rows.optionalLastObject;
     
     BOOL reloadPrevious = NO;
@@ -218,14 +218,12 @@
     }
     
     BOOL insertHeader = self.insertMessage(previousModel.message, message, nil, rows, NO);
-    self.messages = [rows mutableCopy];
     
     NSIndexPath *insertPath = [NSIndexPath indexPathForRow:rows.count - 1 inSection:0];
-    MVMessagesListUpdate *insert = [[MVMessagesListUpdate alloc] initWithType:MVMessagesListUpdateTypeInsertRow indexPath:insertPath];
-    
+    MVMessagesListUpdate *insert = [[MVMessagesListUpdate alloc] initWithType:MVMessagesListUpdateTypeInsertRow indexPath:insertPath rows:[rows copy]];
     insert.shouldReloadPrevious = reloadPrevious;
     insert.shouldInsertHeader = insertHeader;
-    
+
     [self.updateSubject sendNext:insert];
 }
 
@@ -278,9 +276,6 @@
             viewModel.mediaImage = image;
         }];
     }
-    
-    
-    
     
     return viewModel;
 }
@@ -372,6 +367,10 @@ static NSDateFormatter *dateFormatter;
     for (MVMessageCellModel *model in self.messages) {
         [model calculateSize];
     }
+    
+    for (MVMessageCellModel *model in self.rows) {
+        [model calculateSize];
+    }
 }
 #pragma mark - Send command
 - (RACSignal *)sendCommandSignal {
@@ -418,9 +417,11 @@ static NSDateFormatter *dateFormatter;
 
 - (DBAttachmentPickerController *)attachmentPicker {
     DBAttachmentPickerController *attachmentPicker = [DBAttachmentPickerController attachmentPickerControllerFinishPickingBlock:^(NSArray<DBAttachment *> *attachmentArray) {
-        for (DBAttachment *attachment in attachmentArray) {
-            [[MVChatManager sharedInstance] sendMediaMessageWithAttachment:attachment toChatWithId:self.chatId];
-        }
+        dispatch_async(self.queue, ^{        
+            for (DBAttachment *attachment in attachmentArray) {
+                [[MVChatManager sharedInstance] sendMediaMessageWithAttachment:attachment toChatWithId:self.chatId];
+            }
+        });
         
     } cancelBlock:nil];
     

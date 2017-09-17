@@ -9,10 +9,11 @@
 #import "MVMessagesListUpdate.h"
 
 @implementation MVMessagesListUpdate
-- (instancetype)initWithType:(MVMessagesListUpdateType)type indexPath:(NSIndexPath *)indexPath {
+- (instancetype)initWithType:(MVMessagesListUpdateType)type indexPath:(NSIndexPath *)indexPath rows:(NSArray *)rows {
     if (self = [super init]) {
         _type = type;
         _indexPath = indexPath;
+        _rows = rows;
     }
     
     return self;

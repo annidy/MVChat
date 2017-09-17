@@ -54,7 +54,7 @@ typedef enum : NSUInteger {
 
 #pragma mark - Helpers
 - (CGSize)sizeOfAttachmentForMessage:(MVMessageModel *)message;
-- (NSString *)documentsPath;
++ (NSString *)documentsPath;
 - (void)deleteAllFiles;
 - (void)clearAllCache;
 @end

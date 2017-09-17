@@ -173,7 +173,7 @@
 }
 
 - (void)thumbnailImageWithMaxWidth:(CGFloat)maxWidth completion:(void(^)(UIImage *resultImage))completion {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
         UIImage *image;
         NSNumber *cachesKey = @(ceil(maxWidth));
@@ -261,7 +261,7 @@
 }
 
 - (void)originalImageWithCompletion:(void(^)(UIImage *resultImage))completion {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
         PHImageRequestOptions *requestOptions = [PHImageRequestOptions new];
         requestOptions.synchronous = YES;
@@ -309,6 +309,56 @@
             }
         });
     });
+}
+
+- (CGSize)imageSize {
+    __block CGImageSourceRef imageSource = NULL;
+    PHImageRequestOptions *requestOptions = [PHImageRequestOptions new];
+    requestOptions.synchronous = YES;
+    
+    switch (self.sourceType) {
+        case DBAttachmentSourceTypePHAsset:
+            [[PHImageManager defaultManager] requestImageDataForAsset:self.photoAsset
+                                                              options:requestOptions
+                                                        resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
+                                                            imageSource = CGImageSourceCreateWithData((CFDataRef)imageData, NULL);
+                                                        }];
+            break;
+        case DBAttachmentSourceTypeDocumentURL:
+            if (self.originalFilePath) {
+                imageSource = CGImageSourceCreateWithURL((CFURLRef)[NSURL fileURLWithPath:self.originalFilePath], nil);
+            }
+            break;
+        default:
+            if (self.image) {
+                imageSource = CGImageSourceCreateWithData((CFDataRef)UIImagePNGRepresentation(self.image), NULL);
+            }
+            break;
+    }
+    
+    if (imageSource == NULL) {
+        return CGSizeMake(0, 0);
+    }
+    
+    CGFloat originalHeight = 0;
+    CGFloat originalWidth = 0;
+    
+    NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:NO] forKey:(NSString *)kCGImageSourceShouldCache];
+    CFDictionaryRef properties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, (CFDictionaryRef)options);
+    
+    if (properties) {
+        NSDictionary *pr = (__bridge NSDictionary *)properties;
+        NSNumber *heightNum = [pr objectForKey:(NSString *)kCGImagePropertyPixelHeight];
+        NSNumber *widthNum = [pr objectForKey:(NSString *)kCGImagePropertyPixelWidth];
+        if (heightNum) {
+            originalHeight = [heightNum floatValue];
+        }
+        if (widthNum) {
+            originalWidth = [widthNum floatValue];
+        }
+        CFRelease(properties);
+    }
+    return CGSizeMake(originalWidth, originalHeight);
 }
 
 - (void)loadThumbnailImageWithTargetSize:(CGSize)targetSize completion:(void(^)(UIImage *resultImage))completion {

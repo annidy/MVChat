@@ -14,9 +14,10 @@ typedef enum : NSUInteger {
 } MVMessagesListUpdateType;
 
 @interface MVMessagesListUpdate : NSObject
-- (instancetype)initWithType:(MVMessagesListUpdateType)type indexPath:(NSIndexPath *)indexPath;
+- (instancetype)initWithType:(MVMessagesListUpdateType)type indexPath:(NSIndexPath *)indexPath rows:(NSArray *)rows;
 @property (assign, nonatomic) MVMessagesListUpdateType type;
 @property (strong, nonatomic) NSIndexPath *indexPath;
 @property (assign, nonatomic) BOOL shouldReloadPrevious;
 @property (assign, nonatomic) BOOL shouldInsertHeader;
+@property (strong, nonatomic) NSArray *rows;
 @end

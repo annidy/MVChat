@@ -302,7 +302,7 @@ static MVFileManager *instance;
     
     return imageSize;
 }
-- (NSString *)documentsPath {
++ (NSString *)documentsPath {
     return [[[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject] path];
 }
 
@@ -329,7 +329,7 @@ static MVFileManager *instance;
 }
 
 - (NSString *)globalPathFromRelative:(NSString *)relativePath {
-    return [[self documentsPath] stringByAppendingPathComponent:relativePath];
+    return [[[self class] documentsPath] stringByAppendingPathComponent:relativePath];
 }
 
 - (NSURL *)urlToFileAtRelativePath:(NSString *)relativePath {
@@ -338,7 +338,7 @@ static MVFileManager *instance;
 
 - (void)deleteAllFiles {
     dispatch_async(self.managerQueue, ^{
-        NSArray *files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:[self documentsPath] error:nil];
+        NSArray *files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:[[self class] documentsPath] error:nil];
         for (NSString *file in files) {
             if ([file containsString:@"yap"]) {
                 continue;
