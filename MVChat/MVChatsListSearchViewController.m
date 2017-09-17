@@ -24,6 +24,7 @@
 @property (strong, nonatomic) IBOutlet UIView *popularChatsHeader;
 @property (strong, nonatomic) IBOutlet NSLayoutConstraint *popularChatsSeparatorHeight;
 @property (strong, nonatomic) IBOutlet UIView *popularChatsSeparator;
+@property (strong, nonatomic) IBOutlet UIView *tableHeaderHolder;
 @property (weak, nonatomic) UIViewController <UITableViewDelegate, UICollectionViewDelegate> *rootViewController;
 @property (strong, nonatomic) MVChatsListViewModel *viewModel;
 @end
@@ -65,23 +66,9 @@
     }];
     
     RACSignal *showPopularSignal = [RACObserve(self.viewModel, shouldShowPopularData) deliverOnMainThread];
-    
-    RAC(self.collectionView, hidden) = [showPopularSignal not];
-    RAC(self.popularChatsHeader, hidden) = [showPopularSignal not];
-    RAC(self.popularChatsSeparator, hidden) = [showPopularSignal not];
-    RAC(self.tableView, scrollEnabled) = [showPopularSignal not];
-    
-    [showPopularSignal subscribeNext:^(NSNumber *should) {
+    RAC(self.tableView, tableHeaderView) = [showPopularSignal map:^id (NSNumber *shouldShow) {
         @strongify(self);
-        if (should.boolValue) {
-            self.collectionViewHeight.constant = 80;
-            self.popularChatsHeaderHeight.constant = 20;
-            self.popularChatsSeparatorHeight.constant = 1;
-        } else {
-            self.popularChatsSeparatorHeight.constant = 0;
-            self.collectionViewHeight.constant = 0;
-            self.popularChatsHeaderHeight.constant = 0;
-        }
+        return [shouldShow boolValue]? self.tableHeaderHolder : nil;
     }];
 }
 
