@@ -134,7 +134,7 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSArray <MVChatsListCellViewModel *> *chats = (tableView == self.chatsList)? self.viewModel.chats : self.viewModel.filteredChats;
+    NSArray <MVChatsListCellViewModel *> *chats = (tableView == self.chatsList)? self.viewModel.chats : self.viewModel.filteredChats.count? self.viewModel.filteredChats : @[self.viewModel.recentSearchChat];
     MVChatsListCellViewModel *model = chats[indexPath.row];
     [self showChatViewWithChat:model.chat];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];

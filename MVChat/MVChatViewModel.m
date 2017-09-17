@@ -30,7 +30,7 @@
 @property (assign, nonatomic) BOOL initialLoadComplete;
 @property (assign, nonatomic) NSInteger loadedPageIndex;
 @property (assign, nonatomic) NSInteger numberOfProcessedMessages;
-@property (strong, nonatomic) RACSubject *updateSubject;
+@property (strong, nonatomic) RACReplaySubject *updateSubject;
 @property (strong, nonatomic) MVChatModel *chat;
 @property (strong, nonatomic) RACScheduler *scheduler;
 @property (strong, nonatomic) dispatch_queue_t queue;
@@ -45,7 +45,7 @@
         _sliderOffset = 0;
         _chat = chat;
         _messages = [NSMutableArray new];
-        _updateSubject = [RACSubject subject];
+        _updateSubject = [RACReplaySubject replaySubjectWithCapacity:1];
         _scheduler = [MVChatManager sharedInstance].viewModelScheduler;
         _queue = [MVChatManager sharedInstance].viewModelQueue;
         _chatId = chat.id;

@@ -47,6 +47,7 @@
     [self setupFooter];
     [self setupTableView];
     [self bindAll];
+    self.automaticallyAdjustsScrollViewInsets = NO;
 }
 
 #pragma mark - Setup views
@@ -144,7 +145,7 @@
         }];
 
 
-    __block BOOL processingNewPage = YES;
+    __block BOOL processingNewPage = NO;
     __block BOOL autoscroll = YES;
     __block NSValue *oldSize;
     __block BOOL keyboardShown = NO;
@@ -199,7 +200,7 @@
     [self.viewModel.updateSignal subscribeNext:^(MVMessagesListUpdate *update) {
         @strongify(self);
         processingNewPage = (update.type == MVMessagesListUpdateTypeReloadAll);
-        autoscroll = (self.messagesTableView.contentOffset.y >= (self.messagesTableView.contentSize.height - self.messagesTableView.frame.size.height - 50));
+        autoscroll = (self.messagesTableView.contentOffset.y >= (self.messagesTableView.contentSize.height - self.messagesTableView.frame.size.height - 50)) || !self.viewModel.rows.count;
         
         self.viewModel.rows = update.rows;
         if (update.type == MVMessagesListUpdateTypeReloadAll) {
@@ -286,10 +287,25 @@
     
     UIEdgeInsets tableViewInsets = self.messagesTableView.contentInset;
     CGFloat inset = self.messagesTableView.frame.size.height - contentSize.height;
-    if (inset < 64) {
-        inset = 64;
-    }
     
+    if (@available(iOS 11.0, *)) {
+        if (!self.view.safeAreaInsets.top) {
+            inset -= 64;
+            if (inset < 0) {
+                inset = 0;
+            }
+        } else {
+            if (inset < 64) {
+                inset = 64;
+            }
+        }
+        
+    } else {
+        if (inset < 64) {
+            inset = 64;
+        }
+    }
+
     if (inset != tableViewInsets.top) {
         tableViewInsets.top = inset;
         self.messagesTableView.contentInset = tableViewInsets;
@@ -303,6 +319,11 @@
         offset.y = 0;
     } else if (autoScroll) {
         offset.y = newSize.height - self.messagesTableView.frame.size.height;
+        if (@available(iOS 11.0, *)) {
+            if (!self.view.safeAreaInsets.top) {
+                offset.y += 64;
+            }
+        }
     } else if (processingNewPage) {
         offset.y += newSize.height - oldSize.height;
     }
