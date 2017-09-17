@@ -64,21 +64,32 @@
     
     return CGSizeMake(width, height);
 }
-
-static UILabel *referenceMessageLabel;
-- (UILabel *)referenceMessageLabel {
-    if (!referenceMessageLabel) {
-        referenceMessageLabel = [UILabel new];
-        referenceMessageLabel.font = [UIFont systemFontOfSize:17];
-        referenceMessageLabel.numberOfLines = 0;
+static UIFont *referenceMessageFont;
+- (UIFont *)referenceMessageFont {
+    if (!referenceMessageFont) {
+        referenceMessageFont = [UIFont systemFontOfSize:17];
     }
     
-    return referenceMessageLabel;
+    return referenceMessageFont;
+}
+
+static UIFont *referencePlainFont;
+- (UIFont *)referencePlainFont {
+    if (!referencePlainFont) {
+        referencePlainFont = [UIFont systemFontOfSize:13];
+    }
+    
+    return referencePlainFont;
 }
 
 - (CGSize)textHeightWithMaxWidth:(CGFloat)maxWidth {
-    [self.referenceMessageLabel setText:self.text];
-    return [self.referenceMessageLabel sizeThatFits:CGSizeMake(maxWidth, CGFLOAT_MAX)];
+    CGSize size = [self.text boundingRectWithSize:CGSizeMake(maxWidth, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName : self.referenceMessageFont} context:nil].size;
+    return CGSizeMake(ceil(size.width), ceil(size.height));
+}
+
+- (CGSize)plainHeightWithMaxWidth:(CGFloat)maxWidth {
+    CGSize size = [self.text boundingRectWithSize:CGSizeMake(maxWidth, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName : self.referencePlainFont} context:nil].size;
+    return CGSizeMake(ceil(size.width), ceil(size.height));
 }
 
 - (CGSize)mediaHeightWithMaxWidth:(CGFloat)maxWidth {
@@ -95,25 +106,6 @@ static UILabel *referenceMessageLabel;
     }
     
     return  AVMakeRectWithAspectRatioInsideRect(actualSize, CGRectMake(0, 0, maxWidth, maxHeight)).size;
-    
-    
-    //return scaledSize.height;
-}
-
-- (CGSize)plainHeightWithMaxWidth:(CGFloat)maxWidth {
-    [self.referencePlainLabel setText:self.text];
-    return [self.referencePlainLabel sizeThatFits:CGSizeMake(maxWidth, CGFLOAT_MAX)];
-}
-
-static UILabel *referencePlainLabel;
-- (UILabel *)referencePlainLabel {
-    if (!referencePlainLabel) {
-        referencePlainLabel = [UILabel new];
-        referencePlainLabel.font = [UIFont systemFontOfSize:13];
-        referencePlainLabel.numberOfLines = 0;
-    }
-    
-    return referencePlainLabel;
 }
 
 #pragma mark - Cell helpers
