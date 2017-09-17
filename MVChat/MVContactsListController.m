@@ -62,7 +62,13 @@
     self.searchController = [[UISearchController alloc] initWithSearchResultsController:self.viewModel.searchResultsController];
     self.searchController.searchResultsUpdater = self.viewModel;
     self.searchController.searchBar.searchBarStyle = UISearchBarStyleMinimal;
-    self.contactsList.tableHeaderView = self.searchController.searchBar;
+    if (@available(iOS 11.0, *)) {
+        self.navigationItem.searchController = self.searchController;
+    } else {
+        self.contactsList.tableHeaderView = self.searchController.searchBar;
+    }
+
+    
     self.definesPresentationContext = YES;
 }
 
@@ -79,6 +85,9 @@
         
         UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(dismiss:)];
         self.navigationItem.leftBarButtonItem = cancelButton;
+    }
+    if (@available(iOS 11.0, *)) {
+        self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeAlways;
     }
 }
 

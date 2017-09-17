@@ -44,6 +44,10 @@
     [self setupInitialController];
     [self setupTransitions];
     [self setupGestureRecognizers];
+    
+    if (@available(iOS 11.0, *)) {
+        self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeNever;
+    }
 }
 
 - (BOOL)prefersStatusBarHidden {

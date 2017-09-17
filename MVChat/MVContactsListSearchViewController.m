@@ -40,6 +40,10 @@
         @strongify(self);
         [self.tableView reloadData];
     }];
+    
+    if (@available(iOS 11.0, *)) {
+        self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeNever;
+    }
 }
 
 #pragma mark - Table view

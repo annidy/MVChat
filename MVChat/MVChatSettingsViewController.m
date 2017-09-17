@@ -50,6 +50,10 @@
         [self.doneButton setTitle:@"Done" forState:UIControlStateNormal];
         [self.navigationItem setTitle:@"Settings"];
     }
+    
+    if (@available(iOS 11.0, *)) {
+        self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeNever;
+    }
 }
 
 - (void)bindAll {

@@ -49,6 +49,10 @@
     [super viewDidLoad];
     
     self.chatsList.tableFooterView = [UIView new];
+    if (@available(iOS 11.0, *)) {
+        self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeAlways;
+    }
+    
     [self setupSearchController];
     [self registerForceTouchControllerWithDelegate:self andSourceView:self.createChatButton];
     [self bindAll];
@@ -99,7 +103,12 @@
     self.searchController.dimsBackgroundDuringPresentation = NO;
     self.searchController.searchBar.searchBarStyle = UISearchBarStyleMinimal;
     self.searchController.hidesNavigationBarDuringPresentation = YES;
-    self.chatsList.tableHeaderView = self.searchController.searchBar;
+    if (@available(iOS 11.0, *)) {
+        self.navigationItem.searchController = self.searchController;
+    } else {
+        self.chatsList.tableHeaderView = self.searchController.searchBar;
+    }
+    
     self.definesPresentationContext = YES;
 }
 

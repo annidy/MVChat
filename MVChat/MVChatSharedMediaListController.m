@@ -42,6 +42,10 @@ static CGFloat spacing = 5;
         [self.viewModels addObject:[[MVImageViewerViewModel alloc] initWithSourceImageView:nil attachment:attachment andIndex:index]];
         index ++;
     }
+    
+    if (@available(iOS 11.0, *)) {
+        self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeNever;
+    }
 }
 
 #pragma mark - Collection View
