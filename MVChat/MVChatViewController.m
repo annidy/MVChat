@@ -182,7 +182,7 @@
             [self adjustContentOffsetDuringKeyboardAppear:NO withNotification:x];
         }];
     
-    [RACObserve(self.messagesTableView, contentSize)
+    [[RACObserve(self.messagesTableView, contentSize) distinctUntilChanged]
         subscribeNext:^(NSValue *newSize) {
             @strongify(self);
             
@@ -192,7 +192,7 @@
                                      processingNewPage:processingNewPage
                                      autoScrollEnabled:autoscroll];
             
-                [self updateContentInsetForNewContent:newSize.CGSizeValue];
+                [self updateContentInsetForNewContent:newSize.CGSizeValue frame:self.messagesTableView.frame.size.height];
             }];
             
             oldSize = newSize;
@@ -207,20 +207,15 @@
         if (update.type == MVMessagesListUpdateTypeReloadAll) {
             [self.messagesTableView reloadData];
         } else if (update.type == MVMessagesListUpdateTypeInsertRow) {
-            [UIView performWithoutAnimation:^{
-                NSIndexPath *previousIndexPath = [NSIndexPath indexPathForRow:update.indexPath.row-1 inSection:0];
-                NSArray *insertIndexPaths = @[update.indexPath];
-                if (update.shouldInsertHeader) insertIndexPaths = @[update.indexPath, previousIndexPath];
-                
-                [self.messagesTableView insertRowsAtIndexPaths:insertIndexPaths withRowAnimation:UITableViewRowAnimationBottom];
-                if (update.shouldReloadPrevious) {
-                    [self.messagesTableView reloadRowsAtIndexPaths:@[previousIndexPath] withRowAnimation:UITableViewRowAnimationNone];
-                }
-            }];
+            NSIndexPath *previousIndexPath = [NSIndexPath indexPathForRow:update.indexPath.row-1 inSection:0];
+            NSArray *insertIndexPaths = @[update.indexPath];
+            if (update.shouldInsertHeader) insertIndexPaths = @[update.indexPath, previousIndexPath];
+            [self.messagesTableView insertRowsAtIndexPaths:insertIndexPaths withRowAnimation:UITableViewRowAnimationNone];
+            if (update.shouldReloadPrevious) {
+                [self.messagesTableView reloadRowsAtIndexPaths:@[previousIndexPath] withRowAnimation:UITableViewRowAnimationNone];
+            }
         }
     }];
-    
-    
 }
 
 #pragma mark - Table view
@@ -281,13 +276,13 @@
 }
 
 #pragma mark - Content inset/offset
-- (void)updateContentInsetForNewContent:(CGSize)contentSize {
+- (void)updateContentInsetForNewContent:(CGSize)contentSize frame:(CGFloat)frameHeight {
     if (contentSize.height == 0) {
         return;
     }
     
     UIEdgeInsets tableViewInsets = self.messagesTableView.contentInset;
-    CGFloat inset = self.messagesTableView.frame.size.height - contentSize.height;
+    CGFloat inset = frameHeight - contentSize.height;
     
     if (inset < 64) {
         inset = 64;
@@ -331,7 +326,11 @@
         offset.y -= keyboardHeight;
     }
     self.inputPanelBottom.constant = appear? keyboardHeight : 0;
+    CGFloat frameHeight = self.messagesTableView.frame.size.height;
+    frameHeight += appear? -keyboardHeight : keyboardHeight;
+    
     [UIView animateWithDuration:duration delay:0 options:UIViewAnimationOptionBeginFromCurrentState | curve animations:^{
+        [self updateContentInsetForNewContent:self.messagesTableView.contentSize frame:frameHeight];
         self.messagesTableView.contentOffset = offset;
         [self.view layoutIfNeeded];
     } completion:nil];

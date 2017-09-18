@@ -68,7 +68,6 @@
         self.contactsList.tableHeaderView = self.searchController.searchBar;
     }
 
-    
     self.definesPresentationContext = YES;
 }
 
