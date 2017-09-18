@@ -23,6 +23,7 @@
 #import "DBAttachmentPickerController.h"
 #import "NSMutableArray+Optionals.h"
 #import "MVMessagesListUpdate.h"
+#import <DBAttachment.h>
 
 @interface MVChatViewModel() <MVMessagesUpdatesListener>
 @property (strong, nonatomic) NSMutableArray <MVMessageCellModel *> *messages;
@@ -272,8 +273,8 @@
     }
     
     if (message.type == MVMessageTypeMedia) {
-        [[MVFileManager sharedInstance] loadThumbnailAttachmentForMessage:message maxWidth:viewModel.width completion:^(UIImage *image) {
-            viewModel.mediaImage = image;
+        [message.attachment thumbnailImageWithMaxWidth:viewModel.width completion:^(UIImage *resultImage) {
+            viewModel.mediaImage = resultImage;
         }];
     }
     
@@ -404,15 +405,15 @@ static NSDateFormatter *dateFormatter;
 }
 
 - (void)imageViewerForMessage:(MVMessageCellModel *)model fromImageView:(UIImageView *)imageView completion:(void (^)(UIViewController *))completion {
-    [[MVFileManager sharedInstance] loadAttachmentForMessage:model.message completion:^(DBAttachment *attachment) {
+    //[[MVFileManager sharedInstance] loadAttachmentForMessage:model.message completion:^(DBAttachment *attachment) {
         MVImageViewerViewModel *viewModel = [[MVImageViewerViewModel alloc] initWithSourceImageView:imageView
-                                                                                         attachment:attachment
+                                                                                         attachment:model.message.attachment
                                                                                            andIndex:0];
         dispatch_async(dispatch_get_main_queue(), ^{
             MVChatSharedMediaPageController *imageController = [MVChatSharedMediaPageController loadFromStoryboardWithViewModels:@[viewModel] andStartIndex:0];
             completion(imageController);
         });
-    }];
+    //}];
 }
 
 - (DBAttachmentPickerController *)attachmentPicker {

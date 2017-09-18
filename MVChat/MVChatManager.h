@@ -38,6 +38,7 @@ static NSUInteger MVMessagesPageSize = 10;
 - (NSArray <MVChatModel *> *)chatsList;
 - (void)messagesPage:(NSUInteger)pageIndex forChatWithId:(NSString *)chatId withCallback:(void (^)(NSArray <MVMessageModel *> *))callback;
 - (NSUInteger)numberOfPagesInChatWithId:(NSString *)chatId;
+- (void)mediaMessagesForChatWithId:(NSString *)chatId withCallback:(void (^)(NSArray <MVMessageModel *> *))callback;
 
 #pragma mark - Handle Chats
 - (void)chatWithContact:(MVContactModel *)contact andCompeltion:(void (^)(MVChatModel *))callback;

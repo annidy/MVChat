@@ -22,6 +22,7 @@
 @property (strong, nonatomic) NSMutableDictionary *chatsMessagesPages;
 @property (strong, nonatomic) NSMutableSet *cachedChatIds;
 @property (strong, nonatomic) dispatch_queue_t managerQueue;
+@property (strong, nonatomic) RACScheduler *managerScheduler;
 @end
 
 @implementation MVChatManager
@@ -45,6 +46,13 @@ static MVChatManager *sharedManager;
         _chatsMessagesPages = [NSMutableDictionary new];
         _cachedChatIds = [NSMutableSet new];
         _viewModelScheduler = [[RACTargetQueueScheduler alloc] initWithName:@"com.vm.Chat" queue:_viewModelQueue];
+        _managerScheduler = [[RACTargetQueueScheduler alloc] initWithName:@"com.m.chat" queue:_managerQueue];
+        
+        [[[MVFileManager sharedInstance].writerSignal deliverOn:_managerScheduler] subscribeNext:^(RACTuple *tuple) {
+            RACTupleUnpack(MVMessageModel *message, DBAttachment *attachment) = tuple;
+            message.attachment = attachment;
+            [self updateMessage:message];
+        }];
     }
     
     return self;
@@ -65,6 +73,11 @@ static MVChatManager *sharedManager;
 
 - (void)loadMessagesForChatWithId:(NSString *)chatId withCallback:(void (^)())callback {
     [[MVDatabaseManager sharedInstance] messagesFromChatWithId:chatId completion:^(NSArray<MVMessageModel *> *messages) {
+        for (MVMessageModel *message in messages) {
+            if (message.type == MVMessageTypeMedia) {
+                [[MVFileManager sharedInstance] fillMessageAttachment:message];
+            }
+        }
         dispatch_async(self.managerQueue, ^{
             @synchronized (self.chatsMessages) {
                 [self.chatsMessages setObject:[messages mutableCopy] forKey:chatId];
@@ -132,6 +145,33 @@ static MVChatManager *sharedManager;
         }
         
         pagedMessages = [messages subarrayWithRange:NSMakeRange(startIndex, length)];
+        callback(pagedMessages);
+    }
+}
+
+- (void)mediaMessagesForChatWithId:(NSString *)chatId withCallback:(void (^)(NSArray <MVMessageModel *> *))callback {
+    dispatch_async(self.managerQueue, ^{
+        [self syncMediaMessagesForChatWithId:chatId withCallback:callback];
+    });
+}
+
+- (void)syncMediaMessagesForChatWithId:(NSString *)chatId withCallback:(void (^)(NSArray <MVMessageModel *> *))callback {
+    NSMutableArray *messages;
+    @synchronized (self.chatsMessages) {
+        messages = [self.chatsMessages objectForKey:chatId];
+    }
+    
+    NSArray *pagedMessages;
+    
+    if (!messages) {
+        [self loadMessagesForChatWithId:chatId withCallback:^() {
+            [self syncMediaMessagesForChatWithId:chatId withCallback:callback];
+        }];
+    } else {
+        pagedMessages = [messages filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(MVMessageModel *evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
+            return evaluatedObject.type == MVMessageTypeMedia;
+        }]];
+        
         callback(pagedMessages);
     }
 }
@@ -319,9 +359,10 @@ static MVChatManager *sharedManager;
 
 - (void)sendMediaMessageWithAttachment:(DBAttachment *)attachment toChatWithId:(NSString *)chatId {
     MVMessageModel *message = [[MVMessageModel alloc] initWithId:NSUUID.UUID.UUIDString chatId:chatId type:MVMessageTypeMedia text:nil];
-    [[MVFileManager sharedInstance] saveMediaMesssage:message attachment:attachment completion:^{
-        [self sendMessage:message toChatWithId:chatId];
-    }];
+    message.attachment = attachment;
+    [self sendMessage:message toChatWithId:chatId];
+    [[MVFileManager sharedInstance] saveMessageAttachment:message];
+    //[[MVFileManager sharedInstance] saveMediaMesssage:message attachment:attachment completion:nil];
 }
 
 - (void)sendMessage:(MVMessageModel *)message toChatWithId:(NSString *)chatId {
