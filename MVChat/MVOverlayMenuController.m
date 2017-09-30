@@ -103,6 +103,15 @@ static NSString *textCellId = @"MVBarButtonMenuTextCell";
     });
 }
 
+- (void)cancel {
+    if (IS_IOS10_AND_HIGHER) {
+        [self.blurAnimator stopAnimation:YES];
+        [self.blurAnimator finishAnimationAtPosition:UIViewAnimatingPositionStart];
+    } else {
+        self.blurView.effect = nil;
+    }
+}
+
 #pragma mark - Cells animation
 - (void)showCells:(NSArray *)cells withStartCompletion:(void (^)())completion {
     CGFloat startValue = - [UIScreen mainScreen].bounds.size.width - 1;

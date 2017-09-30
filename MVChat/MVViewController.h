@@ -12,6 +12,7 @@
 @protocol MVForceTouchControllerProtocol <NSObject>
 - (void)setAppearancePercent:(CGFloat)percent;
 - (void)finilizeAppearance;
+- (void)cancel;
 @end
 
 @protocol MVForceTouchPresentaionDelegate <NSObject>
