@@ -139,6 +139,8 @@ static MVUpdatesProvider *instance;
     
     for (MVChatModel *chat in chats) {
         NSArray <MVMessageModel *> *messages = [[MVRandomGenerator sharedInstance] generateMessagesForChat:chat];
+        chat.lastMessage = messages.lastObject;
+        chat.lastUpdateDate = messages.lastObject.sendDate;
         allMessages = [allMessages arrayByAddingObjectsFromArray:messages];
     }
     
