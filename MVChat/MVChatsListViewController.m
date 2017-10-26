@@ -21,12 +21,11 @@
 #import "MVUpdatesProvider.h"
 
 @interface MVChatsListViewController () <UITableViewDelegate, UITableViewDataSource, MVChatsUpdatesListener, UISearchResultsUpdating, MVSearchProviderDelegate, MVForceTouchPresentaionDelegate>
+@property (strong, nonatomic) IBOutlet UIButton *createChatButton;
 @property (strong, nonatomic) IBOutlet UITableView *chatsList;
-@property (strong, nonatomic) NSArray <MVChatModel *> *chats;
 @property (strong, nonatomic) MVChatsListSearchViewController *searchResultsController;
-@property (strong, nonatomic) IBOutlet NSLayoutConstraint *chatsListTop;
 @property (strong, nonatomic) UISearchController *searchController;
-@property (strong, nonatomic) UIButton *createChatButton;
+@property (strong, nonatomic) NSArray <MVChatModel *> *chats;
 @end
 
 @implementation MVChatsListViewController
@@ -34,38 +33,16 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [MVChatManager sharedInstance].chatsListener = self;
-    self.chats = [[MVChatManager sharedInstance] chatsList];
     self.chatsList.tableFooterView = [UIView new];
-    
-    CGFloat navbarHeight = self.navigationController.navigationBar.frame.size.height;
-    self.chatsListTop.constant = -navbarHeight;
-    self.chatsList.contentInset = UIEdgeInsetsMake(navbarHeight, 0, 0, 0);
-    
-    self.chatsList.delegate = self;
-    self.chatsList.dataSource = self;
-    
-    [self setupNavigationBar];
     [self setupSearchController];
     [self registerForceTouchControllerWithDelegate:self andSourceView:self.createChatButton];
-}
-
-- (void)setupNavigationBar {
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
-    [button setTitle:@"" forState:UIControlStateNormal];
-    [button setImage:[UIImage imageNamed:@"iconPlus"] forState:UIControlStateNormal];
-    button.frame = CGRectMake(0, 0, 30, 30);
-    [button addTarget:self action:@selector(createNewChat) forControlEvents:UIControlEventTouchUpInside];
-    self.createChatButton = button;
     
-    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithCustomView:button];
-    self.navigationItem.rightBarButtonItem = item;
-    self.navigationItem.title = @"Chats";
+    [[MVChatManager sharedInstance] addChatListener:self];
+    self.chats = [[MVChatManager sharedInstance] chatsList];
 }
 
 - (void)setupSearchController {
     self.searchResultsController = [MVChatsListSearchViewController loadFromStoryboardWithDelegate:self];
-    
     self.searchController = [[UISearchController alloc] initWithSearchResultsController:self.searchResultsController];
     self.searchController.searchResultsUpdater = self;
     self.searchController.dimsBackgroundDuringPresentation = NO;
@@ -75,17 +52,17 @@
 }
 
 #pragma mark - Data handling
+- (void)updateChats {
+    self.chats = [[MVChatManager sharedInstance] chatsList];
+    [self.chatsList reloadData];
+}
+
 - (void)insertNewChat:(MVChatModel *)chat {
     NSMutableArray *chats = [self.chats mutableCopy];
     [chats insertObject:chat atIndex:0];
     self.chats = [chats copy];
     NSIndexPath *insertPath = [NSIndexPath indexPathForRow:0 inSection:0];
     [self.chatsList insertRowsAtIndexPaths:@[insertPath] withRowAnimation:UITableViewRowAnimationBottom];
-}
-
-- (void)updateChats {
-    self.chats = [[MVChatManager sharedInstance] chatsList];
-    [self.chatsList reloadData];
 }
 
 - (void)removeChat:(MVChatModel *)chat {
@@ -175,8 +152,7 @@
 }
 
 #pragma mark - Create chat
-- (void)createNewChat {
-//    UINavigationController *rootNavigationController = self.navigationController.navigationController;
+- (IBAction)createNewChat:(id)sender {
     MVContactsListController *contactsList = [MVContactsListController loadFromStoryboardWithMode:MVContactsListControllerModeSelectable andDoneAction:^(NSArray<MVContactModel *> *selectedContacts) {
         MVChatSettingsViewController *settings = [MVChatSettingsViewController loadFromStoryboardWithContacts:selectedContacts andDoneAction:^(NSArray<MVContactModel *> *chatContacts, NSString *chatTitle, DBAttachment *avatarImage) {
             [[MVChatManager sharedInstance] createChatWithContacts:chatContacts title:chatTitle andCompletion:^(MVChatModel *chat) {
@@ -197,7 +173,7 @@
     MVOverlayMenuController *menu = [MVOverlayMenuController loadFromStoryboard];
     NSMutableArray *menuElements = [NSMutableArray new];
     [menuElements addObject:[MVOverlayMenuElement elementWithTitle:@"Create chat" action:^{
-        [self createNewChat];
+        [self createNewChat:nil];
     }]];
     [menuElements addObject:[MVOverlayMenuElement elementWithTitle:@"Update avatars" action:^{
         [[MVUpdatesProvider sharedInstance] performAvatarsUpdate];

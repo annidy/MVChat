@@ -21,6 +21,7 @@
 @property (strong, nonatomic) NSMutableDictionary *chatsMessagesPages;
 @property (strong, nonatomic) NSMutableSet *cachedChatIds;
 @property (strong, nonatomic) dispatch_queue_t managerQueue;
+@property (strong, nonatomic) NSMutableArray *chatsListeners;
 @end
 
 @implementation MVChatManager
@@ -42,11 +43,26 @@ static MVChatManager *sharedManager;
         _chatsMessages = [NSMutableDictionary new];
         _chatsMessagesPages = [NSMutableDictionary new];
         _cachedChatIds = [NSMutableSet new];
+        _chatsListeners = [NSMutableArray new];
     }
     
     return self;
 }
 
+#pragma  mark - listeners
+- (void)addChatListener:(id<MVChatsUpdatesListener>)listener {
+    [self.chatsListeners addObject:[NSValue valueWithNonretainedObject:listener]];
+    [self removeEmptyChatListeners];
+}
+
+- (void)removeEmptyChatListeners {
+    NSArray *copy = self.chatsListeners.copy;
+    for (NSValue *value in copy) {
+        if (!value.nonretainedObjectValue) {
+            [self.chatsListeners removeObject:value];
+        }
+    }
+}
 #pragma mark - Caching
 - (void)loadAllChats {
     [[MVDatabaseManager sharedInstance] allChats:^(NSArray<MVChatModel *> *chats) {
@@ -55,7 +71,9 @@ static MVChatManager *sharedManager;
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.chatsListener updateChats];
+            for (NSValue *value in self.chatsListeners) {
+                [value.nonretainedObjectValue updateChats];
+            }
         });
     }];
 }
@@ -135,7 +153,9 @@ static MVChatManager *sharedManager;
         [self.chats insertObject:chat atIndex:0];
     }
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self.chatsListener insertNewChat:chat];
+        for (NSValue *value in self.chatsListeners) {
+            [value.nonretainedObjectValue insertNewChat:chat];
+        }
     });
 }
 
@@ -152,7 +172,9 @@ static MVChatManager *sharedManager;
         }
     };
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self.chatsListener updateChat:chat withSorting:sorting newIndex:newIndex];
+        for (NSValue *value in self.chatsListeners) {
+            [value.nonretainedObjectValue updateChat:chat withSorting:sorting newIndex:newIndex];
+        }
     });
 }
 
@@ -165,7 +187,9 @@ static MVChatManager *sharedManager;
     }
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self.chatsListener removeChat:chat];
+        for (NSValue *value in self.chatsListeners) {
+            [value.nonretainedObjectValue removeChat:chat];
+        }
     });
 }
 
@@ -287,7 +311,9 @@ static MVChatManager *sharedManager;
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.chatsListener updateChats];
+            for (NSValue *value in self.chatsListeners) {
+                [value.nonretainedObjectValue updateChats];
+            }
         });
     });
 }
@@ -449,7 +475,9 @@ static MVChatManager *sharedManager;
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.chatsListener updateChats];
+            for (NSValue *value in self.chatsListeners) {
+                [value.nonretainedObjectValue updateChats];
+            }
         });
     });
 }
