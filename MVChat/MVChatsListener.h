@@ -17,8 +17,9 @@
 @end
 
 @protocol MVChatsUpdatesListener <NSObject>
+- (void)updateChat:(MVChatModel *)chat withSorting:(BOOL)sorting newIndex:(NSUInteger)newIndex;
+@optional
 - (void)updateChats;
 - (void)insertNewChat:(MVChatModel *)chat;
-- (void)updateChat:(MVChatModel *)chat withSorting:(BOOL)sorting newIndex:(NSUInteger)newIndex;
 - (void)removeChat:(MVChatModel *)chat;
 @end

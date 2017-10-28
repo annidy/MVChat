@@ -72,7 +72,9 @@ static MVChatManager *sharedManager;
         
         dispatch_async(dispatch_get_main_queue(), ^{
             for (NSValue *value in self.chatsListeners) {
-                [value.nonretainedObjectValue updateChats];
+                if ([value.nonretainedObjectValue respondsToSelector:@selector(updateChats)]) {
+                    [value.nonretainedObjectValue updateChats];
+                }
             }
         });
     }];
@@ -154,7 +156,9 @@ static MVChatManager *sharedManager;
     }
     dispatch_async(dispatch_get_main_queue(), ^{
         for (NSValue *value in self.chatsListeners) {
-            [value.nonretainedObjectValue insertNewChat:chat];
+            if ([value.nonretainedObjectValue respondsToSelector:@selector(insertNewChat:)]) {
+                [value.nonretainedObjectValue insertNewChat:chat];
+            }
         }
     });
 }
@@ -173,7 +177,9 @@ static MVChatManager *sharedManager;
     };
     dispatch_async(dispatch_get_main_queue(), ^{
         for (NSValue *value in self.chatsListeners) {
-            [value.nonretainedObjectValue updateChat:chat withSorting:sorting newIndex:newIndex];
+            if ([value.nonretainedObjectValue respondsToSelector:@selector(updateChat:withSorting:newIndex:)]) {
+                [value.nonretainedObjectValue updateChat:chat withSorting:sorting newIndex:newIndex];
+            }
         }
     });
 }
@@ -188,7 +194,9 @@ static MVChatManager *sharedManager;
     
     dispatch_async(dispatch_get_main_queue(), ^{
         for (NSValue *value in self.chatsListeners) {
-            [value.nonretainedObjectValue removeChat:chat];
+            if ([value.nonretainedObjectValue respondsToSelector:@selector(removeChat:)]) {
+                [value.nonretainedObjectValue removeChat:chat];
+            }
         }
     });
 }
@@ -312,7 +320,9 @@ static MVChatManager *sharedManager;
         
         dispatch_async(dispatch_get_main_queue(), ^{
             for (NSValue *value in self.chatsListeners) {
-                [value.nonretainedObjectValue updateChats];
+                if ([value.nonretainedObjectValue respondsToSelector:@selector(updateChats)]) {
+                    [value.nonretainedObjectValue updateChats];
+                }
             }
         });
     });
@@ -476,7 +486,9 @@ static MVChatManager *sharedManager;
         
         dispatch_async(dispatch_get_main_queue(), ^{
             for (NSValue *value in self.chatsListeners) {
-                [value.nonretainedObjectValue updateChats];
+                if ([value.nonretainedObjectValue respondsToSelector:@selector(updateChats)]) {
+                    [value.nonretainedObjectValue updateChats];
+                }
             }
         });
     });
