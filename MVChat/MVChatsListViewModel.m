@@ -185,9 +185,9 @@
         } else {
             return (update.type == MVAvatarUpdateTypeChat && [update.id isEqualToString:chat.id]);
         }
-    }] map:^id (MVAvatarUpdate *update) {
-        return update.avatar;
-    }] takeUntil:viewModel.rac_willDeallocSignal];
+    }] takeUntil:viewModel.rac_willDeallocSignal] subscribeNext:^(MVAvatarUpdate *update) {
+        viewModel.avatar = update.avatar;
+    }];
     
     return viewModel;
 }
