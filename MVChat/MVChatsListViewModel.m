@@ -15,52 +15,151 @@
 #import <ReactiveObjC.h>
 
 @implementation MVChatsListUpdate : NSObject
-- (instancetype)initWithType:(MVChatsListUpdateType)type start:(NSIndexPath *)start end:(NSIndexPath *)end {
++ (instancetype)insertUpdateWithIndex:(NSIndexPath *)index {
+    return [[MVChatsListUpdate alloc] initWithType:MVChatsListUpdateTypeInsert startIndex:nil endIndex:nil insertIndex:index deleteIndex:nil reloadIndex:nil];
+}
+
++ (instancetype)deleteUpdateWithIndex:(NSIndexPath *)index {
+    return [[MVChatsListUpdate alloc] initWithType:MVChatsListUpdateTypeDelete startIndex:nil endIndex:nil insertIndex:nil deleteIndex:index reloadIndex:nil];
+}
+
++ (instancetype)reloadAllUpdate {
+    return [[MVChatsListUpdate alloc] initWithType:MVChatsListUpdateTypeReloadAll startIndex:nil endIndex:nil insertIndex:nil deleteIndex:nil reloadIndex:nil];
+}
+
++ (instancetype)moveUpdateWithStartIndex:(NSIndexPath *)start endIndex:(NSIndexPath *)end {
+    return [[MVChatsListUpdate alloc] initWithType:MVChatsListUpdateTypeMove startIndex:start endIndex:end insertIndex:nil deleteIndex:nil reloadIndex:nil];
+}
+
++ (instancetype)reloadUpdateWithIndex:(NSIndexPath *)index {
+    return [[MVChatsListUpdate alloc] initWithType:MVChatsListUpdateTypeMove startIndex:nil endIndex:nil insertIndex:nil deleteIndex:nil reloadIndex:index];
+}
+
+- (instancetype)initWithType:(MVChatsListUpdateType)type startIndex:(NSIndexPath *)start endIndex:(NSIndexPath *)end insertIndex:(NSIndexPath *)insert deleteIndex:(NSIndexPath *)delete reloadIndex:(NSIndexPath *)reload {
     if (self = [super init]) {
         _updateType = type;
         _startIndexPath = start;
         _endIndexPath = end;
+        _insertIndexPath = insert;
+        _removeIndexPath = delete;
+        _reloadIndexPath = reload;
     }
     
     return self;
 }
 @end
 
-@interface MVChatsListViewModel () <MVChatsUpdatesListener>
+@interface MVChatsListViewModel ()
 @property (strong, nonatomic, readwrite) NSArray *chats;
 @property (strong, nonatomic, readwrite) NSArray *filteredChats;
 @property (strong, nonatomic, readwrite) NSArray *popularChats;
-@property (strong, nonatomic) RACSubject *updateSubject;
 @property (assign, nonatomic, readwrite) BOOL shouldShowPopularData;
+@property (strong, nonatomic, readwrite) NSArray *listUpdates;
 @end
 
 @implementation MVChatsListViewModel
 #pragma mark - Lifecycle
 - (instancetype)init {
     if (self = [super init]) {
-        [self setup];
+        [self setupBindings];
     }
     
     return self;
 }
 
-- (void)setup {
-    self.updateSubject = [RACSubject subject];
-    self.updateSignal = [self.updateSubject deliverOnMainThread];
+- (void)setupBindings {
+    MVChatManager *chatManager = [MVChatManager sharedInstance];
+    RACScheduler *viewModelScheduler = chatManager.viewModelScheduler;
+    RACSignal *chatUpdateSignal = [chatManager.chatUpdateSignal deliverOn:viewModelScheduler];
     
-    RAC(self, shouldShowPopularData) = [[RACObserve(self, filteredChats) map:^id _Nullable(NSArray *chats) {
+    self.chats = [self viewModelsForChats:chatManager.chatsList];
+    self.listUpdates = @[[MVChatsListUpdate reloadAllUpdate]];
+    
+    @weakify(self);
+    RACSignal *reloadSignal = [[[[chatUpdateSignal filter:^BOOL(MVChatUpdate *listUpdate) {
+        return listUpdate.updateType == ChatUpdateTypeReload;
+    }] map:^id(MVChatUpdate *listUpdate) {
+        @strongify(self);
+        return [self viewModelsForChats:chatManager.chatsList];
+    }] doNext:^(NSArray *models) {
+        @strongify(self);
+        self.chats = models;
+    }] map:^id (NSArray *models) {
+        return @[[MVChatsListUpdate reloadAllUpdate]];
+    }];
+    
+    RACSignal *insertSignal = [[[[chatUpdateSignal filter:^BOOL(MVChatUpdate *listUpdate) {
+        return listUpdate.updateType == ChatUpdateTypeInsert;
+    }] map:^id (MVChatUpdate *listUpdate) {
+        @strongify(self);
+        return [self viewModelForChat:listUpdate.chat];
+    }] doNext:^(MVChatsListViewModel *model) {
+        @strongify(self);
+        NSMutableArray *chats = [self.chats mutableCopy];
+        [chats insertObject:model atIndex:0];
+        self.chats = [chats copy];
+    }] map:^id (MVChatsListViewModel *model) {
+        return @[[MVChatsListUpdate insertUpdateWithIndex:[NSIndexPath indexPathForRow:0 inSection:0]]];
+    }];
+    
+    RACSignal *deleteSignal = [[[[[chatUpdateSignal filter:^BOOL(MVChatUpdate *listUpdate) {
+        return listUpdate.updateType == ChatUpdateTypeDelete;
+    }] map:^id(MVChatUpdate *listUpdate) {
+        @strongify(self);
+        return @([self indexOfChat:listUpdate.chat]);
+    }] filter:^BOOL(NSNumber *index) {
+        return index.integerValue != NSNotFound;
+    }] doNext:^(NSNumber *index) {
+        @strongify(self);
+        NSMutableArray *chats = [self.chats mutableCopy];
+        [chats removeObjectAtIndex:index.integerValue];
+        self.chats = [chats copy];
+    }] map:^id (NSNumber *index) {
+        return @[[MVChatsListUpdate deleteUpdateWithIndex:[NSIndexPath indexPathForRow:index.integerValue inSection:0]]];
+    }];
+    
+    RACSignal *modifySignal = [[[[chatUpdateSignal filter:^BOOL(MVChatUpdate *listUpdate) {
+        return listUpdate.updateType == ChatUpdateTypeModify;
+    }] map:^id (MVChatUpdate *listUpdate) {
+        @strongify(self);
+        return RACTuplePack(@(listUpdate.sorting), [self viewModelForChat:listUpdate.chat], @([self indexOfChat:listUpdate.chat]), @(listUpdate.index));
+    }] doNext:^(RACTuple *tuple) {
+        RACTupleUnpack(NSNumber *sorting, MVChatsListCellViewModel *model, NSNumber *oldIndex, NSNumber *newIndex) = tuple;
+        @strongify(self);
+        NSMutableArray *chats = [self.chats mutableCopy];
+        if (sorting.boolValue) {
+            [chats removeObjectAtIndex:oldIndex.integerValue];
+            [chats insertObject:model atIndex:newIndex.integerValue];
+        } else {
+            [chats replaceObjectAtIndex:oldIndex.integerValue withObject:model];
+        }
+        self.chats = [chats copy];
+    }] map:^id (RACTuple *tuple) {
+        RACTupleUnpack(NSNumber *sorting, MVChatsListCellViewModel *model, NSNumber *oldIndex, NSNumber *newIndex) = tuple;
+        NSMutableArray *updates = [NSMutableArray new];
+        if (sorting.boolValue) {
+            NSIndexPath *oldIndexPath = [NSIndexPath indexPathForRow:oldIndex.integerValue inSection:0];
+            NSIndexPath *newIndexPath = [NSIndexPath indexPathForRow:newIndex.integerValue inSection:0];
+            MVChatsListUpdate *move = [MVChatsListUpdate moveUpdateWithStartIndex:oldIndexPath endIndex:newIndexPath];
+            [updates addObject:move];
+        }
+        NSInteger rowToReload = sorting.boolValue? newIndex.integerValue : oldIndex.integerValue;
+        MVChatsListUpdate *reload = [MVChatsListUpdate reloadUpdateWithIndex:[NSIndexPath indexPathForRow:rowToReload inSection:0]];
+        [updates addObject:reload];
+        return updates.copy;
+    }];
+    
+    RAC(self, listUpdates) = [RACSignal merge:@[reloadSignal, insertSignal, deleteSignal, modifySignal]];
+    
+    RAC(self, shouldShowPopularData) = [[RACObserve(self, filteredChats) map:^id(NSArray *chats) {
         return @((BOOL)chats);
     }] not];
-    
-    [MVChatManager sharedInstance].chatsListener = self;
-    [self updateChats];
 }
 
 #pragma mark - Data handling
 - (MVChatsListCellViewModel *)viewModelForChat:(MVChatModel *)chat {
     MVChatsListCellViewModel *viewModel = [MVChatsListCellViewModel new];
     viewModel.chat = chat;
-    
     if (chat.isPeerToPeer) {
         viewModel.title = chat.getPeer.name;
     } else {
@@ -79,75 +178,27 @@
         viewModel.avatar = image;
     }];
     
-    [[[MVFileManager sharedInstance].avatarUpdateSignal filter:^BOOL(MVAvatarUpdate *update) {
+    RAC(viewModel, avatar) =
+    [[[[MVFileManager sharedInstance].avatarUpdateSignal filter:^BOOL(MVAvatarUpdate *update) {
         if (chat.isPeerToPeer) {
             return (update.type == MVAvatarUpdateTypeContact && [update.id isEqualToString:chat.getPeer.id]);
         } else {
             return (update.type == MVAvatarUpdateTypeChat && [update.id isEqualToString:chat.id]);
         }
-    }] subscribeNext:^(MVAvatarUpdate *update) {
-        viewModel.avatar = update.avatar;
-    }];
+    }] map:^id (MVAvatarUpdate *update) {
+        return update.avatar;
+    }] takeUntil:viewModel.rac_willDeallocSignal];
     
     return viewModel;
 }
 
-#pragma mark - Chats Listener
-- (void)updateChats {
-    @weakify(self);
-    self.chats = [[[MVChatManager sharedInstance].chatsList.rac_sequence.signal map:^id (MVChatModel *chat) {
-        @strongify(self);
-        return [self viewModelForChat:chat];
-    }] toArray];
-    
-    MVChatsListUpdate *update = [[MVChatsListUpdate alloc] initWithType:MVChatsListUpdateTypeReloadAll start:nil end:nil];
-    [self.updateSubject sendNext:update];
-}
-
-- (void)insertNewChat:(MVChatModel *)chat {
-    NSMutableArray *chats = [self.chats mutableCopy];
-    [chats insertObject:[self viewModelForChat:chat] atIndex:0];
-    self.chats = [chats copy];
-    
-    MVChatsListUpdate *update = [[MVChatsListUpdate alloc] initWithType:MVChatsListUpdateTypeInsert start:[NSIndexPath indexPathForRow:0 inSection:0] end:nil];
-    [self.updateSubject sendNext:update];
-}
-
-- (void)removeChat:(MVChatModel *)chat {
-    NSUInteger index = [self indexOfChat:chat];
-    if (index != NSNotFound) {
-        NSMutableArray *chats = [self.chats mutableCopy];
-        [chats removeObjectAtIndex:index];
-        self.chats = [chats copy];
-        MVChatsListUpdate *update = [[MVChatsListUpdate alloc] initWithType:MVChatsListUpdateTypeDelete start:[NSIndexPath indexPathForRow:index inSection:0] end:nil];
-        [self.updateSubject sendNext:update];
+- (NSArray <MVChatsListCellViewModel *> *)viewModelsForChats:(NSArray <MVChatModel *> *)chats {
+    NSMutableArray *models = [NSMutableArray new];
+    for (MVChatModel *chat in chats) {
+        [models addObject:[self viewModelForChat:chat]];
     }
+    return [models copy];
 }
-
-- (void)updateChat:(MVChatModel *)chat withSorting:(BOOL)sorting newIndex:(NSUInteger)newIndex {
-    NSUInteger index = [self indexOfChat:chat];
-    NSMutableArray *chats = [self.chats mutableCopy];
-    MVChatsListCellViewModel *model = [self viewModelForChat:chat];
-    
-    if (sorting) {
-        [chats removeObjectAtIndex:index];
-        [chats insertObject:model atIndex:newIndex];
-    } else {
-        [chats replaceObjectAtIndex:index withObject:model];
-    }
-    
-    self.chats = [chats copy];
-    
-    if (sorting) {
-        MVChatsListUpdate *move = [[MVChatsListUpdate alloc] initWithType:MVChatsListUpdateTypeMove start:[NSIndexPath indexPathForRow:index inSection:0] end:[NSIndexPath indexPathForRow:newIndex inSection:0]];
-        [self.updateSubject sendNext:move];
-    }
-    
-    NSInteger rowToReload = sorting? newIndex : index;
-    MVChatsListUpdate *reload = [[MVChatsListUpdate alloc] initWithType:MVChatsListUpdateTypeReload start:[NSIndexPath indexPathForRow:rowToReload inSection:0] end:nil];
-    [self.updateSubject sendNext:reload];
-}
-
 #pragma mark - Search filter
 - (void)updateSearchResultsForSearchController:(UISearchController *)searchController {
     if (searchController.isActive) {

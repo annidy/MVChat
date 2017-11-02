@@ -56,39 +56,43 @@
     [self setupSearchController];
     [self registerForceTouchControllerWithDelegate:self andSourceView:self.createChatButton];
     [self bindAll];
+    [self.chatsList reloadData];
 }
 
 - (void)bindAll {
     @weakify(self);
-    [self.viewModel.updateSignal subscribeNext:^(MVChatsListUpdate *update) {
-        @strongify(self);
-        switch (update.updateType) {
-            case MVChatsListUpdateTypeReloadAll:
-                [self.chatsList reloadData];
-                break;
-                
-            case MVChatsListUpdateTypeInsert:
-                [self.chatsList insertRowsAtIndexPaths:@[update.startIndexPath] withRowAnimation:UITableViewRowAnimationBottom];
-                break;
-                
-            case MVChatsListUpdateTypeDelete:
-                [self.chatsList deleteRowsAtIndexPaths:@[update.startIndexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
-                break;
+    [[[RACObserve(self.viewModel, listUpdates) skip:1] deliverOnMainThread]
+        subscribeNext:^(NSArray *updates) {
+            @strongify(self);
+            for (MVChatsListUpdate *update in updates) {
+                switch (update.updateType) {
+                    case MVChatsListUpdateTypeReloadAll:
+                        [self.chatsList reloadData];
+                        break;
+                        
+                    case MVChatsListUpdateTypeInsert:
+                        [self.chatsList insertRowsAtIndexPaths:@[update.insertIndexPath] withRowAnimation:UITableViewRowAnimationBottom];
+                        break;
+                        
+                    case MVChatsListUpdateTypeDelete:
+                        [self.chatsList deleteRowsAtIndexPaths:@[update.removeIndexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+                        break;
 
-            case MVChatsListUpdateTypeMove:
-                [self.chatsList moveRowAtIndexPath:update.startIndexPath toIndexPath:update.endIndexPath];
-                break;
-                
-            case MVChatsListUpdateTypeReload:
-                [UIView setAnimationsEnabled:NO];
-                [self.chatsList reloadRowsAtIndexPaths:@[update.startIndexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
-                [UIView setAnimationsEnabled:YES];
-                break;
-                
-            default:
-                break;
-        }
-    }];
+                    case MVChatsListUpdateTypeMove:
+                        [self.chatsList moveRowAtIndexPath:update.startIndexPath toIndexPath:update.endIndexPath];
+                        break;
+                        
+                    case MVChatsListUpdateTypeReload:
+                        [UIView setAnimationsEnabled:NO];
+                        [self.chatsList reloadRowsAtIndexPaths:@[update.reloadIndexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+                        [UIView setAnimationsEnabled:YES];
+                        break;
+                        
+                    default:
+                        break;
+                }
+            }
+        }];
     
     [[self.createChatButton rac_signalForControlEvents:UIControlEventTouchUpInside] subscribeNext:^(__kindof UIControl *x) {
         @strongify(self);

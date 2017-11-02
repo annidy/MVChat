@@ -85,7 +85,7 @@
 }
 
 - (void)setupAll {
-    MVChatManager.sharedInstance.messagesListener = self;
+    //MVChatManager.sharedInstance.messagesListener = self;
     self.title = self.chat.title;
     self.chatParticipants = self.chat.participants;
     

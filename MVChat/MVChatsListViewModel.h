@@ -16,22 +16,22 @@ typedef enum : NSUInteger {
     MVChatsListUpdateTypeInsert,
     MVChatsListUpdateTypeDelete,
     MVChatsListUpdateTypeMove
-    
 } MVChatsListUpdateType;
 
 @interface MVChatsListUpdate : NSObject
 @property (assign, nonatomic) MVChatsListUpdateType updateType;
 @property (strong, nonatomic) NSIndexPath *startIndexPath;
 @property (strong, nonatomic) NSIndexPath *endIndexPath;
-- (instancetype)initWithType:(MVChatsListUpdateType)type start:(NSIndexPath *)start end:(NSIndexPath *)end;
+@property (strong, nonatomic) NSIndexPath *insertIndexPath;
+@property (strong, nonatomic) NSIndexPath *removeIndexPath;
+@property (strong, nonatomic) NSIndexPath *reloadIndexPath;
 @end
 
-
 @interface MVChatsListViewModel : NSObject <UISearchResultsUpdating>
+@property (strong, nonatomic, readonly) NSArray <MVChatsListUpdate *> *listUpdates;
 @property (assign, nonatomic, readonly) BOOL shouldShowPopularData;
 @property (strong, nonatomic) MVChatsListCellViewModel *recentSearchChat;
 @property (strong, nonatomic, readonly) NSArray <MVChatsListCellViewModel *> *chats;
 @property (strong, nonatomic, readonly) NSArray <MVChatsListCellViewModel *> *filteredChats;
 @property (strong, nonatomic, readonly) NSArray <MVChatsListCellViewModel *> *popularChats;
-@property (strong, nonatomic) RACSignal *updateSignal;
 @end

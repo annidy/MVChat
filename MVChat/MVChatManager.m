@@ -23,6 +23,20 @@
 @property (strong, nonatomic) NSMutableSet *cachedChatIds;
 @property (strong, nonatomic) dispatch_queue_t managerQueue;
 @property (strong, nonatomic) RACScheduler *managerScheduler;
+
+@property (strong, nonatomic) RACSubject *chatUpdateSubject;
+@property (strong, nonatomic) RACSubject *messageUpdateSubject;
+@end
+
+@implementation MVChatUpdate
++ (instancetype)updateWithType:(ChatUpdateType)type chat:(MVChatModel *)chat sorting:(BOOL)sort index:(NSInteger)index {
+    MVChatUpdate *update = [MVChatUpdate new];
+    update.updateType = type;
+    update.chat = chat;
+    update.sorting = sort;
+    update.index = index;
+    return update;
+}
 @end
 
 @implementation MVChatManager
@@ -47,12 +61,17 @@ static MVChatManager *sharedManager;
         _cachedChatIds = [NSMutableSet new];
         _viewModelScheduler = [[RACTargetQueueScheduler alloc] initWithName:@"com.vm.Chat" queue:_viewModelQueue];
         _managerScheduler = [[RACTargetQueueScheduler alloc] initWithName:@"com.m.chat" queue:_managerQueue];
+        _messageUpdateSubject = [RACSubject new];
+        _chatUpdateSubject = [RACSubject new];
         
         [[[MVFileManager sharedInstance].writerSignal deliverOn:_managerScheduler] subscribeNext:^(RACTuple *tuple) {
             RACTupleUnpack(MVMessageModel *message, DBAttachment *attachment) = tuple;
             message.attachment = attachment;
             [self updateMessage:message];
         }];
+        
+        self.chatUpdateSignal = [self.chatUpdateSubject deliverOn:self.viewModelScheduler];
+        _messageUpdateSignal = [_messageUpdateSubject deliverOn:_viewModelScheduler];
     }
     
     return self;
@@ -65,9 +84,7 @@ static MVChatManager *sharedManager;
             self.chats = [chats mutableCopy];
         }
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.chatsListener updateChats];
-        });
+        [self.chatUpdateSubject sendNext:[MVChatUpdate updateWithType:ChatUpdateTypeReload chat:nil sorting:NO index:0]];
     }];
 }
 
@@ -192,9 +209,8 @@ static MVChatManager *sharedManager;
     @synchronized (self) {
         [self.chats insertObject:chat atIndex:0];
     }
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.chatsListener insertNewChat:chat];
-    });
+    
+    [self.chatUpdateSubject sendNext:[MVChatUpdate updateWithType:ChatUpdateTypeInsert chat:chat sorting:NO index:0]];
 }
 
 - (void)replaceChat:(MVChatModel *)chat withSorting:(BOOL)sorting {
@@ -209,9 +225,7 @@ static MVChatManager *sharedManager;
             [self.chats insertObject:chat atIndex:newIndex];
         }
     };
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.chatsListener updateChat:chat withSorting:sorting newIndex:newIndex];
-    });
+    [self.chatUpdateSubject sendNext:[MVChatUpdate updateWithType:ChatUpdateTypeModify chat:chat sorting:sorting index:newIndex]];
 }
 
 - (void)removeChat:(MVChatModel *)chat {
@@ -222,9 +236,7 @@ static MVChatManager *sharedManager;
         }
     }
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.chatsListener removeChat:chat];
-    });
+    [self.chatUpdateSubject sendNext:[MVChatUpdate updateWithType:ChatUpdateTypeDelete chat:chat sorting:NO index:0]];
 }
 
 - (void)addMessage:(MVMessageModel *)message {
@@ -240,9 +252,7 @@ static MVChatManager *sharedManager;
         }
     }
 
-    if ([self.messagesListener.chatId isEqualToString:message.chatId]) {
-        [self.messagesListener insertNewMessage:message];
-    }
+    [self.messageUpdateSubject sendNext:message];
 }
 
 - (void)updateMessage:(MVMessageModel *)message {
@@ -252,9 +262,7 @@ static MVChatManager *sharedManager;
             @synchronized (self.chatsMessages) {
                 [[self.chatsMessages objectForKey:message.chatId] replaceObjectAtIndex:index withObject:message];
             }
-            if ([self.messagesListener.chatId isEqualToString:message.chatId]) {
-                [self.messagesListener updateMessage:message];
-            }
+            //TODO: update message
         }
     });
 }
@@ -503,9 +511,7 @@ static MVChatManager *sharedManager;
             self.cachedChatIds = [NSMutableSet new];
         }
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.chatsListener updateChats];
-        });
+        [self.chatUpdateSubject sendNext:[MVChatUpdate updateWithType:ChatUpdateTypeReload chat:nil sorting:NO index:0]];
     });
 }
 @end
