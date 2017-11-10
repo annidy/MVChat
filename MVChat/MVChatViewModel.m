@@ -25,7 +25,7 @@
 #import "MVMessagesListUpdate.h"
 #import <DBAttachment.h>
 
-@interface MVChatViewModel() <MVMessagesUpdatesListener>
+@interface MVChatViewModel()
 @property (strong, nonatomic) NSMutableArray <MVMessageCellModel *> *messages;
 @property (assign, nonatomic) BOOL processingMessages;
 @property (assign, nonatomic) BOOL initialLoadComplete;
@@ -65,51 +65,43 @@
             MVMessageCellModel *headerViewModel = [self viewModelForSection:sectionKey];
             BOOL shouldInsertHeader = ![previousSectionKey isEqualToString:sectionKey];
             
-            NSInteger messageIndex = reverse? 0 : rows.count;
-            NSInteger headerIndex = reverse? 0 : rows.count;
+            NSInteger insertIndex = reverse? 0 : rows.count;
             
-            [rows insertObject:viewModel atIndex:messageIndex];
+            [rows insertObject:viewModel atIndex:insertIndex];
             if (shouldInsertHeader) {
-                [rows insertObject:headerViewModel atIndex:headerIndex];
+                [rows insertObject:headerViewModel atIndex:insertIndex];
             }
             
             return shouldInsertHeader;
         };
         
-        [self tryToLoadNextPage];
         [self setupAll];
-        
+        [self tryToLoadNextPage];
     }
     
     return self;
 }
 
 - (void)setupAll {
-    //MVChatManager.sharedInstance.messagesListener = self;
     self.title = self.chat.title;
     self.chatParticipants = self.chat.participants;
-    
     [[MVFileManager sharedInstance] loadThumbnailAvatarForChat:self.chat maxWidth:50 completion:^(UIImage *image) {
         self.avatar = image;
     }];
     
     @weakify(self);
-    RAC(self, avatar) =
-    [[[[MVFileManager sharedInstance] avatarUpdateSignal]
-        filter:^BOOL(MVAvatarUpdate *update) {
-            @strongify(self);
-            if (self.chat.isPeerToPeer) {
-                return [update.id isEqualToString:self.chat.getPeer.id];
-            } else {
-                return [update.id isEqualToString:self.chat.id];
-            }
-        }]
-        map:^id (MVAvatarUpdate *update) {
-            return update.avatar;
-        }];
+    RAC(self, avatar) = [[[[MVFileManager sharedInstance] avatarUpdateSignal] filter:^BOOL(MVAvatarUpdate *update) {
+        @strongify(self);
+        if (self.chat.isPeerToPeer) {
+            return [update.id isEqualToString:self.chat.getPeer.id];
+        } else {
+            return [update.id isEqualToString:self.chat.id];
+        }
+    }] map:^id (MVAvatarUpdate *update) {
+        return update.avatar;
+    }];
     
-    
-    RACSignal *messageTextValid = [RACObserve(self, messageText) map:^id _Nullable(NSString *text) {
+    RACSignal *messageTextValid = [RACObserve(self, messageText) map:^id (NSString *text) {
         return @([text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]].length > 0);
     }];
     
@@ -118,90 +110,91 @@
         return [self sendCommandSignal];
     }];
     
+    [[[MVChatManager sharedInstance].messageUpdateSignal deliverOn:self.scheduler] subscribeNext:^(MVMessageModel *message) {
+        @strongify(self);
+        [self insertNewMessage:message];
+    }];
+    
     NSString *chatId = [self.chat.id copy];
+    [[[MVChatManager sharedInstance].chatUpdateSignal filter:^BOOL(MVChatUpdate *chatUpdate) {
+        return chatUpdate.updateType == ChatUpdateTypeModify && [chatUpdate.chat.id isEqualToString:chatId];
+    }] subscribeNext:^(MVChatUpdate *chatUpdate) {
+        @strongify(self);
+        self.chat = chatUpdate.chat;
+        self.title = chatUpdate.chat.title;
+        self.chatParticipants = chatUpdate.chat.participants;
+    }];
+    
     [self.rac_willDeallocSignal subscribeCompleted:^{
         [[MVChatManager sharedInstance] markChatAsRead:chatId];
     }];
 }
-
 
 #pragma mark - Handle messages
 - (void)tryToLoadNextPage {
     if (self.processingMessages) {
         return;
     }
+    self.processingMessages = YES;
     
     BOOL shouldLoad = (!self.initialLoadComplete || ([[MVChatManager sharedInstance] numberOfPagesInChatWithId:self.chatId]) > self.loadedPageIndex + 1);
     
-    if (shouldLoad) {
-        self.processingMessages = YES;
-        [[MVChatManager sharedInstance] messagesPage:++self.loadedPageIndex forChatWithId:self.chatId withCallback:^(NSArray<MVMessageModel *> *messages) {
-            [self handleNewMessagesPage:messages];
-        }];
+    if (!shouldLoad) {
+        self.processingMessages = NO;
+        return;
     }
-}
-
-- (void)handleNewMessagesPage:(NSArray <MVMessageModel *> *)models {
-    NSMutableArray <MVMessageCellModel *> *messages = self.messages;
-    
-    MVMessageModel *lastLoadedMessage = [messages optionalObjectAtIndex:1].message;
-    MVMessageModel *beforeLastLoadedMessage = [messages optionalObjectAtIndex:2].message;
-    RACTuple *firstTuple = RACTuplePack(beforeLastLoadedMessage, lastLoadedMessage);
     
     @weakify(self);
-    [[[[models.rac_sequence
-        scanWithStart:firstTuple reduceWithIndex:^id (RACTuple *running, MVMessageModel *next, NSUInteger index) {
+    [[[[[MVChatManager sharedInstance] messagesPage:++self.loadedPageIndex forChatWithId:self.chatId] map:^id (NSArray<MVMessageModel *> *models) {
+        @strongify(self);
+        NSMutableArray <MVMessageCellModel *> *messages = self.messages;
+        MVMessageModel *lastLoadedMessage = [messages optionalObjectAtIndex:1].message;
+        MVMessageModel *beforeLastLoadedMessage = [messages optionalObjectAtIndex:2].message;
+        RACTuple *firstTuple = RACTuplePack(beforeLastLoadedMessage, lastLoadedMessage);
+        return [[models.rac_sequence scanWithStart:firstTuple reduceWithIndex:^id (RACTuple *running, MVMessageModel *next, NSUInteger index) {
             if (index == 0) {
                 return RACTuplePack(running.first, running.second, next, @(index));
             } else {
                 return RACTuplePack(running.second, running.third, next, @(index));
             }
-           
-        }]
-        map:^id (RACTuple *tuple) {
-            return RACTuplePack(messages, tuple.first, tuple.second, tuple.third, tuple.fourth);
-        }]
-        signalWithScheduler:self.scheduler]
-        subscribeNext:^(RACTuple *tuple) {
-            RACTupleUnpack(NSMutableArray <MVMessageCellModel *> *rows, MVMessageModel *nextModel, MVMessageModel *currentModel, MVMessageModel *previousModel, NSNumber *idx) = tuple;
-            @strongify(self);
             
-            if (idx.integerValue == 0 && currentModel) {
-                [rows removeObjectAtIndex:0];
-                [rows removeObjectAtIndex:0];
-            }
-        
-            if (currentModel) {
-                self.insertMessage(previousModel, currentModel, nextModel, rows, YES);
-            }
-            
-            if (idx.integerValue == models.count - 1) {
-                self.insertMessage(nil, previousModel, currentModel, rows, YES);
-            }
-        } completed:^{
-            @strongify(self);
-            self.processingMessages = NO;
-            self.initialLoadComplete = YES;
-            self.numberOfProcessedMessages += messages.count;
-            MVMessagesListUpdate *update = [[MVMessagesListUpdate alloc] initWithType:MVMessagesListUpdateTypeReloadAll indexPath:nil rows:[messages copy]];
-            [self.updateSubject sendNext:update];
+        }] map:^id (RACTuple *tuple) {
+            return RACTuplePack(messages, tuple.first, tuple.second, tuple.third, tuple.fourth, @(models.count));
         }];
-}
-
-- (void)updateMessage:(MVMessageModel *)message {
-    //Not used yet
+    }] flattenMap:^__kindof RACSignal *(RACSequence *sequence) {
+        @strongify(self);
+        return [sequence signalWithScheduler:self.scheduler];
+    }] subscribeNext:^(RACTuple *tuple) {
+        RACTupleUnpack(NSMutableArray <MVMessageCellModel *> *rows, MVMessageModel *nextModel, MVMessageModel *currentModel, MVMessageModel *previousModel, NSNumber *idx, NSNumber *count) = tuple;
+        @strongify(self);
+        if (idx.integerValue == 0 && currentModel) {
+            [rows removeObjectAtIndex:0];
+            [rows removeObjectAtIndex:0];
+        }
+        if (currentModel) {
+            self.insertMessage(previousModel, currentModel, nextModel, rows, YES);
+        }
+        if (idx.integerValue == count.integerValue - 1) {
+            self.insertMessage(nil, previousModel, currentModel, rows, YES);
+        }
+    } completed:^{
+        @strongify(self);
+        self.processingMessages = NO;
+        self.initialLoadComplete = YES;
+        self.numberOfProcessedMessages += self.messages.count;
+        MVMessagesListUpdate *update = [[MVMessagesListUpdate alloc] initWithType:MVMessagesListUpdateTypeReloadAll indexPath:nil rows:[self.messages copy]];
+        [self.updateSubject sendNext:update];
+    }];
 }
 
 - (void)insertNewMessage:(MVMessageModel *)message {
-    dispatch_async(self.queue, ^{
-        self.processingMessages = YES;
-        [self handleNewMessage:message];
-        self.numberOfProcessedMessages ++;
-        if (self.numberOfProcessedMessages % MVMessagesPageSize == 0) {
-            self.loadedPageIndex++;
-        }
-        self.processingMessages = NO;
-    });
+    self.processingMessages = YES;
+    [self handleNewMessage:message];
+    self.numberOfProcessedMessages++;
+    if (self.numberOfProcessedMessages % MVMessagesPageSize == 0) {
+        self.loadedPageIndex++;
+    }
+    self.processingMessages = NO;
 }
 
 - (void)handleNewMessage:(MVMessageModel *)message {
@@ -229,53 +222,61 @@
 }
 
 #pragma mark - Message helpers
-- (MVMessageCellModel *)viewModelForMessage:(MVMessageModel *)message previousMessage:(MVMessageModel *)previousMessage nextMessage:(MVMessageModel *)nextMessage {
-    MVMessageCellModel *viewModel = [MVMessageCellModel new];
-    switch (message.type) {
+- (MVMessageCellModelType)modelTypeForMessageType:(MVMessageType)type {
+    switch (type) {
         case MVMessageTypeText:
-            viewModel.type = MVMessageCellModelTypeTextMessage;
-            viewModel.tailType = [self messageCellTailTypeForModel:message previousModel:previousMessage nextModel:nextMessage];
-            
+            return MVMessageCellModelTypeTextMessage;
             break;
         case MVMessageTypeMedia:
-            viewModel.type = MVMessageCellModelTypeMediaMessage;
-            viewModel.tailType = [self messageCellTailTypeForModel:message previousModel:previousMessage nextModel:nextMessage];
+            return MVMessageCellModelTypeMediaMessage;
             break;
         case MVMessageTypeSystem:
-            viewModel.type = MVMessageCellModelTypeSystemMessage;
+            return MVMessageCellModelTypeSystemMessage;
             break;
+    }
+}
+
+- (MVMessageCellModelDirection)modeldirectionForMessageDirection:(MessageDirection)direction {
+    switch (direction) {
+        case MessageDirectionIncoming:
+            return MVMessageCellModelDirectionIncoming;
+            break;
+        case MessageDirectionOutgoing:
+            return MVMessageCellModelDirectionOutgoing;
+            break;
+    }
+}
+
+- (MVMessageCellModel *)viewModelForMessage:(MVMessageModel *)message previousMessage:(MVMessageModel *)previousMessage nextMessage:(MVMessageModel *)nextMessage {
+    MVMessageCellModel *viewModel = [MVMessageCellModel new];
+    viewModel.type = [self modelTypeForMessageType:message.type];
+    if (message.type != MVMessageTypeSystem) {
+        viewModel.tailType = [self messageCellTailTypeForModel:message previousModel:previousMessage nextModel:nextMessage];
     }
     viewModel.message = message;
     viewModel.text = message.text;
-    switch (message.direction) {
-        case MessageDirectionIncoming:
-            viewModel.direction = MVMessageCellModelDirectionIncoming;
-            break;
-        case MessageDirectionOutgoing:
-            viewModel.direction = MVMessageCellModelDirectionOutgoing;
-            break;
+    [viewModel calculateSize];
+    if (message.type == MVMessageTypeMedia) {
+        [message.attachment thumbnailImageWithMaxWidth:viewModel.width completion:^(UIImage *resultImage) {
+            viewModel.mediaImage = resultImage;
+        }];
     }
-    
+    viewModel.direction = [self modeldirectionForMessageDirection:message.direction];
     viewModel.sendDateString = [NSString messageTimeFromDate:message.sendDate];
     
-    [viewModel calculateSize];
     
     if (message.direction == MessageDirectionIncoming) {
         [[MVFileManager sharedInstance] loadThumbnailAvatarForContact:message.contact maxWidth:50 completion:^(UIImage *image) {
             viewModel.avatar = image;
         }];
         
-        [[[MVFileManager sharedInstance].avatarUpdateSignal filter:^BOOL(MVAvatarUpdate *update) {
-            return (update.type == MVAvatarUpdateTypeContact && [update.id isEqualToString:message.contact.id]);
-        }] subscribeNext:^(MVAvatarUpdate *update) {
-            viewModel.avatar = update.avatar;
-        }];
-    }
-    
-    if (message.type == MVMessageTypeMedia) {
-        [message.attachment thumbnailImageWithMaxWidth:viewModel.width completion:^(UIImage *resultImage) {
-            viewModel.mediaImage = resultImage;
-        }];
+        RAC(viewModel, avatar) =
+        [[[[MVFileManager sharedInstance].avatarUpdateSignal filter:^BOOL(MVAvatarUpdate *update) {
+            return (update.type == MVAvatarUpdateTypeContact
+                    && [update.id isEqualToString:message.contact.id]);
+        }] map:^id(MVAvatarUpdate *update) {
+            return update.avatar;
+        }] takeUntil:viewModel.rac_willDeallocSignal];
     }
     
     return viewModel;
@@ -291,7 +292,6 @@
 }
 
 - (MVMessageCellTailType)messageCellTailTypeForModel:(MVMessageModel *)model previousModel:(MVMessageModel *)possiblePreviousModel nextModel:(MVMessageModel *)possibleNextModel {
-    
     MVMessageModel *previousModel;
     MVMessageModel *nextModel;
     
@@ -405,15 +405,13 @@ static NSDateFormatter *dateFormatter;
 }
 
 - (void)imageViewerForMessage:(MVMessageCellModel *)model fromImageView:(UIImageView *)imageView completion:(void (^)(UIViewController *))completion {
-    //[[MVFileManager sharedInstance] loadAttachmentForMessage:model.message completion:^(DBAttachment *attachment) {
-        MVImageViewerViewModel *viewModel = [[MVImageViewerViewModel alloc] initWithSourceImageView:imageView
-                                                                                         attachment:model.message.attachment
-                                                                                           andIndex:0];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            MVChatSharedMediaPageController *imageController = [MVChatSharedMediaPageController loadFromStoryboardWithViewModels:@[viewModel] andStartIndex:0];
-            completion(imageController);
-        });
-    //}];
+    MVImageViewerViewModel *viewModel = [[MVImageViewerViewModel alloc] initWithSourceImageView:imageView
+                                                                                     attachment:model.message.attachment
+                                                                                       andIndex:0];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        MVChatSharedMediaPageController *imageController = [MVChatSharedMediaPageController loadFromStoryboardWithViewModels:@[viewModel] andStartIndex:0];
+        completion(imageController);
+    });
 }
 
 - (DBAttachmentPickerController *)attachmentPicker {

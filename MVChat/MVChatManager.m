@@ -141,6 +141,18 @@ static MVChatManager *sharedManager;
     });
 }
 
+- (RACSignal *)messagesPage:(NSInteger)pageIndex forChatWithId:(NSString *)chatId {
+    return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber>  subscriber) {
+        dispatch_async(self.managerQueue, ^{
+            [self syncMessagesPage:pageIndex forChatWithId:chatId withCallback:^(NSArray<MVMessageModel *> *messages) {
+                [subscriber sendNext:messages];
+                [subscriber sendCompleted];
+            }];
+        });
+        return nil;
+    }];
+}
+
 - (void)syncMessagesPage:(NSUInteger)pageIndex forChatWithId:(NSString *)chatId withCallback:(void (^)(NSArray <MVMessageModel *> *))callback {
     NSMutableArray *messages;
     @synchronized (self.chatsMessages) {

@@ -55,6 +55,7 @@ typedef enum : NSUInteger {
 - (void)messagesPage:(NSUInteger)pageIndex forChatWithId:(NSString *)chatId withCallback:(void (^)(NSArray <MVMessageModel *> *))callback;
 - (NSUInteger)numberOfPagesInChatWithId:(NSString *)chatId;
 - (void)mediaMessagesForChatWithId:(NSString *)chatId withCallback:(void (^)(NSArray <MVMessageModel *> *))callback;
+- (RACSignal *)messagesPage:(NSInteger)pageIndex forChatWithId:(NSString *)chatId;
 
 #pragma mark - Handle Chats
 - (void)chatWithContact:(MVContactModel *)contact andCompeltion:(void (^)(MVChatModel *))callback;

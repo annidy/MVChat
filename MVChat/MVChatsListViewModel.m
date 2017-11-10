@@ -32,7 +32,7 @@
 }
 
 + (instancetype)reloadUpdateWithIndex:(NSIndexPath *)index {
-    return [[MVChatsListUpdate alloc] initWithType:MVChatsListUpdateTypeMove startIndex:nil endIndex:nil insertIndex:nil deleteIndex:nil reloadIndex:index];
+    return [[MVChatsListUpdate alloc] initWithType:MVChatsListUpdateTypeReload startIndex:nil endIndex:nil insertIndex:nil deleteIndex:nil reloadIndex:index];
 }
 
 - (instancetype)initWithType:(MVChatsListUpdateType)type startIndex:(NSIndexPath *)start endIndex:(NSIndexPath *)end insertIndex:(NSIndexPath *)insert deleteIndex:(NSIndexPath *)delete reloadIndex:(NSIndexPath *)reload {
@@ -178,7 +178,7 @@
         viewModel.avatar = image;
     }];
     
-    RAC(viewModel, avatar) =
+    
     [[[[MVFileManager sharedInstance].avatarUpdateSignal filter:^BOOL(MVAvatarUpdate *update) {
         if (chat.isPeerToPeer) {
             return (update.type == MVAvatarUpdateTypeContact && [update.id isEqualToString:chat.getPeer.id]);

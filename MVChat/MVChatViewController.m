@@ -114,20 +114,8 @@
 - (void)bindAll {
     RAC(self.navigationItem, title) = RACObserve(self.viewModel, title);
     RAC(self.viewModel, messageText) = [self.messageTextField rac_textSignal];
-    
-    self.sendButton.rac_command = self.viewModel.sendCommand;
-    
+  
     @weakify(self);
-    [[[self.attatchButton rac_signalForControlEvents:UIControlEventTouchUpInside] 
-        map:^id (UIControl *value) {
-            @strongify(self);
-            return self.viewModel.attachmentPicker;
-        }] 
-        subscribeNext:^(DBAttachmentPickerController *controller) {
-            @strongify(self);
-            [controller presentOnViewController:self];
-        }];
-    
     [RACObserve(self.viewModel, messageText) subscribeNext:^(NSString *text) {
         @strongify(self);
         self.messageTextField.text = text;
@@ -138,16 +126,26 @@
         [self.avatarButton setImage:image forState:UIControlStateNormal];
     }];
     
-    [[[self.avatarButton rac_signalForControlEvents:UIControlEventTouchUpInside]
-        map:^id (UIControl *value) {
-            @strongify(self);
-            return [self.viewModel relevantSettingsController];
-        }]
-        subscribeNext:^(UIViewController *viewController) {
-            @strongify(self);
-            [self.navigationController pushViewController:viewController animated:YES];
-        }];
+self.sendButton.rac_command = self.viewModel.sendCommand;
+[[[self.attatchButton rac_signalForControlEvents:UIControlEventTouchUpInside]
+    map:^id (UIControl *value) {
+        @strongify(self);
+        return self.viewModel.attachmentPicker;
+    }]
+    subscribeNext:^(DBAttachmentPickerController *controller) {
+        @strongify(self);
+        [controller presentOnViewController:self];
+    }];
 
+[[[self.avatarButton rac_signalForControlEvents:UIControlEventTouchUpInside]
+    map:^id (UIControl *value) {
+        @strongify(self);
+        return [self.viewModel relevantSettingsController];
+    }]
+    subscribeNext:^(UIViewController *viewController) {
+        @strongify(self);
+        [self.navigationController pushViewController:viewController animated:YES];
+    }];
 
     __block BOOL processingNewPage = NO;
     __block BOOL autoscroll = YES;
