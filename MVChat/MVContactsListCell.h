@@ -8,7 +8,8 @@
 
 #import <UIKit/UIKit.h>
 @class MVContactModel;
+@class MVContactsListCellViewModel;
 
 @interface MVContactsListCell : UITableViewCell
-- (void)fillWithContact:(MVContactModel *)contact;
+- (void)fillWithModel:(MVContactsListCellViewModel *)model;
 @end

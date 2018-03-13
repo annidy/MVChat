@@ -1,16 +1,15 @@
 //
-//  MVChatViewController.h
+//  MVMessagesViewController.h
 //  MVChat
 //
-//  Created by Mark Vasiv on 30/04/2017.
+//  Created by Mark Vasiv on 01/05/2017.
 //  Copyright © 2017 Mark Vasiv. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
 #import "MVViewController.h"
-@class MVChatModel;
+@class MVChatViewModel;
 
 @interface MVChatViewController : MVViewController
-@property (strong, nonatomic) MVChatModel *chat;
-+ (instancetype)loadFromStoryboardWithChat:(MVChatModel *)chat;
++ (instancetype)loadFromStoryboardWithViewModel:(MVChatViewModel *)viewModel;
 @end

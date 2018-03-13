@@ -11,9 +11,12 @@
 #import "MVContactsListener.h"
 
 @class MVContactModel;
+@class RACSignal;
 
 @interface MVContactManager : NSObject
 @property (weak, nonatomic) id <MVContactsUpdatesListener> updatesListener;
+@property (strong, nonatomic) RACSignal *lastSeenTimeSignal;
+
 + (instancetype)sharedInstance;
 - (void)loadContacts;
 - (NSArray <MVContactModel *> *)getAllContacts;

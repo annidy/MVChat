@@ -7,10 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "MVSearchProviderDelegate.h"
 #import "MVViewController.h"
+@class MVContactsListViewModel;
 
 @interface MVContactsListSearchViewController : MVViewController
-@property (strong, nonatomic) NSArray *filteredContacts;
-+ (instancetype)loadFromStoryboardWithDelegate:(id <MVSearchProviderDelegate>)delegate;
++ (instancetype)loadFromStoryboardWithViewModel:(MVContactsListViewModel *)viewModel;
 @end

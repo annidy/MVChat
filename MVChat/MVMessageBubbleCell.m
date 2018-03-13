@@ -10,29 +10,38 @@
 #import "MVMessageModel.h"
 #import "NSString+Helpers.h"
 #import "MVFileManager.h"
-#import "MVMessageCellProtocol.h"
+#import <ReactiveObjC.h>
 
-static CGFloat MVBubbleWidthMultiplierOutgoing = 0.8;
-static CGFloat MVBubbleWidthMultiplierIncoming = 0.7;
-static CGFloat MVBubbleVerticalOffsetDefault = 7;
-static CGFloat MVBubbleVerticalOffsetTailess = 2;
-static CGFloat MVAvatarImageSide = 40;
-static CGFloat MVAvatarImageOffset = 5;
-static CGFloat MVBubbleDefaultHorizontalOffset = 10;
-static CGFloat MVBubbleMinSize = 36;
-static CGFloat MVBubbleMinTailessSize = 30;
+#define MVCacheBubbleImageDef(name, incoming, fileName) \
+    static UIImage *name() \
+    { \
+        static UIImage *image = nil; \
+        static dispatch_once_t onceToken; \
+        dispatch_once(&onceToken, ^ \
+        { \
+            image = [[UIImage imageNamed:fileName] stretchableImageWithLeftCapWidth:incoming ? 23 : (40 - 23) topCapHeight:16]; \
+        }); \
+        return image; \
+    }
+
+MVCacheBubbleImageDef(incomingImage, true, @"bubbleIncoming")
+MVCacheBubbleImageDef(incomingTaillessImage, true, @"bubbleIncomingTailless")
+MVCacheBubbleImageDef(outgoingImage, false, @"bubbleOutgoing")
+MVCacheBubbleImageDef(outgoingTaillessImage, false, @"bubbleOutgoingTailless")
 
 @interface MVMessageBubbleCell()
 @property (strong, nonatomic) NSLayoutConstraint *timeLeftConstraint;
+@property (strong, nonatomic) NSLayoutConstraint *bubbleWidthConstraint;
 @property (strong, nonatomic) UIImageView *avatarImage;
+@property (strong, nonatomic) UITapGestureRecognizer *tapRecognizer;
 @end
 
 @implementation MVMessageBubbleCell
 #pragma mark - Lifecycle
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
-        _direction = [[self class] directionForReuseIdentifier:reuseIdentifier];
-        _tailType = [[self class] tailTypeForReuseIdentifier:reuseIdentifier];
+        _direction = [MVMessageCellModel directionForReuseIdentifier:reuseIdentifier];
+        _tailType = [MVMessageCellModel tailTypeForReuseIdentifier:reuseIdentifier];
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         [self setupViews];
         [self setupTapRecognizers];
@@ -46,10 +55,6 @@ static CGFloat MVBubbleMinTailessSize = 30;
     self.avatarImage.image = nil;
 }
 
-- (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 #pragma mark - Build views
 - (void)setupViews {
     self.backgroundColor = [UIColor clearColor];
@@ -58,11 +63,8 @@ static CGFloat MVBubbleMinTailessSize = 30;
     
     [self.contentView addSubview:self.bubbleImageView];
     [self.contentView addSubview:self.timeLabel];
-    
-    [[self.bubbleImageView.widthAnchor constraintLessThanOrEqualToAnchor:self.contentView.widthAnchor multiplier:[self bubbleWidthMultiplier]] setActive:YES];
-    CGFloat minBubbleWidth = (self.tailType == MVMessageCellTailTypeTailess || self.tailType == MVMessageCellTailTypeFirstTailess)? MVBubbleMinTailessSize : MVBubbleMinSize;
-    [[self.bubbleImageView.widthAnchor constraintGreaterThanOrEqualToConstant:minBubbleWidth] setActive:YES];
-    
+        
+    [self.bubbleWidthConstraint = [self.bubbleImageView.widthAnchor constraintEqualToConstant:100] setActive:YES];
     [[self.bubbleImageView.topAnchor constraintEqualToAnchor:self.contentView.topAnchor constant:[self bubbleTopOffset]] setActive:YES];
     [[self.bubbleImageView.bottomAnchor constraintEqualToAnchor:self.contentView.bottomAnchor constant:-[self bubbleBottomOffset]] setActive:YES];
     
@@ -92,9 +94,9 @@ static CGFloat MVBubbleMinTailessSize = 30;
 }
 
 - (void)setupTapRecognizers {
-    UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(bubbleTapped:)];
+    self.tapRecognizer = [UITapGestureRecognizer new];
     self.bubbleImageView.userInteractionEnabled = YES;
-    [self.bubbleImageView addGestureRecognizer:tapRecognizer];
+    [self.bubbleImageView addGestureRecognizer:self.tapRecognizer];
 }
 
 - (UIImageView *)buildBubbleImageView {
@@ -135,109 +137,39 @@ static CGFloat MVBubbleMinTailessSize = 30;
 }
 
 - (UIImage *)bubbleImage {
-    UIImage *bubbleImage;
-    UIEdgeInsets insets;
     if (self.tailType == MVMessageCellTailTypeTailess || self.tailType == MVMessageCellTailTypeFirstTailess) {
         if (self.direction == MessageDirectionIncoming) {
-            bubbleImage = [UIImage imageNamed:@"bubbleNewIncomingTailess"];
+            return incomingTaillessImage();
         } else {
-            bubbleImage = [UIImage imageNamed:@"bubbleNewOutgoingTailess"];
+            return outgoingTaillessImage();
         }
         
-        insets = UIEdgeInsetsMake(6, 6, 6, 6);
     } else if (self.direction == MessageDirectionOutgoing) {
-        bubbleImage = [UIImage imageNamed:@"bubbleNewOutgoing"];
-        insets = UIEdgeInsetsMake(6, 6, 6, 11);
+        return outgoingImage();
     } else {
-        bubbleImage = [UIImage imageNamed:@"bubbleNewIncoming"];
-        insets = UIEdgeInsetsMake(6, 11, 6, 6);
+        return incomingImage();
     }
-    CGFloat scale = [UIScreen mainScreen].scale;
-    insets.top *= scale;
-    insets.left *= scale;
-    insets.right *= scale;
-    insets.bottom *= scale;
-    
-    bubbleImage = [[bubbleImage resizableImageWithCapInsets:insets resizingMode:UIImageResizingModeStretch] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-    
-    return bubbleImage;
 }
 
 #pragma mark - Offsets
 - (CGFloat)bubbleTopOffset {
-    return [[self class] bubbleTopOffsetForTailType:self.tailType];
-}
-
-+ (CGFloat)bubbleTopOffsetForTailType:(MVMessageCellTailType)tailType {
-    if (tailType == MVMessageCellTailTypeTailess || tailType == MVMessageCellTailTypeLastTailess) {
-        return MVBubbleVerticalOffsetTailess;
-    } else {
-        return MVBubbleVerticalOffsetDefault;
-    }
+    return [MVMessageCellModel bubbleTopOffsetForTailType:self.tailType];
 }
 
 - (CGFloat)bubbleBottomOffset {
-    return [[self class] bubbleBottomOffsetForTailType:self.tailType];
-}
-
-+ (CGFloat)bubbleBottomOffsetForTailType:(MVMessageCellTailType)tailType {
-    if (tailType == MVMessageCellTailTypeTailess || tailType == MVMessageCellTailTypeFirstTailess) {
-        return MVBubbleVerticalOffsetTailess;
-    } else {
-        return MVBubbleVerticalOffsetDefault;
-    }
+    return [MVMessageCellModel bubbleBottomOffsetForTailType:self.tailType];
 }
 
 - (CGFloat)bubbleWidthMultiplier {
-    return [[self class] bubbleWidthMultiplierForDirection:self.direction];
-}
-
-+ (CGFloat)bubbleWidthMultiplierForDirection:(MessageDirection)direction {
-    if (direction == MessageDirectionOutgoing) {
-        return MVBubbleWidthMultiplierOutgoing;
-    } else {
-        return MVBubbleWidthMultiplierIncoming;
-    }
+    return [MVMessageCellModel bubbleWidthMultiplierForDirection:self.direction];
 }
 
 - (CGFloat)bubbleHorizontalOffset {
-    CGFloat margin = 0;
     if (self.direction == MessageDirectionIncoming) {
-        margin = MVAvatarImageSide + 2 * MVAvatarImageOffset;
+        return MVAvatarImageSide + 2 * MVAvatarImageOffset - MVBubbleTailSize;
     } else {
-        margin = MVBubbleDefaultHorizontalOffset;
+        return MVBubbleDefaultHorizontalOffset;
     }
-    
-    if (self.tailType == MVMessageCellTailTypeDefault || self.tailType == MVMessageCellTailTypeLastTailess) {
-        margin -= MVBubbleTailSize;
-    }
-    
-    return margin;
-}
-
-#pragma mark - Helpers
-+ (MessageDirection)directionForReuseIdentifier:(NSString *)reuseId {
-    if ([reuseId containsString:@"Outgoing"]) {
-        return MessageDirectionOutgoing;
-    } else {
-        return MessageDirectionIncoming;
-    }
-}
-
-+ (MVMessageCellTailType)tailTypeForReuseIdentifier:(NSString *)reuseId {
-    if ([reuseId containsString:@"TailTypeLastTailess"]) {
-        return MVMessageCellTailTypeLastTailess;
-    } else if ([reuseId containsString:@"TailTypeFirstTailess"]) {
-        return MVMessageCellTailTypeFirstTailess;
-    } else if ([reuseId containsString:@"TailTypeTailess"]) {
-        return MVMessageCellTailTypeTailess;
-    } else {
-        return MVMessageCellTailTypeDefault;
-    }
-}
-
-+ (CGFloat)maxContentWidthWithDirection:(MessageDirection)direction {
-    return UIScreen.mainScreen.bounds.size.width * [self bubbleWidthMultiplierForDirection:direction];
 }
 
 #pragma mark - MVSlidingCell protocol
@@ -250,30 +182,21 @@ static CGFloat MVBubbleMinTailessSize = 30;
 }
 
 #pragma mark - MVMessageCell protocol
-+ (CGFloat)heightWithTailType:(MVMessageCellTailType)tailType direction:(MessageDirection)direction andModel:(MVMessageModel *)model {
-    return [self bubbleTopOffsetForTailType:tailType] + [self bubbleBottomOffsetForTailType:tailType];
-}
-
-- (void)fillWithModel:(MVMessageModel *)messageModel {
-    self.timeLabel.text = [NSString messageTimeFromDate:messageModel.sendDate];
-    if (self.direction == MessageDirectionIncoming) {
-        [[MVFileManager sharedInstance] loadThumbnailAvatarForContact:messageModel.contact maxWidth:50 completion:^(UIImage *image) {
-            self.avatarImage.image = image;
-        }];
-    }
+- (void)fillWithModel:(MVMessageCellModel *)model {
+    self.model = model;
+    self.timeLabel.text = model.sendDateString;
     
-    __weak typeof(self) weakCell = self;
-    [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        NSString *avatarId = note.userInfo[@"Id"];
-        if ([avatarId isEqualToString:messageModel.contact.id]) {
-            [[MVFileManager sharedInstance] loadThumbnailAvatarForContact:messageModel.contact maxWidth:50 completion:^(UIImage *image) {
-                weakCell.avatarImage.image = image;
-            }];
-        }
+    self.bubbleWidthConstraint.constant = self.model.width;
+    @weakify(self);
+    [[[[RACObserve(model, width) distinctUntilChanged] takeUntil:self.rac_prepareForReuseSignal] deliverOnMainThread] subscribeNext:^(NSNumber *width) {
+        @strongify(self);
+        self.bubbleWidthConstraint.constant = width.floatValue;
     }];
-}
-
-- (void)bubbleTapped:(UITapGestureRecognizer *)recognizer {
-    [self.delegate cellTapped:self];
+    
+    //self.bubbleWidthConstraint.constant = model.width;
+    
+    if (self.direction == MessageDirectionIncoming) {
+        RAC(self.avatarImage, image) = [RACObserve(self.model, avatar) takeUntil:self.rac_prepareForReuseSignal];
+    }
 }
 @end

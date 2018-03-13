@@ -8,8 +8,8 @@
 
 #import <UIKit/UIKit.h>
 #import "MVViewController.h"
-@class MVContactModel;
+@class MVContactProfileViewModel;
 
 @interface MVContactProfileViewController : MVViewController
-+ (instancetype)loadFromStoryboardWithContact:(MVContactModel *)contact;
++ (instancetype)loadFromStoryboardWithViewModel:(MVContactProfileViewModel *)viewModel;
 @end

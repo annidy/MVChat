@@ -70,7 +70,10 @@
 
 - (void)forceTouchRecognizer:(MVForceTouchGestureRecogniser *)recognizer didEndWithForce:(CGFloat)force maxForce:(CGFloat)maxForce {
     if (!self.menuControllerFinalized) {
-        [self.sender dismissViewControllerAnimated:NO completion:nil];
+        if (self.menuControllerShown) {
+            [self.forceViewController cancel];
+            [self.sender dismissViewControllerAnimated:NO completion:nil];
+        }
     }
     self.menuControllerShown = NO;
     self.menuControllerFinalized = NO;

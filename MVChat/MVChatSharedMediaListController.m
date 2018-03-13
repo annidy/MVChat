@@ -13,6 +13,8 @@
 #import "MVImageViewerController.h"
 #import "MVChatSharedMediaPageController.h"
 #import "MVImageViewerViewModel.h"
+#import "MVChatManager.h"
+#import "MVMessageModel.h"
 
 static NSString *cellId = @"MVChatSharedMediaListCell";
 static CGFloat numberOfItemsPerRow = 6;
@@ -35,12 +37,25 @@ static CGFloat spacing = 5;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.attachments = [[MVFileManager sharedInstance] attachmentsForChatWithId:self.chatId];
-    self.viewModels = [NSMutableArray new];
-    NSUInteger index = 0;
-    for (DBAttachment *attachment in self.attachments) {
-        [self.viewModels addObject:[[MVImageViewerViewModel alloc] initWithSourceImageView:nil attachment:attachment andIndex:index]];
-        index ++;
+    [[MVChatManager sharedInstance] mediaMessagesForChatWithId:self.chatId withCallback:^(NSArray<MVMessageModel *> *messages) {
+        NSMutableArray *attachments = [NSMutableArray new];
+        NSMutableArray *viewModels = [NSMutableArray new];
+        NSUInteger index = 0;
+        for (MVMessageModel *message in messages) {
+            [attachments addObject:message.attachment];
+            [viewModels addObject:[[MVImageViewerViewModel alloc] initWithSourceImageView:nil attachment:message.attachment andIndex:index]];
+            index ++;
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.attachments = attachments;
+            self.viewModels = viewModels;
+            [self.collectionView reloadData];
+        });
+    }];
+    
+    if (@available(iOS 11.0, *)) {
+        self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeNever;
     }
 }
 

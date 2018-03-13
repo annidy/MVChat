@@ -19,5 +19,8 @@
     self.view.backgroundColor = [UIColor whiteColor];
     self.navigationBar.barStyle = UIBarStyleDefault;
     self.navigationBar.translucent = YES;
+    if (@available(iOS 11.0, *)) {
+        self.navigationBar.prefersLargeTitles = YES;
+    }
 }
 @end

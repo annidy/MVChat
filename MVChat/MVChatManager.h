@@ -15,13 +15,34 @@
 @class MVContactModel;
 @class UIImage;
 @class DBAttachment;
+@class RACScheduler;
+@class RACSignal;
 
-static NSUInteger MVMessagesPageSize = 15;
+static NSUInteger MVMessagesPageSize = 10;
+
+typedef enum : NSUInteger {
+    ChatUpdateTypeReload,
+    ChatUpdateTypeInsert,
+    ChatUpdateTypeDelete,
+    ChatUpdateTypeModify
+} ChatUpdateType;
+
+@interface MVChatUpdate : NSObject
+@property (assign, nonatomic) ChatUpdateType updateType;
+@property (strong, nonatomic) MVChatModel *chat;
+@property (assign, nonatomic) BOOL sorting;
+@property (assign, nonatomic) NSInteger index;
++ (instancetype)updateWithType:(ChatUpdateType)type chat:(MVChatModel *)chat sorting:(BOOL)sort index:(NSInteger)index;
+@end
 
 @interface MVChatManager : NSObject
 #pragma mark - Listeners
-@property (weak, nonatomic) id <MVMessagesUpdatesListener> messagesListener;
-- (void)addChatListener:(id <MVChatsUpdatesListener>)listener;
+@property (strong, nonatomic) RACSignal *chatUpdateSignal;
+@property (strong, nonatomic) RACSignal *messageUpdateSignal;
+@property (strong, nonatomic) RACSignal *messageReloadSignal;
+
+@property (strong, nonatomic) RACScheduler *viewModelScheduler;
+@property (strong, nonatomic) dispatch_queue_t viewModelQueue;
 
 #pragma mark - Initialization
 + (instancetype) sharedInstance;
@@ -37,6 +58,8 @@ static NSUInteger MVMessagesPageSize = 15;
        forChatWithId:(NSString *)chatId
         withCallback:(void (^)(NSArray <MVMessageModel *> *))callback;
 - (NSUInteger)numberOfPagesInChatWithId:(NSString *)chatId;
+- (void)mediaMessagesForChatWithId:(NSString *)chatId withCallback:(void (^)(NSArray <MVMessageModel *> *))callback;
+- (RACSignal *)messagesPage:(NSInteger)pageIndex forChatWithId:(NSString *)chatId;
 
 #pragma mark - Handle Chats
 - (void)chatWithContact:(MVContactModel *)contact andCompeltion:(void (^)(MVChatModel *))callback;

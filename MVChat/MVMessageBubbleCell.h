@@ -8,19 +8,14 @@
 
 #import <UIKit/UIKit.h>
 #import "MVSlidingCell.h"
-#import "MVMessageCellDelegate.h"
+#import "MVMessageCellModel.h"
+#import "MVMessageCell.h"
 
-static CGFloat MVBubbleTailSize = 6;
-
-@interface MVMessageBubbleCell : UITableViewCell <MVSlidingCell>
+@interface MVMessageBubbleCell : UITableViewCell <MVSlidingCell, MVMessageCell>
 @property (assign, nonatomic) MVMessageCellTailType tailType;
-@property (assign, nonatomic) MessageDirection direction;
-@property (strong, nonatomic) NSIndexPath *indexPath;
+@property (assign, nonatomic) MVMessageCellModelDirection direction;
 @property (strong, nonatomic) UIImageView *bubbleImageView;
 @property (strong, nonatomic) UILabel *timeLabel;
-@property (weak, nonatomic) id <MVMessageCellDelegate> delegate;
-+ (CGFloat)maxContentWidthWithDirection:(MessageDirection)direction;
+@property (strong, nonatomic) MVMessageCellModel *model;
 - (void)setupViews;
-- (void)fillWithModel:(MVMessageModel *)messageModel;
-+ (CGFloat)heightWithTailType:(MVMessageCellTailType)tailType direction:(MessageDirection)direction andModel:(MVMessageModel *)model;
 @end

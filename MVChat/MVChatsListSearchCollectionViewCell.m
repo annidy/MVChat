@@ -10,7 +10,8 @@
 #import "MVChatModel.h"
 #import "MVChatManager.h"
 #import "MVFileManager.h"
-#import <DBAttachment.h>
+#import <ReactiveObjC.h>
+#import "MVChatsListCellViewModel.h"
 
 @interface MVChatsListSearchCollectionViewCell ()
 
@@ -37,14 +38,14 @@
     self.avatarImageView.layer.borderColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:0.4].CGColor;
 }
 
-- (void)fillWithChat:(MVChatModel *)chat {
+- (void)prepareForReuse {
+    [super prepareForReuse];
     self.avatarImageView.image = nil;
-    
-    [[MVFileManager sharedInstance] loadThumbnailAvatarForChat:chat maxWidth:50 completion:^(UIImage *image) {
-        self.avatarImageView.image = image;
-    }];
-    
-    self.titleLabel.text = chat.title;
+}
+
+- (void)fillWithModel:(MVChatsListCellViewModel *)model {    
+    self.titleLabel.text = model.title;
+    RAC(self.avatarImageView, image) = [[RACObserve(model, avatar) deliverOnMainThread] takeUntil:self.rac_prepareForReuseSignal];
 }
 
 @end

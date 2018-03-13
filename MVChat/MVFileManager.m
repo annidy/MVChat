@@ -19,11 +19,26 @@
 #import <ImageIO/ImageIO.h>
 #import "MVChatManager.h"
 #import "MVDatabaseManager.h"
+#import <ReactiveObjC.h>
+
+@implementation MVAvatarUpdate
+- (instancetype)initWithType:(MVAvatarUpdateType)type id:(NSString *)id avatar:(UIImage *)avatar {
+    if (self = [super init]) {
+        _type = type;
+        _id = id;
+        _avatar = avatar;
+    }
+    
+    return self;
+}
+@end
 
 @interface MVFileManager()
 @property (strong, nonatomic) dispatch_queue_t managerQueue;
+@property (strong, nonatomic) dispatch_queue_t writerQueue;
 @property (strong, nonatomic) NSCache *imagesCache;
-@property (strong, nonatomic) NSMutableDictionary *messageAttachments;
+@property (strong, nonatomic) RACSubject *avatarUpdateSubject;
+@property (strong, nonatomic) RACSubject *writerSubject;
 @end
 
 @implementation MVFileManager
@@ -41,45 +56,39 @@ static MVFileManager *instance;
 - (instancetype)init {
     if (self = [super init]) {
         _managerQueue = dispatch_queue_create("com.markvasiv.fileManager", DISPATCH_QUEUE_SERIAL);
+        dispatch_set_target_queue(_managerQueue, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0));
+        _writerQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0);
+        
         _imagesCache = [NSCache new];
-        _messageAttachments = [NSMutableDictionary new];
-        [self cacheMediaMessages];
+        _avatarUpdateSubject = [RACSubject subject];
+        _avatarUpdateSignal = [_avatarUpdateSubject deliverOnMainThread];
+        _writerSubject = [RACSubject subject];
+        _writerSignal = _writerSubject;
+        
     }
     
     return self;
 }
 
-#pragma mark - Caching
-- (void)cacheMediaMessages {
-    dispatch_async(self.managerQueue, ^{
-        [[MVDatabaseManager sharedInstance] allChats:^(NSArray <MVChatModel *> *chats) {
-            for (MVChatModel *chat in chats) {
-                NSString *chatFolder = [self globalPathFromRelative:[self relativePathForMediaMessagesFolder:chat]];
-                
-                if ([[NSFileManager defaultManager] fileExistsAtPath:chatFolder]) {
-                    NSArray *files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:chatFolder error:nil];
-                    
-                    NSMutableArray *attachments = [self.messageAttachments objectForKey:chat.id];
-                    if (!attachments) {
-                        attachments = [NSMutableArray new];
-                        [self.messageAttachments setObject:attachments forKey:chat.id];
-                    }
-                    
-                    for (NSString *file in files) {
-                        NSString *fullFilePath = [chatFolder stringByAppendingPathComponent:file];
-                        DBAttachment *attachment = [DBAttachment attachmentFromDocumentURL:[NSURL fileURLWithPath:fullFilePath]];
-                        [attachments addObject:attachment];
-                    }
-                }
-            }
-        }];
+
+- (void)fillMessageAttachment:(MVMessageModel *)message {
+    NSString *relativePath = [self relativePathForMediaMessage:message];
+    DBAttachment *attachment = [DBAttachment attachmentFromDocumentURL:[self urlToFileAtRelativePath:relativePath]];
+    message.attachment = attachment;
+}
+
+- (void)saveMessageAttachment:(MVMessageModel *)message {
+    dispatch_async(self.writerQueue, ^{
+        NSString *relativePath = [self relativePathForMediaMessage:message];
+        UIImage *image = [message.attachment loadOriginalImageSync];
+        [self writeData:UIImagePNGRepresentation(image) toFileAtRelativePath:relativePath];
+        DBAttachment *attahment = [DBAttachment attachmentFromDocumentURL:[self urlToFileAtRelativePath:relativePath]];
+        [self loadedAttachment:attahment forMessage:message];
     });
 }
 
-- (NSArray <DBAttachment *> *)attachmentsForChatWithId:(NSString *)chatId {
-    @synchronized (self.messageAttachments) {
-        return [self.messageAttachments objectForKey:chatId];
-    }
+- (void)loadedAttachment:(DBAttachment *)attachment forMessage:(MVMessageModel *)message {
+    [self.writerSubject sendNext:RACTuplePack(message, attachment)];
 }
 
 #pragma mark - Save Attachments
@@ -98,30 +107,19 @@ static MVFileManager *instance;
 
 - (void)saveChatAvatar:(MVChatModel *)chat attachment:(DBAttachment *)attachment {
     [self saveAttachment:attachment atRelativePath:[self relativePathForChatAvatar:chat] completion:^(DBAttachment *urlAttachment) {
-        NSNotification *notification = [[NSNotification alloc] initWithName:@"ChatAvatarUpdate" object:nil userInfo:@{@"Id" : chat.id, @"Image" : [attachment loadOriginalImageSync]}];
-        [[NSNotificationCenter defaultCenter] postNotification:notification];
+        [attachment originalImageWithCompletion:^(UIImage *resultImage) {
+            MVAvatarUpdate *update = [[MVAvatarUpdate alloc] initWithType:MVAvatarUpdateTypeChat id:chat.id avatar:resultImage];
+            [self.avatarUpdateSubject sendNext:update];
+        }];
     }];
 }
 
 - (void)saveContactAvatar:(MVContactModel *)contact attachment:(DBAttachment *)attachment {
     [self saveAttachment:attachment atRelativePath:[self relativePathForContactAvatar:contact] completion:^(DBAttachment *urlAttachment) {
-        NSNotification *notification = [[NSNotification alloc] initWithName:@"ContactAvatarUpdate" object:nil userInfo:@{@"Id" : contact.id, @"Image" : [attachment loadOriginalImageSync]}];
-        [[NSNotificationCenter defaultCenter] postNotification:notification];
-    }];
-}
-
-- (void)saveMediaMesssage:(MVMessageModel *)message attachment:(DBAttachment *)attachment completion:(void (^)(void))completion {
-    [self saveAttachment:attachment atRelativePath:[self relativePathForMediaMessage:message] completion:^(DBAttachment *urlAttachment){
-        NSMutableArray *attachments = [self.messageAttachments objectForKey:message.chatId];
-        if (!attachments) {
-            attachments = [NSMutableArray new];
-            [self.messageAttachments setObject:attachments forKey:message.chatId];
-        }
-        [attachments addObject:urlAttachment];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if(completion) completion();
-        });
+        [attachment originalImageWithCompletion:^(UIImage *resultImage) {
+            MVAvatarUpdate *update = [[MVAvatarUpdate alloc] initWithType:MVAvatarUpdateTypeContact id:contact.id avatar:resultImage];
+            [self.avatarUpdateSubject sendNext:update];
+        }];
     }];
 }
 
@@ -258,7 +256,13 @@ static MVFileManager *instance;
 
 #pragma Heleprs
 - (CGSize)sizeOfAttachmentForMessage:(MVMessageModel *)message {
-    return [self sizeOfImageAtURL:[self urlToFileAtRelativePath:[self relativePathForMediaMessage:message]]];
+    CGSize size = [message.attachment imageSize];
+
+    if (CGSizeEqualToSize(size, CGSizeZero)) {
+        return CGSizeMake(5, 5);
+    } else {
+        return size;
+    }
 }
 
 - (CGSize)sizeOfImageAtURL:(NSURL *)imageURL {
@@ -282,7 +286,7 @@ static MVFileManager *instance;
     
     return imageSize;
 }
-- (NSString *)documentsPath {
++ (NSString *)documentsPath {
     return [[[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject] path];
 }
 
@@ -309,7 +313,7 @@ static MVFileManager *instance;
 }
 
 - (NSString *)globalPathFromRelative:(NSString *)relativePath {
-    return [[self documentsPath] stringByAppendingPathComponent:relativePath];
+    return [[[self class] documentsPath] stringByAppendingPathComponent:relativePath];
 }
 
 - (NSURL *)urlToFileAtRelativePath:(NSString *)relativePath {
@@ -318,7 +322,7 @@ static MVFileManager *instance;
 
 - (void)deleteAllFiles {
     dispatch_async(self.managerQueue, ^{
-        NSArray *files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:[self documentsPath] error:nil];
+        NSArray *files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:[[self class] documentsPath] error:nil];
         for (NSString *file in files) {
             if ([file containsString:@"yap"]) {
                 continue;
@@ -330,7 +334,6 @@ static MVFileManager *instance;
 
 - (void)clearAllCache {
     dispatch_async(self.managerQueue, ^{
-        self.messageAttachments = [NSMutableDictionary new];
         self.imagesCache = [NSCache new];
     });
 }

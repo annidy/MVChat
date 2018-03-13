@@ -9,6 +9,7 @@ PODS:
   - INTUAnimationEngine (1.4.2):
     - INTUAnimationEngine/SpringSolver (= 1.4.2)
   - INTUAnimationEngine/SpringSolver (1.4.2)
+  - ReactiveObjC (3.0.0)
   - YapDatabase (3.0.1):
     - YapDatabase/Standard (= 3.0.1)
   - YapDatabase/Standard (3.0.1):
@@ -73,14 +74,16 @@ PODS:
 DEPENDENCIES:
   - DBAttachmentPickerController
   - INTUAnimationEngine
+  - ReactiveObjC
   - YapDatabase
 
 SPEC CHECKSUMS:
   CocoaLumberjack: 2800c03334042fe80589423c8d80e582dcaec482
   DBAttachmentPickerController: 9b3c5f84a9e4530da6d9e098c710f2152957c31e
   INTUAnimationEngine: 3a7d63738cd51af573d16848a771feedea7cc9f2
+  ReactiveObjC: ce79989e8684b9086b5f8d0c74bc7b81a8729c9e
   YapDatabase: 69ca88a2dfee305fde4412cf670c76f75aa7ccd0
 
-PODFILE CHECKSUM: 83264e7b42ecfdeb476cf4f73e8910c73c91719c
+PODFILE CHECKSUM: f19b77a1d69c018d9af194a8db1ef0be043681be
 
 COCOAPODS: 1.3.1

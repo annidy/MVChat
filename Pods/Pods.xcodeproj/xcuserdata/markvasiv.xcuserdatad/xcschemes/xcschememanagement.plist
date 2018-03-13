@@ -29,6 +29,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>ReactiveObjC.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>YapDatabase.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -37,7 +42,22 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>2CDC213E5DFA8172291D7BEE0130C870</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>3C317C46975B39D7E67B12EBCCD35247</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>50243B28600257A1672000EF8ACD7883</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>51110AF11EEEF4C8518DB2392C68C8C3</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -52,17 +72,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>A677B8D69C9AE5B41FD9DF828D9232CE</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
 		<key>A9D9DCCE5442795D0AD9E99D86389328</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>E52F0115F69B738CDC4AA7BF8F018121</key>
 		<dict>
 			<key>primary</key>
 			<true/>

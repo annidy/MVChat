@@ -14,43 +14,30 @@
 #import "MVChatViewController.h"
 #import "MVContactsListSearchViewController.h"
 #import "MVTableViewHeader.h"
+#import "MVContactsListViewModel.h"
+#import <ReactiveObjC.h>
+#import "MVChatViewModel.h"
 
-@interface MVContactsListController () <UITableViewDelegate, UITableViewDataSource, MVContactsUpdatesListener, MVSearchProviderDelegate, UISearchResultsUpdating>
+@interface MVContactsListController () <UITableViewDelegate, UITableViewDataSource>
 @property (strong, nonatomic) IBOutlet UITableView *contactsList;
-@property (strong, nonatomic) NSArray <NSString *> *sections;
-@property (strong, nonatomic) NSDictionary <NSString *, NSArray *> *contacts;
-@property (weak, nonatomic) MVContactsListSearchViewController *searchResultsController;
 @property (strong, nonatomic) UISearchController *searchController;
-@property (strong, nonatomic) NSMutableArray *selectedContacts;
-@property (strong, nonatomic) IBOutlet NSLayoutConstraint *contactsListTop;
-@property (strong, nonatomic) UIBarButtonItem *doneButtonItem;
-@property (strong, nonatomic) NSArray *excludingContacts;
+@property (strong, nonatomic) MVContactsListViewModel *viewModel;
 @end
 
 @implementation MVContactsListController
 #pragma mark - Initialization
-+ (instancetype)loadFromStoryboardWithMode:(MVContactsListControllerMode)mode andDoneAction:(void (^)(NSArray <MVContactModel *> *))doneAction {
-    return [self loadFromStoryboardWithMode:mode andDoneAction:doneAction excludingContacts:nil];
-}
-
-+ (instancetype)loadFromStoryboardWithMode:(MVContactsListControllerMode)mode andDoneAction:(void (^)(NSArray <MVContactModel *> *))doneAction excludingContacts:(NSArray <MVContactModel *> *)excludingContacts {
-    MVContactsListController *instance = [super loadFromStoryboard];
-    if (mode == MVContactsListControllerModeSelectable) {
-        instance.hidesBottomBarWhenPushed = YES;
-    }
-    instance.mode = mode;
-    instance.doneAction = doneAction;
-    instance.excludingContacts = excludingContacts;
-    return instance;
-}
-
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
     if (self = [super initWithCoder:aDecoder]) {
-        _mode = MVContactsListControllerModeDefault;
-        _selectedContacts = [NSMutableArray new];
+        _viewModel = [[MVContactsListViewModel alloc] initWithMode:MVContactsListModeDefault];
     }
     
     return self;
+}
+
++ (instancetype)loadFromStoryboardWithViewModel:(MVContactsListViewModel *)viewModel {
+    MVContactsListController *instance = [MVContactsListController loadFromStoryboard];
+    instance.viewModel = viewModel;
+    return instance;
 }
 
 #pragma mark - View lifecycle
@@ -58,89 +45,79 @@
     [super viewDidLoad];
     
     [self setupNavigationBar];
-    self.contactsList.tableFooterView = [UIView new];
+    [self bindViewModel];
     
-    CGFloat navBarHeight = [self navigationController].navigationBar.frame.size.height;
-    self.contactsListTop.constant = - navBarHeight;
-    self.contactsList.contentInset = UIEdgeInsetsMake(navBarHeight, 0, 0, 0);
-    [self.contactsList registerClass:[MVTableViewHeader class] forHeaderFooterViewReuseIdentifier:@"MVTableViewHeader"];
-    
-    if (self.mode == MVContactsListControllerModeDefault) {
-        [self setupSearchController];
-    } else if (self.mode == MVContactsListControllerModeSelectable){
+    if (self.viewModel.mode == MVContactsListModeSelectable) {
         self.contactsList.allowsMultipleSelection = YES;
+    } else {
+        [self setupSearchController];
     }
     
-    [MVContactManager sharedInstance].updatesListener = self;
-    [self mapWithSections:[[MVContactManager sharedInstance] getAllContacts]];
+    self.contactsList.tableFooterView = [UIView new];
+    [self.contactsList registerClass:[MVTableViewHeader class] forHeaderFooterViewReuseIdentifier:@"MVTableViewHeader"];
 }
 
 - (void)setupSearchController {
-    self.searchResultsController = [MVContactsListSearchViewController loadFromStoryboardWithDelegate:self];
-    self.searchController = [[UISearchController alloc] initWithSearchResultsController:self.searchResultsController];
-    self.searchController.searchResultsUpdater = self;
+    self.viewModel.searchResultsController = [MVContactsListSearchViewController loadFromStoryboardWithViewModel:self.viewModel];
+    self.searchController = [[UISearchController alloc] initWithSearchResultsController:self.viewModel.searchResultsController];
+    self.searchController.searchResultsUpdater = self.viewModel;
     self.searchController.searchBar.searchBarStyle = UISearchBarStyleMinimal;
-    self.contactsList.tableHeaderView = self.searchController.searchBar;
+    if (@available(iOS 11.0, *)) {
+        self.navigationItem.searchController = self.searchController;
+    } else {
+        self.contactsList.tableHeaderView = self.searchController.searchBar;
+    }
+
     self.definesPresentationContext = YES;
 }
 
 - (void)setupNavigationBar {
-    if (self.mode == MVContactsListControllerModeDefault) {
+    if (self.viewModel.mode == MVContactsListModeDefault) {
         self.navigationItem.title = @"Contacts";
-    } else if (self.mode == MVContactsListControllerModeSelectable) {
-        self.doneButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Next" style:UIBarButtonItemStylePlain target:self action:@selector(nextButtonAction)];
-        self.navigationItem.rightBarButtonItem = self.doneButtonItem;
-        self.doneButtonItem.enabled = NO;
+    } else {
         self.navigationItem.title = @"New chat";
+        UIBarButtonItem *doneButton = [UIBarButtonItem new];
+        doneButton.style = UIBarButtonItemStylePlain;
+        doneButton.title = @"Next";
+        doneButton.rac_command = self.viewModel.doneCommand;
+        self.navigationItem.rightBarButtonItem = doneButton;
+        
+        UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(dismiss:)];
+        self.navigationItem.leftBarButtonItem = cancelButton;
+    }
+    if (@available(iOS 11.0, *)) {
+        if (self.viewModel.mode == MVContactsListModeDefault) {
+            self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeAlways;
+        } else {
+            self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeNever;
+        }
     }
 }
 
-#pragma mark - Data Handling
-- (void)updateContacts {
-    [self mapWithSections:[[MVContactManager sharedInstance] getAllContacts]];
-    [self.contactsList reloadData];
+- (void)dismiss:(id)sender {
+    if (self.presentingViewController) {
+        [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+    } else {
+        [self.navigationController popViewControllerAnimated:YES];
+    }
 }
 
-- (void)mapWithSections:(NSArray *)contacts {
-    NSMutableArray *sections = [NSMutableArray new];
-    NSMutableDictionary *mappedContacts = [NSMutableDictionary new];
-    for (MVContactModel *contact in contacts) {
-        if ([self shouldExcludeContact:contact]) {
-            continue;
-        }
-        NSString *sectionKey = [[contact.name substringToIndex:1] uppercaseString];
-        if (!mappedContacts[sectionKey]) {
-            [sections addObject:sectionKey];
-            mappedContacts[sectionKey] = [NSMutableArray new];
-        }
-        [mappedContacts[sectionKey] addObject:contact];
-    }
-    
-    self.sections = sections;
-    self.contacts = mappedContacts;
-}
-
-- (BOOL)shouldExcludeContact:(MVContactModel *)contact {
-    if (!self.excludingContacts) {
-        return NO;
-    }
-    
-    for (MVContactModel *excludingContact in self.excludingContacts) {
-        if ([contact.id isEqualToString:excludingContact.id]) {
-            return YES;
-        }
-    }
-    
-    return NO;
+- (void)bindViewModel {
+    @weakify(self);
+    [[RACObserve(self.viewModel, rows) deliverOnMainThread] subscribeNext:^(id x) {
+        @strongify(self);
+        [self.contactsList reloadData];
+    }];
 }
 
 #pragma mark - Table View
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return self.sections.count;
+    return self.viewModel.sections.count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.contacts[self.sections[section]].count;
+    NSString *key = self.viewModel.sections[section];
+    return self.viewModel.rows[key].count;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -149,15 +126,18 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     MVContactsListCell *cell = [self.contactsList dequeueReusableCellWithIdentifier:@"ContactsListCell"];
-    MVContactModel *contact = self.contacts[self.sections[indexPath.section]][indexPath.row];
-    [cell fillWithContact:contact];
+    MVContactsListCellViewModel *model = self.viewModel.rows[self.viewModel.sections[indexPath.section]][indexPath.row];
+    [cell fillWithModel:model];
+    if ([self.viewModel isModelSelected:model]) {
+        [tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+    }
     
     return cell;
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     MVTableViewHeader *header = [tableView dequeueReusableHeaderFooterViewWithIdentifier:@"MVTableViewHeader"];
-    header.titleLabel.text = self.sections[section];
+    header.titleLabel.text = self.viewModel.sections[section];
     return header;
 }
 
@@ -166,55 +146,21 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    MVContactModel *contact = self.contacts[self.sections[indexPath.section]][indexPath.row];
+    MVContactsListCellViewModel *model = self.viewModel.rows[self.viewModel.sections[indexPath.section]][indexPath.row];
     
-    if (self.mode == MVContactsListControllerModeDefault) {
+    if (self.viewModel.mode == MVContactsListModeDefault) {
         [self.contactsList deselectRowAtIndexPath:indexPath animated:YES];
-        [self showChatViewWithContact:contact];
+        [self showChatViewWithContact:model.contact];
     } else {
-        if (![self.selectedContacts containsObject:contact]) {
-            [self.selectedContacts addObject:contact];
-            self.doneButtonItem.enabled = YES;
-        }
+        [self.viewModel selectModel:model];
     }
 }
 
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath {
     [self.contactsList deselectRowAtIndexPath:indexPath animated:YES];
     
-    MVContactModel *contact = self.contacts[self.sections[indexPath.section]][indexPath.row];
-    if ([self.selectedContacts containsObject:contact]) {
-        [self.selectedContacts removeObject:contact];
-    }
-    
-    if (!self.selectedContacts.count) {
-        self.doneButtonItem.enabled = NO;
-    }
-}
-#pragma mark - Search bar
-- (void)updateSearchResultsForSearchController:(UISearchController *)searchController {
-    NSArray *contacts = [self filterContactsWithString:searchController.searchBar.text];
-    self.searchResultsController.filteredContacts = contacts;
-}
-
-- (NSArray *)filterContactsWithString:(NSString *)string {
-    if (!string.length) {
-        return [NSArray new];
-    } else {
-        return [[[MVContactManager sharedInstance] getAllContacts] filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(MVContactModel *evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
-            return [[evaluatedObject.name uppercaseString] containsString:[string uppercaseString]];
-        }]];
-    }
-}
-
-- (void)didSelectCellWithModel:(id)model {
-    MVContactModel *contact = (MVContactModel *)model;
-    [self showChatViewWithContact:contact];
-}
-
-#pragma mark - Button tap
-- (void)nextButtonAction {
-    self.doneAction([self.selectedContacts copy]);
+    MVContactsListCellViewModel *model = self.viewModel.rows[self.viewModel.sections[indexPath.section]][indexPath.row];
+    [self.viewModel deselectModel:model];
 }
 
 #pragma mark - Helpers
@@ -225,7 +171,8 @@
 }
 
 - (void)showChatViewWithChat:(MVChatModel *)chat {
-    MVChatViewController *chatVC = [MVChatViewController loadFromStoryboardWithChat:chat];
+    MVChatViewModel *viewModel = [[MVChatViewModel alloc] initWithChat:chat];
+    MVChatViewController *chatVC = [MVChatViewController loadFromStoryboardWithViewModel:viewModel];
     [self.navigationController pushViewController:chatVC animated:YES];
 }
 @end

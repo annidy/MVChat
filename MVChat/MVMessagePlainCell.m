@@ -7,10 +7,12 @@
 //
 
 #import "MVMessagePlainCell.h"
-#import "MVMessageCellProtocol.h"
+#import "MVMessageCellModel.h"
 
 @interface MVMessagePlainCell ()
 @property (strong, nonatomic) UILabel *titleLabel;
+@property (strong, nonatomic) UIView *container;
+@property (strong, nonatomic) MVMessageCellModel *model;
 @end
 
 @implementation MVMessagePlainCell
@@ -31,19 +33,19 @@
     self.container = container;
     [self.contentView addSubview:container];
     
-    [[container.topAnchor constraintEqualToAnchor:self.contentView.topAnchor constant:5] setActive:YES];
-    [[container.bottomAnchor constraintEqualToAnchor:self.contentView.bottomAnchor constant:-5] setActive:YES];
+    [[container.topAnchor constraintEqualToAnchor:self.contentView.topAnchor constant:MVPlainCellContainerVerticalOffset] setActive:YES];
+    [[container.bottomAnchor constraintEqualToAnchor:self.contentView.bottomAnchor constant:-MVPlainCellContainerVerticalOffset] setActive:YES];
     [[container.centerXAnchor constraintEqualToAnchor:self.contentView.centerXAnchor] setActive:YES];
-    [[container.leftAnchor constraintGreaterThanOrEqualToAnchor:self.contentView.leftAnchor constant:10] setActive:YES];
-    [[self.contentView.rightAnchor constraintGreaterThanOrEqualToAnchor:container.rightAnchor constant:10] setActive:YES];
+    [[container.leftAnchor constraintGreaterThanOrEqualToAnchor:self.contentView.leftAnchor constant:MVPlainCellContainerHorizontalOffset] setActive:YES];
+    [[self.contentView.rightAnchor constraintGreaterThanOrEqualToAnchor:container.rightAnchor constant:MVPlainCellContainerHorizontalOffset] setActive:YES];
     
     UILabel *label = [self buildLabel];
     self.titleLabel = label;
     [container addSubview:label];
-    [[label.leftAnchor constraintEqualToAnchor:container.leftAnchor constant:10] setActive:YES];
-    [[label.rightAnchor constraintEqualToAnchor:container.rightAnchor constant:-10] setActive:YES];
-    [[label.topAnchor constraintEqualToAnchor:container.topAnchor constant:3] setActive:YES];
-    [[label.bottomAnchor constraintEqualToAnchor:container.bottomAnchor constant:-3] setActive:YES];
+    [[label.leftAnchor constraintEqualToAnchor:container.leftAnchor constant:MVPlainCellContentHorizontalOffset] setActive:YES];
+    [[label.rightAnchor constraintEqualToAnchor:container.rightAnchor constant:-MVPlainCellContentHorizontalOffset] setActive:YES];
+    [[label.topAnchor constraintEqualToAnchor:container.topAnchor constant:MVPlainCellContentVerticalOffset] setActive:YES];
+    [[label.bottomAnchor constraintEqualToAnchor:container.bottomAnchor constant:-MVPlainCellContentVerticalOffset] setActive:YES];
     
 }
 
@@ -67,31 +69,13 @@
     return label;
 }
 
-#pragma mark - MVMessageCell
-+ (CGFloat)heightWithText:(NSString *)text {
-    CGFloat height = 20;
-    
-    [self.referenceLabel setText:text];
-    
-    CGFloat maxLabelWidth = UIScreen.mainScreen.bounds.size.width - 26;
-    height += [self.referenceLabel sizeThatFits:CGSizeMake(maxLabelWidth, CGFLOAT_MAX)].height;
-    
-    return height;
+#pragma mark - Message cell protocol
+- (void)fillWithModel:(MVMessageCellModel *)model {
+    self.model = model;
+    self.titleLabel.text = model.text;
 }
 
-- (void)fillWithText:(NSString *)text {
-    self.titleLabel.text = text;
-}
-
-#pragma mark - Helpers
-static UILabel *referenceLabel;
-+ (UILabel *)referenceLabel {
-    if (!referenceLabel) {
-        referenceLabel = [UILabel new];
-        referenceLabel.font = [UIFont systemFontOfSize:13];
-        referenceLabel.numberOfLines = 0;
-    }
-    
-    return referenceLabel;
+- (UITapGestureRecognizer *)tapRecognizer {
+    return nil;
 }
 @end

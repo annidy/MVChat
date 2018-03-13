@@ -7,157 +7,78 @@
 //
 
 #import "MVChatSettingsViewController.h"
-#import "MVContactModel.h"
-#import "MVContactManager.h"
 #import "MVChatModel.h"
-#import "MVContactsListController.h"
-#import "MVChatManager.h"
 #import <DBAttachmentPickerController.h>
-#import <DBAttachment.h>
-#import "MVFileManager.h"
 #import "MVContactProfileViewController.h"
-#import "NSString+Helpers.h"
 #import "MVChatSharedMediaListController.h"
-
-typedef enum : NSUInteger {
-    MVChatSettingsModeNew,
-    MVChatSettingsModeSettings
-} MVChatSettingsMode;
+#import <ReactiveObjC.h>
+#import "MVChatSettingsViewModel.h"
+#import "MVContactsListCellViewModel.h"
+#import "MVChatViewController.h"
+#import "MVContactProfileViewModel.h"
+#import "MVContactsListController.h"
+#import "MVChatViewModel.h"
 
 @interface MVChatSettingsViewController () <UITableViewDataSource, UITableViewDelegate>
-@property (assign, nonatomic) MVChatSettingsMode mode;
-@property (strong, nonatomic) MVChatModel *chat;
-@property (strong, nonatomic) NSMutableArray <MVContactModel *> *contacts;
-@property (strong, nonatomic) NSString *chatTitle;
-@property (strong, nonatomic) UIImage *avatarImage;
-@property (strong, nonatomic) DBAttachment *avatarAttachment;
-@property (assign, nonatomic) BOOL avatarChanged;
+@property (strong, nonatomic) MVChatSettingsViewModel *viewModel;
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
-@property (weak, nonatomic) UITextField *titleTextField;
-@property (weak, nonatomic) UIImageView *avatarImageView;
-@property (strong, nonatomic) UIBarButtonItem *doneButton;
-@property (nonatomic, copy) void (^doneAction)(NSArray <MVContactModel *> *, NSString *, DBAttachment *);
+@property (strong, nonatomic) IBOutlet UIButton *doneButton;
 @end
-
-static NSString *AvatarTitleCellId = @"MVChatSettingsAvatarTitleCell";
-static NSString *AvatarCellId = @"MVChatSettingsAvatarCell";
-static NSString *ContactCellId = @"MVChatSettingsContactCell";
-static NSString *NewContactCellId = @"MVChatSettingsNewContactCell";
-static NSString *DeleteContactCellId = @"MVChatSettingsDeleteCell";
-static NSString *MediaFilesCellID = @"MVChatSettingsMediaCell";
 
 @implementation MVChatSettingsViewController
 #pragma mark - Initialization
-- (instancetype)initWithCoder:(NSCoder *)aDecoder {
-    if (self = [super initWithCoder:aDecoder]) {
-        _contacts = [NSMutableArray new];
-    }
-    
-    return self;
-}
-
-+ (instancetype)loadFromStoryboardWithContacts:(NSArray <MVContactModel *> *)contacts andDoneAction:(void (^)(NSArray <MVContactModel *> *, NSString *, DBAttachment *))doneAction {
++ (instancetype)loadFromStoryboardWithViewModel:(MVChatSettingsViewModel *)viewModel {
     MVChatSettingsViewController *instance = [super loadFromStoryboard];
-    instance.contacts = [contacts mutableCopy];
-    instance.doneAction = doneAction;
-    instance.mode = MVChatSettingsModeNew;
+    instance.viewModel = viewModel;
     
     return instance;
 }
 
-+ (instancetype)loadFromStoryboardWithChat:(MVChatModel *)chat andDoneAction:(void (^)(NSArray <MVContactModel *> *, NSString *, DBAttachment *))doneAction {
-    MVChatSettingsViewController *instance = [super loadFromStoryboard];
-    instance.chat = chat;
-    instance.doneAction = doneAction;
-    instance.mode = MVChatSettingsModeSettings;
-    
-    for (MVContactModel *contact in chat.participants) {
-        if (!contact.iam) {
-            [instance.contacts addObject:contact];
-        }
-    }
-    
-    return instance;
-}
-
-#pragma mark - View lifecycle
-- (void)dealloc {
-    [self removeObserver:self forKeyPath:@"titleTextField"];
-    [self removeObserver:self forKeyPath:@"avatarImage"];
-    [self.titleTextField removeTarget:self action:@selector(titleTextDidChange:) forControlEvents:UIControlEventEditingChanged];
-}
-
+#pragma mark - View lifecycle and setup
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self addObserver:self forKeyPath:@"titleTextField" options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:nil];
-    [self addObserver:self forKeyPath:@"avatarImage" options:NSKeyValueObservingOptionNew context:nil];
-    [self setupNavigationBar];
     
-    if (self.mode == MVChatSettingsModeSettings) {
-        self.chatTitle = self.chat.title;
-        [[MVFileManager sharedInstance] loadThumbnailAvatarForChat:self.chat maxWidth:50 completion:^(UIImage *image) {
-            self.avatarImage = image;
-        }];
-        
-        [[NSNotificationCenter defaultCenter] addObserverForName:@"ChatAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-            NSString *chatId = note.userInfo[@"Id"];
-            UIImage *image = note.userInfo[@"Image"];
-            if ([self.chat.id isEqualToString:chatId]) {
-                self.avatarImage = image;
-                self.avatarAttachment = nil;
-                self.avatarChanged = NO;
-                self.doneButton.enabled = [self canProceed];
-            }
-        }];
-    }
+    [self setupNavigationBar];
+    [self bindAll];
 }
 
 - (void)setupNavigationBar {
-    NSString *doneButtonTitle;
-    NSString *navigationBarTitle;
-    if (self.mode == MVChatSettingsModeNew) {
-        doneButtonTitle = @"Create";
-        navigationBarTitle = @"New chat";
-    } else if (self.mode == MVChatSettingsModeSettings) {
-        doneButtonTitle = @"Done";
-        navigationBarTitle = @"Settings";
+    if (self.viewModel.mode == MVChatSettingsModeNew) {
+        [self.doneButton setTitle:@"Create" forState:UIControlStateNormal];
+        [self.navigationItem setTitle:@"New Chat"];
+    } else {
+        [self.doneButton setTitle:@"Done" forState:UIControlStateNormal];
+        [self.navigationItem setTitle:@"Settings"];
     }
-    self.doneButton = [[UIBarButtonItem alloc] initWithTitle:doneButtonTitle style:UIBarButtonItemStyleDone target:self action:@selector(doneButtonAction)];
-    self.navigationItem.rightBarButtonItem = self.doneButton;
-    self.navigationItem.title = navigationBarTitle;
-    self.doneButton.enabled = NO;
+    
+    if (@available(iOS 11.0, *)) {
+        self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeNever;
+    }
 }
 
-#pragma mark - KVO
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
-    if (object == self && [keyPath isEqualToString:@"titleTextField"]) {
-        UITextField *oldTextField = change[NSKeyValueChangeOldKey];
-        UITextField *newTextField = change[NSKeyValueChangeNewKey];
-        
-        if (oldTextField && ![oldTextField isEqual:[NSNull null]]) {
-            [oldTextField removeTarget:self action:@selector(titleTextDidChange:) forControlEvents:UIControlEventEditingChanged];
+- (void)bindAll {
+    self.doneButton.rac_command = self.viewModel.doneCommand;
+    
+    @weakify(self);
+    [RACObserve(self.viewModel, contactModels) subscribeNext:^(id x) {
+        @strongify(self);
+        [self.tableView reloadData];
+    }];
+    
+    [[self.viewModel.doneCommand.executionSignals flatten] subscribeNext:^(MVChatModel *chat) {
+        @strongify(self);
+        if (self.viewModel.mode == MVChatSettingsModeNew) {
+            MVChatViewModel *viewModel = [[MVChatViewModel alloc] initWithChat:chat];
+            NSArray *viewControllers = @[self.navigationController.viewControllers[0], [MVChatViewController loadFromStoryboardWithViewModel:viewModel]];
+            [self.navigationController setViewControllers:viewControllers animated:YES];
+        } else {
+            [self.navigationController popViewControllerAnimated:YES];
         }
-        
-        [newTextField addTarget:self action:@selector(titleTextDidChange:) forControlEvents:UIControlEventEditingChanged];
-    } else if (object == self && [keyPath isEqualToString:@"avatarImage"]) {
-        UIImage *newImage = change[NSKeyValueChangeNewKey];
-        self.avatarImageView.image = newImage;
-    }
+    }];
 }
-
-#pragma mark - Button and control actions
-- (void)titleTextDidChange:(UITextField *)textField {
-    self.chatTitle = textField.text;
-    self.doneButton.enabled = [self canProceed];
-}
-
-- (void)doneButtonAction {
-    self.doneAction(self.contacts, self.chatTitle, self.avatarAttachment);
-}
-
 #pragma mark - Table view
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    if (self.mode == MVChatSettingsModeNew) {
+    if (self.viewModel.mode == MVChatSettingsModeNew) {
         return 2;
     } else {
         return 4;
@@ -168,7 +89,7 @@ static NSString *MediaFilesCellID = @"MVChatSettingsMediaCell";
     if (section == 0) {
         return 2;
     } else if (section == 1) {
-        return self.contacts.count + 1;
+        return self.viewModel.contactModels.count + 1;
     } else {
         return 1;
     }
@@ -191,110 +112,100 @@ static NSString *MediaFilesCellID = @"MVChatSettingsMediaCell";
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.section == 0) {
-        if (indexPath.row == 0) {
-            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:AvatarTitleCellId];
-            UIImageView *avatarImageView = [cell viewWithTag:1];
-            
-            avatarImageView.layer.masksToBounds = YES;
-            avatarImageView.layer.cornerRadius = 30;
-            avatarImageView.layer.borderWidth = 0.3f;
-            avatarImageView.layer.borderColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:0.4].CGColor;
-            
-            UITapGestureRecognizer *tapGestureRecogniser = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showChatPhotoSelectController)];
-            avatarImageView.userInteractionEnabled = YES;
-            [avatarImageView addGestureRecognizer:tapGestureRecogniser];
-            
-            if (self.avatarImage) {
-                avatarImageView.image = self.avatarImage;
-            } else {
-                avatarImageView.image = [UIImage imageNamed:@"avatarPlaceholder"];
-            }
-            
-            self.avatarImageView = avatarImageView;
-            
-            UITextField *textField = [cell viewWithTag:2];
-            textField.text = self.chatTitle;
-            self.titleTextField = textField;
-            return cell;
-        } else {
-            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:AvatarCellId];
-            return cell;
-        }
-    } else if (indexPath.section == 1) {
-        if (indexPath.row == 0) {
-            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:NewContactCellId];
-            UIImageView *iconImageView = [cell viewWithTag:1];
-            iconImageView.image = [UIImage imageNamed:@"iconPlus"];
-            return cell;
-        }
-        
-        MVContactModel *contact = self.contacts[indexPath.row - 1];
-        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ContactCellId];
-        UIImageView *contactAvatarImageView = [cell viewWithTag:1];
-        UILabel *contactNameLabel = [cell viewWithTag:2];
-        UILabel *lastSeenLabel = [cell viewWithTag:3];
-        
-        contactNameLabel.text = contact.name;
-        
-        [[MVFileManager sharedInstance] loadThumbnailAvatarForContact:contact maxWidth:50 completion:^(UIImage *image) {
-            contactAvatarImageView.image = image;
-        }];
-        
-        [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactAvatarUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-            NSString *contactId = note.userInfo[@"Id"];
-            UIImage *image = note.userInfo[@"Image"];
-            if ([contact.id isEqualToString:contactId]) {
-                contactAvatarImageView.image = image;
-            }
-        }];
-        
-        contactAvatarImageView.layer.masksToBounds = YES;
-        contactAvatarImageView.layer.cornerRadius = 15;
-        contactAvatarImageView.layer.borderWidth = 0.3f;
-        contactAvatarImageView.layer.borderColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:0.4].CGColor;
-        
-        lastSeenLabel.text = [NSString lastSeenTimeStringForDate:contact.lastSeenDate];
-        [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactLastSeenTimeUpdate" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-            NSString *contactId = note.userInfo[@"Id"];
-            if ([contactId isEqualToString:contact.id]) {
-                NSDate *lastSeenDate = note.userInfo[@"LastSeenTime"];
-                lastSeenLabel.text = [NSString lastSeenTimeStringForDate:lastSeenDate];
-                contact.lastSeenDate = lastSeenDate;
-            }
-        }];
-        
-        return cell;
-    } else if (indexPath.section == 2){
-        return [tableView dequeueReusableCellWithIdentifier:MediaFilesCellID];
-    } else {
-        return [tableView dequeueReusableCellWithIdentifier:DeleteContactCellId];
+    MVChatSettingsCellType cellType = [self.viewModel cellTypeForIndexPath:indexPath];
+    NSString *cellId = [self.viewModel cellIdForCellType:cellType];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
+    
+    switch (cellType) {
+        case MVChatSettingsCellTypeAvatarTitle:
+            [self setupAvatarTitleCell:cell];
+            break;
+        case MVChatSettingsCellTypeContact:
+            [self setupContactCell:cell withModel:self.viewModel.contactModels[indexPath.row - 1]];
+        default:
+            break;
     }
+    
+    return cell;
+}
+
+- (void)setupAvatarTitleCell:(UITableViewCell *)cell {
+    UIImageView *avatarImageView = [cell viewWithTag:1];
+    avatarImageView.layer.masksToBounds = YES;
+    avatarImageView.layer.cornerRadius = 30;
+    avatarImageView.layer.borderWidth = 0.3f;
+    avatarImageView.layer.borderColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:0.4].CGColor;
+    avatarImageView.userInteractionEnabled = YES;
+    
+    UITextField *titleTextField = [cell viewWithTag:2];
+    
+    @weakify(self);
+    
+    RAC(titleTextField, text) = [RACObserve(self.viewModel, chatTitle) takeUntil:cell.rac_prepareForReuseSignal];
+    [[titleTextField rac_signalForControlEvents:UIControlEventEditingChanged] subscribeNext:^(UITextField *field) {
+        @strongify(self);
+        self.viewModel.chatTitle = field.text;
+    }];
+    
+    if (!self.viewModel.avatarImage) {
+        avatarImageView.image = [UIImage imageNamed:@"avatarPlaceholder"];
+    }
+    
+    RAC(avatarImageView, image) = [[RACObserve(self.viewModel, avatarImage) ignore:nil] takeUntil:cell.rac_prepareForReuseSignal];
+    
+    UITapGestureRecognizer *tapRecognizer = [UITapGestureRecognizer new];
+    [avatarImageView addGestureRecognizer:tapRecognizer];
+    [[tapRecognizer.rac_gestureSignal takeUntil:cell.rac_prepareForReuseSignal] subscribeNext:^(UIGestureRecognizer *x) {
+        @strongify(self);
+        [self showChatPhotoSelectController];
+    }];
+    
+    //TODO: Need to remove recognizer?
+}
+
+- (void)setupContactCell:(UITableViewCell *)cell withModel:(MVContactsListCellViewModel *)model {
+    UIImageView *contactAvatarImageView = [cell viewWithTag:1];
+    contactAvatarImageView.layer.masksToBounds = YES;
+    contactAvatarImageView.layer.cornerRadius = 15;
+    contactAvatarImageView.layer.borderWidth = 0.3f;
+    contactAvatarImageView.layer.borderColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:0.4].CGColor;
+    
+    RAC(contactAvatarImageView, image) = [RACObserve(model, avatar) takeUntil:cell.rac_prepareForReuseSignal];
+    UILabel *contactNameLabel = [cell viewWithTag:2];
+    RAC (contactNameLabel, text) = [RACObserve(model, name) takeUntil:cell.rac_prepareForReuseSignal];
+    
+    UILabel *lastSeenLabel = [cell viewWithTag:3];
+    RAC(lastSeenLabel, text) = [RACObserve(model, lastSeenTime) takeUntil:cell.rac_prepareForReuseSignal];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    MVChatSettingsCellType cellType = [self.viewModel cellTypeForIndexPath:indexPath];
     
-    if (indexPath.section == 0) {
-        if (indexPath.row == 1) {
+    switch (cellType) {
+        case MVChatSettingsCellTypeAvatar:
             [self showChatPhotoSelectController];
-        }
-    } else if (indexPath.section == 1) {
-        if (indexPath.row == 0) {
+            break;
+        case MVChatSettingsCellTypeNewContact:
             [self showContactsSelectController];
-        } else {
-            [self showContactProfileForContact:self.contacts[indexPath.row - 1]];
-        }
-        
-    } else if (indexPath.section == 2) {
-        [self showAllSharedMedia];
-    } else {
-        [self showDeleteAlert];
+            break;
+        case MVChatSettingsCellTypeContact:
+            [self showContactProfileForContact:self.viewModel.contactModels[indexPath.row - 1].contact];
+            break;
+        case MVChatSettingsCellTypeMediaFiles:
+            [self showAllSharedMedia];
+            break;
+        case MVChatSettingsCellTypeDeleteChat:
+            [self showDeleteAlert];
+            break;
+        default:
+            break;
     }
 }
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.section == 1 && indexPath.row > 0) {
+    MVChatSettingsCellType cellType = [self.viewModel cellTypeForIndexPath:indexPath];
+    if (cellType == MVChatSettingsCellTypeContact) {
         return UITableViewCellEditingStyleDelete;
     }
     
@@ -302,38 +213,26 @@ static NSString *MediaFilesCellID = @"MVChatSettingsMediaCell";
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    [self.contacts removeObjectAtIndex:indexPath.row - 1];
+    [self.viewModel removeContactAtIndex:indexPath.row - 1];
     [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
-    self.doneButton.enabled = [self canProceed];
 }
 
 #pragma mark - Helpers
 - (void)showAllSharedMedia {
-    MVChatSharedMediaListController *vc = [MVChatSharedMediaListController loadFromStoryboardWithChatId:self.chat.id];
+    MVChatSharedMediaListController *vc = [MVChatSharedMediaListController loadFromStoryboardWithChatId:self.viewModel.chat.id];
     [self.navigationController pushViewController:vc animated:YES];
 }
 
 - (void)showContactsSelectController {
-    MVContactsListController *contactsListController = [MVContactsListController loadFromStoryboardWithMode:MVContactsListControllerModeSelectable andDoneAction:^(NSArray<MVContactModel *> *selectedContacts) {
-        [self.contacts addObjectsFromArray:selectedContacts];
-        [self.tableView reloadData];
-        [self dismissViewControllerAnimated:YES completion:nil];
-        self.doneButton.enabled = [self canProceed];
-    } excludingContacts:[self.contacts copy]];
-    
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:contactsListController];
-    contactsListController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStyleDone target:self action:@selector(dismissContactsSelectController)];
+    MVContactsListController *controller = [self.viewModel contactsSelectController];
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
     [self presentViewController:navigationController animated:YES completion:nil];
-}
-
-- (void)dismissContactsSelectController {
-    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)showDeleteAlert {
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Delete and Exit" message:@"Are you sure you want to delete and exit this chat?" preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *yesAction = [UIAlertAction actionWithTitle:@"YES" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
-        [[MVChatManager sharedInstance] exitAndDeleteChat:self.chat];
+    UIAlertAction *yesAction = [UIAlertAction actionWithTitle:@"YES" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+        [self.viewModel deleteChat];
         [self.navigationController popToRootViewControllerAnimated:YES];
     }];
     
@@ -344,54 +243,13 @@ static NSString *MediaFilesCellID = @"MVChatSettingsMediaCell";
 }
 
 - (void)showChatPhotoSelectController {
-    DBAttachmentPickerController *attachmentPicker = [DBAttachmentPickerController attachmentPickerControllerFinishPickingBlock:^(NSArray<DBAttachment *> *attachmentArray) {
-        DBAttachment *attachment = attachmentArray[0];
-        self.avatarAttachment = attachment;
-        [attachment thumbnailImageWithMaxWidth:50 completion:^(UIImage *resultImage) {
-            self.avatarImage = resultImage;
-            self.avatarChanged = YES;
-            self.doneButton.enabled = [self canProceed];
-        }];
-    } cancelBlock:nil];
-    
-    attachmentPicker.mediaType = DBAttachmentMediaTypeImage;
+    DBAttachmentPickerController *attachmentPicker = [self.viewModel attachmentPicker];
     [attachmentPicker presentOnViewController:self];
 }
 
 - (void)showContactProfileForContact:(MVContactModel *)contact {
-    MVContactProfileViewController *contactProfile = [MVContactProfileViewController loadFromStoryboardWithContact:contact];
+    MVContactProfileViewModel *viewModel = [[MVContactProfileViewModel alloc] initWithContact:contact];
+    MVContactProfileViewController *contactProfile = [MVContactProfileViewController loadFromStoryboardWithViewModel:viewModel];
     [self.navigationController pushViewController:contactProfile animated:YES];
-}
-
-#pragma mark - Helpers
-- (BOOL)canProceed {
-    if (self.mode == MVChatSettingsModeSettings) {
-        return [self dataChanged] && [self dataValid];
-    } else {
-        return [self dataValid];
-    }
-}
-
-- (BOOL)dataChanged {
-    NSMutableSet *chatParticipants = [NSMutableSet new];
-    NSMutableSet *selectedContacts = [NSMutableSet new];
-    for (MVContactModel *contact in self.chat.participants) {
-        if (!contact.iam) {
-            [chatParticipants addObject:contact.id];
-        }
-    }
-    for (MVContactModel *contact in self.contacts) {
-        [selectedContacts addObject:contact.id];
-    }
-    
-    if ([chatParticipants isEqualToSet:selectedContacts] && [self.chat.title isEqualToString:self.chatTitle] && !self.avatarChanged) {
-        return NO;
-    } else {
-        return YES;
-    }
-}
-
-- (BOOL)dataValid {
-    return (self.contacts.count > 0 && self.chatTitle.length > 0);
 }
 @end

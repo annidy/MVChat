@@ -9,4 +9,6 @@ target 'MVChat' do
   pod 'DBAttachmentPickerController'
   pod 'INTUAnimationEngine'
   pod 'YapDatabase'
+
+  pod 'ReactiveObjC'
 end
