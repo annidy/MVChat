@@ -49,7 +49,6 @@
     [super viewDidLoad];
     
     self.chatsList.tableFooterView = [UIView new];
-    
     if (@available(iOS 11.0, *)) {
         self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeAlways;
     }
@@ -176,7 +175,7 @@
     MVOverlayMenuController *menu = [MVOverlayMenuController loadFromStoryboard];
     NSMutableArray *menuElements = [NSMutableArray new];
     [menuElements addObject:[MVOverlayMenuElement elementWithTitle:@"Create chat" action:^{
-        [self createNewChat:nil];
+        [self createNewChat];
     }]];
     [menuElements addObject:[MVOverlayMenuElement elementWithTitle:@"Update avatars" action:^{
         [[MVUpdatesProvider sharedInstance] performAvatarsUpdate];

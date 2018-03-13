@@ -80,20 +80,6 @@ static MVChatManager *sharedManager;
     return self;
 }
 
-#pragma  mark - listeners
-- (void)addChatListener:(id<MVChatsUpdatesListener>)listener {
-    [self.chatsListeners addObject:[NSValue valueWithNonretainedObject:listener]];
-    [self removeEmptyChatListeners];
-}
-
-- (void)removeEmptyChatListeners {
-    NSArray *copy = self.chatsListeners.copy;
-    for (NSValue *value in copy) {
-        if (!value.nonretainedObjectValue) {
-            [self.chatsListeners removeObject:value];
-        }
-    }
-}
 #pragma mark - Caching
 - (void)loadAllChats {
     [[MVDatabaseManager sharedInstance] allChats:^(NSArray<MVChatModel *> *chats) {
@@ -238,6 +224,7 @@ static MVChatManager *sharedManager;
     @synchronized (self) {
         [self.chats insertObject:chat atIndex:0];
     }
+    
     [self.chatUpdateSubject sendNext:[MVChatUpdate updateWithType:ChatUpdateTypeInsert chat:chat sorting:NO index:0]];
 }
 

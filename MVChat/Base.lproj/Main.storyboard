@@ -656,7 +656,6 @@
                             <constraint firstItem="NQg-8Q-OfD" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="fJ7-uv-5uK"/>
                             <constraint firstAttribute="bottom" secondItem="NQg-8Q-OfD" secondAttribute="bottom" id="fgU-3S-Vui"/>
                             <constraint firstAttribute="trailing" secondItem="NQg-8Q-OfD" secondAttribute="trailing" id="l6y-Ez-ZZZ"/>
-                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="xJk-T6-TV5" secondAttribute="bottom" id="lQC-L3-TiW"/>
                             <constraint firstItem="NQg-8Q-OfD" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="neE-gz-dkc"/>
                             <constraint firstItem="z0W-Ef-Th7" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="wAD-l5-Pym"/>
                         </constraints>

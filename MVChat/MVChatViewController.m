@@ -435,49 +435,4 @@ self.sendButton.rac_command = self.viewModel.sendCommand;
         [self presentViewController:imageViewer animated:YES completion:nil];
     }];
 }
-
-- (IBAction)tableViewTapped:(id)sender {
-    [self.view.superview.superview endEditing:YES];
-}
-
-- (void)cellTapped:(UITableViewCell *)cell {
-    [self.view.superview.superview endEditing:YES];
-    
-    if (![cell isKindOfClass:[MVMessageMediaCell class]]) {
-        return;
-    }
-    
-    MVMessageMediaCell *mediaCell = (MVMessageMediaCell *)cell;
-    NSIndexPath *indexPath = mediaCell.indexPath;
-    NSString *section = self.sections[indexPath.section];
-    MVMessageModel *message = self.messages[section][indexPath.row];
-    
-    [[MVFileManager sharedInstance] loadAttachmentForMessage:message completion:^(DBAttachment *attachment) {
-        MVImageViewerViewModel *viewModel = [[MVImageViewerViewModel alloc] initWithSourceImageView:mediaCell.mediaImageView attachment:attachment andIndex:0];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            MVChatSharedMediaPageController *imageController = [MVChatSharedMediaPageController loadFromStoryboardWithViewModels:@[viewModel] andStartIndex:0];
-            [self presentViewController:imageController animated:YES completion:nil];
-        });
-    }];
-}
-
-- (IBAction)messageTextFieldChanged:(id)sender {
-    self.sendButton.enabled = [self.messageTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]].length > 0;
-}
-
-- (IBAction)sendButtonTapped:(id)sender {
-    self.sendButton.enabled = NO;
-    [[MVChatManager sharedInstance] sendTextMessage:self.messageTextField.text toChatWithId:self.chatId];
-    self.messageTextField.text = @"";
-}
-
-- (IBAction)attatchButtonTapped:(id)sender {
-    DBAttachmentPickerController *attachmentPicker = [DBAttachmentPickerController attachmentPickerControllerFinishPickingBlock:^(NSArray<DBAttachment *> *attachmentArray) {
-        [[MVChatManager sharedInstance] sendMediaMessageWithAttachment:attachmentArray[0] toChatWithId:self.chatId];
-    } cancelBlock:nil];
-    
-    attachmentPicker.mediaType = DBAttachmentMediaTypeImage;
-    [attachmentPicker presentOnViewController:self];
-}
-
 @end
