@@ -110,9 +110,14 @@
         return [self sendCommandSignal];
     }];
     
-    [[[MVChatManager sharedInstance].messageUpdateSignal deliverOn:self.scheduler] subscribeNext:^(MVMessageModel *message) {
+    [[MVChatManager sharedInstance].messageUpdateSignal subscribeNext:^(MVMessageModel *message) {
         @strongify(self);
         [self insertNewMessage:message];
+    }];
+    
+    [[MVChatManager sharedInstance].messageReloadSignal subscribeNext:^(MVMessageModel *message) {
+        @strongify(self);
+        [self updateMessage:message];
     }];
     
     NSString *chatId = [self.chat.id copy];
@@ -219,6 +224,30 @@
     insert.shouldInsertHeader = insertHeader;
 
     [self.updateSubject sendNext:insert];
+}
+
+- (void)updateMessage:(MVMessageModel *)message {
+    if (message.type != MVMessageTypeMedia) {
+        return;
+    }
+    
+    NSInteger index = 0;
+    BOOL found = NO;
+    for (MVMessageCellModel *cellModel in self.rows) {
+        if ([cellModel.message.id isEqualToString:message.id]) {
+            cellModel.message = message;
+            //[cellModel calculateSize];
+            found = YES;
+        } else {
+            index ++;
+        }
+    }
+    
+    if (found) {
+        NSIndexPath *updatePath = [NSIndexPath indexPathForRow:index inSection:0];
+        MVMessagesListUpdate *update = [[MVMessagesListUpdate alloc] initWithType:MVMessagesListUpdateTypeReloadRow indexPath:updatePath rows:[self.messages copy]];
+        [self.updateSubject sendNext:update];
+    }
 }
 
 #pragma mark - Message helpers

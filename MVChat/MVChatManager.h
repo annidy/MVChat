@@ -39,6 +39,7 @@ typedef enum : NSUInteger {
 #pragma mark - Listeners
 @property (strong, nonatomic) RACSignal *chatUpdateSignal;
 @property (strong, nonatomic) RACSignal *messageUpdateSignal;
+@property (strong, nonatomic) RACSignal *messageReloadSignal;
 
 @property (strong, nonatomic) RACScheduler *viewModelScheduler;
 @property (strong, nonatomic) dispatch_queue_t viewModelQueue;

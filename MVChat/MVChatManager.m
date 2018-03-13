@@ -26,6 +26,7 @@
 
 @property (strong, nonatomic) RACSubject *chatUpdateSubject;
 @property (strong, nonatomic) RACSubject *messageUpdateSubject;
+@property (strong, nonatomic) RACSubject *messageReloadSubject;
 @end
 
 @implementation MVChatUpdate
@@ -63,6 +64,7 @@ static MVChatManager *sharedManager;
         _managerScheduler = [[RACTargetQueueScheduler alloc] initWithName:@"com.m.chat" queue:_managerQueue];
         _messageUpdateSubject = [RACSubject new];
         _chatUpdateSubject = [RACSubject new];
+        _messageReloadSubject = [RACSubject new];
         
         [[[MVFileManager sharedInstance].writerSignal deliverOn:_managerScheduler] subscribeNext:^(RACTuple *tuple) {
             RACTupleUnpack(MVMessageModel *message, DBAttachment *attachment) = tuple;
@@ -72,6 +74,7 @@ static MVChatManager *sharedManager;
         
         self.chatUpdateSignal = [self.chatUpdateSubject deliverOn:self.viewModelScheduler];
         _messageUpdateSignal = [_messageUpdateSubject deliverOn:_viewModelScheduler];
+        _messageReloadSignal = [_messageReloadSubject deliverOn:_viewModelScheduler];
     }
     
     return self;
@@ -274,7 +277,7 @@ static MVChatManager *sharedManager;
             @synchronized (self.chatsMessages) {
                 [[self.chatsMessages objectForKey:message.chatId] replaceObjectAtIndex:index withObject:message];
             }
-            //TODO: update message
+            [self.messageReloadSubject sendNext:message];
         }
     });
 }

@@ -181,7 +181,23 @@ self.sendButton.rac_command = self.viewModel.sendCommand;
             [self adjustContentOffsetDuringKeyboardAppear:NO withNotification:x];
         }];
     
-    [[RACObserve(self.messagesTableView, contentSize) distinctUntilChanged]
+    [[[RACObserve(self.messagesTableView, contentSize)
+        distinctUntilChanged] take:2]
+        subscribeNext:^(NSValue *newSize) {
+            @strongify(self);
+            [UIView animateWithDuration:(!processingNewPage && autoscroll)? 0.2 : 0 animations:^{
+                [self updateContentOffsetForOldContent:oldSize.CGSizeValue
+                                         andNewContent:newSize.CGSizeValue
+                                     processingNewPage:processingNewPage
+                                     autoScrollEnabled:autoscroll];
+                
+                [self updateContentInsetForNewContent:newSize.CGSizeValue frame:self.messagesTableView.frame.size.height];
+            }];
+        
+            oldSize = newSize;
+        }];
+    
+    [[[[RACObserve(self.messagesTableView, contentSize) distinctUntilChanged] skip:1] throttle:0.2]
         subscribeNext:^(NSValue *newSize) {
             @strongify(self);
             
@@ -213,7 +229,10 @@ self.sendButton.rac_command = self.viewModel.sendCommand;
             if (update.shouldReloadPrevious) {
                 [self.messagesTableView reloadRowsAtIndexPaths:@[previousIndexPath] withRowAnimation:UITableViewRowAnimationNone];
             }
+        } else if (update.type == MVMessagesListUpdateTypeReloadRow) {
+            [self.messagesTableView reloadRowsAtIndexPaths:@[update.indexPath] withRowAnimation:UITableViewRowAnimationNone];
         }
+             
     }];
 }
 

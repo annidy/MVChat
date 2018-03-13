@@ -10,7 +10,8 @@
 
 typedef enum : NSUInteger {
     MVMessagesListUpdateTypeReloadAll,
-    MVMessagesListUpdateTypeInsertRow
+    MVMessagesListUpdateTypeInsertRow,
+    MVMessagesListUpdateTypeReloadRow
 } MVMessagesListUpdateType;
 
 @interface MVMessagesListUpdate : NSObject

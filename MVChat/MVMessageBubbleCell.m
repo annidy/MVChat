@@ -188,10 +188,12 @@ MVCacheBubbleImageDef(outgoingTaillessImage, false, @"bubbleOutgoingTailless")
     
     self.bubbleWidthConstraint.constant = self.model.width;
     @weakify(self);
-    [[[RACObserve(model, width) distinctUntilChanged] takeUntil:self.rac_prepareForReuseSignal] subscribeNext:^(NSNumber *width) {
+    [[[[RACObserve(model, width) distinctUntilChanged] takeUntil:self.rac_prepareForReuseSignal] deliverOnMainThread] subscribeNext:^(NSNumber *width) {
         @strongify(self);
         self.bubbleWidthConstraint.constant = width.floatValue;
     }];
+    
+    //self.bubbleWidthConstraint.constant = model.width;
     
     if (self.direction == MessageDirectionIncoming) {
         RAC(self.avatarImage, image) = [RACObserve(self.model, avatar) takeUntil:self.rac_prepareForReuseSignal];
